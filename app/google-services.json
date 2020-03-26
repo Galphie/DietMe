@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "560661445726",
+    "firebase_url": "https://dietme-39c69.firebaseio.com",
+    "project_id": "dietme-39c69",
+    "storage_bucket": "dietme-39c69.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560661445726:android:fade4c3c9b67832d0288cf",
+        "android_client_info": {
+          "package_name": "com.galphie.dietme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "560661445726-gsb0uuuibhpfdt6il8e77q4sujsilotu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.galphie.dietme",
+            "certificate_hash": "d324fd40d3516541d102b96a379692ee40f4fd30"
+          }
+        },
+        {
+          "client_id": "560661445726-529rhe9c7fvfqpke8puvb94t0j4vl4kn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD8bEU4eT-YBN1FfFlsHeUAzR5zPnND08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "560661445726-529rhe9c7fvfqpke8puvb94t0j4vl4kn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
