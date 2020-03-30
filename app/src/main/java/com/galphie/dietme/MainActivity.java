@@ -10,5 +10,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        String welcome;
+        Bundle bd = getIntent().getExtras();
+        if (bd != null) {
+            welcome = (String) bd.get("Welcome");
+        } else {
+            welcome = "desconocido.";
+        }
+
+
+        Utils.toast(getApplicationContext(), "Bienvenido, " + welcome);
     }
 }
