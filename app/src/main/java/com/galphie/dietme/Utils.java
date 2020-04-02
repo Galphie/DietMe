@@ -17,7 +17,7 @@ public class Utils {
         toast.show();
     }
 
-    public static boolean validarEmail(String email) {
+    public static boolean hasEmailFormat(String email) {
         Pattern pattern = Pattern.compile(PATTERN_EMAIL);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
@@ -29,7 +29,7 @@ public class Utils {
             byte[] array = md.digest(md5.getBytes());
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
             }
             return sb.toString();
         } catch (java.security.NoSuchAlgorithmException e) {

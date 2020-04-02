@@ -31,7 +31,6 @@ public class ConfirmDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                         mListener.setInfo(emailInput.getText().toString(), phoneInput.getText().toString());
-                        mListener.onConfirm();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -41,7 +40,6 @@ public class ConfirmDialog extends DialogFragment {
                 });
         emailInput = (EditText) view.findViewById(R.id.emailInput);
         phoneInput = (EditText) view.findViewById(R.id.phoneInput);
-        // Create the AlertDialog object and return it
         return builder.create();
     }
 

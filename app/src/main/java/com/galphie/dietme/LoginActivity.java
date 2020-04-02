@@ -1,13 +1,19 @@
 package com.galphie.dietme;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -20,14 +26,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity implements ConfirmDialogListener {
+    public static String mensaje = "";
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 123;
+    private static final int MY_PERMISSIONS_REQUEST_RECEIVE_SMS = 321;
     EditText emailInput, passInput;
     Button linkBut, loginBut;
     DialogFragment confirmDialog;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference("Usuario");
+    DatabaseReference usersRef = database.getReference("Usuario");
     String dbPass = null;
     String dbUser = null;
-    ArrayList<User> listaUsuarios = new ArrayList();
+    private ArrayList<User> usersRegistered = new ArrayList();
 
 
     @Override
@@ -46,7 +55,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
-                    listaUsuarios.add(user);
+                    usersRegistered.add(user);
                 }
             }
 
@@ -54,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        myRef.addValueEventListener(postListener);
+        usersRef.addValueEventListener(postListener);
 
         linkBut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,51 +72,111 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 confirmDialog.show(getSupportFragmentManager(), "Solicitud código");
             }
         });
+
+        requestSmsPermission();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String mail = extras.getString("Email");
+            String password = extras.getString("Password");
+            emailInput.setText(mail);
+            passInput.setText(password);
+            final Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("Crear contraseña", "crear");
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    startActivity(intent);
+                    finish();
+                }
+            }, 1000);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                finish();
+            }
+        }, 1000);
     }
 
     @SuppressLint("ResourceAsColor")
     public void login(View view) {
-        String nombre = emailInput.getText().toString();
-        if (validarLogin(nombre)) {
-            if (Utils.MD5(passInput.getText().toString()).equals(dbPass)) {
+        String name = emailInput.getText().toString();
+        if (isRegistered(name)) {
+            if (Utils.MD5(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
                 Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("Welcome", "Bienvenido, " + dbUser);
                 startActivity(intent);
-                intent.putExtra("Welcome", dbUser);
+                finish();
 
             } else {
-                Snackbar.make(view, "Contraseña no válida.", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, R.string.invalid_password, Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .show();
             }
 
         } else {
-            Snackbar.make(view, "No existe ningún usuario registrado con el correo " + emailInput.getText().toString() + ".", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, R.string.no_such_email + emailInput.getText().toString() + ".", Snackbar.LENGTH_LONG)
                     .setAction("Action", null)
                     .show();
         }
 
     }
 
-    public boolean validarLogin(String user) {
-        boolean existe = false;
-        for (int i = 0; i < listaUsuarios.size(); i++) {
-            if ((user.equals(listaUsuarios.get(i).getUsername())) || user.equals(listaUsuarios.get(i).getEmail())) {
-                dbPass = listaUsuarios.get(i).getPassword();
-                dbUser = listaUsuarios.get(i).getUsername();
-                existe = true;
+    public boolean isRegistered(String user) {
+        boolean isCorrect = false;
+        for (int i = 0; i < usersRegistered.size(); i++) {
+            if ((user.equals(usersRegistered.get(i).getUsername())) || user.equals(usersRegistered.get(i).getEmail())) {
+                dbPass = usersRegistered.get(i).getPassword();
+                dbUser = usersRegistered.get(i).getUsername();
+                isCorrect = true;
             }
         }
-        return existe;
-    }
-
-
-    @Override
-    public void onConfirm() {
-        Utils.toast(getApplicationContext(), "Solicitud enviada. En breve recibirá respuesta.");
+        return isCorrect;
     }
 
     @Override
     public void setInfo(String email, String phone) {
-        //TODO enviar código de acceso
+        Utils.toast(getApplicationContext(), String.valueOf(R.string.request_submitted));
+        boolean isRegistered = false;
+        for (int i = 0; i < usersRegistered.size(); i++) {
+            if ((email.equals(usersRegistered.get(i).getEmail()))
+                    && (phone.equals(usersRegistered.get(i).getPhone()) || phone.equals("+34" + usersRegistered.get(i).getPhone()))) {
+                sendSms(usersRegistered.get(i), phone);
+                isRegistered = true;
+            }
+        }
+        if (!isRegistered) {
+            Utils.toast(getApplicationContext(), String.valueOf(R.string.user_not_found));
+        }
+
     }
+
+    protected void requestSmsPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSIONS_REQUEST_SEND_SMS);
+            }
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECEIVE_SMS)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, MY_PERMISSIONS_REQUEST_RECEIVE_SMS);
+            }
+        }
+    }
+
+    public void sendSms(User user, String phone) {
+        String message = user.getUsername() + ", tus credenciales:\n" +
+                "#" + user.getEmail() + "#\n" +
+                "#" + user.getPassword() + "#";
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phone, null, message, null, null);
+    }
+
 }

@@ -14,11 +14,7 @@ public class MainActivity extends AppCompatActivity {
         Bundle bd = getIntent().getExtras();
         if (bd != null) {
             welcome = (String) bd.get("Welcome");
-        } else {
-            welcome = "desconocido.";
+            Utils.toast(getApplicationContext(), "Bienvenido, " + welcome);
         }
-
-
-        Utils.toast(getApplicationContext(), "Bienvenido, " + welcome);
     }
 }
