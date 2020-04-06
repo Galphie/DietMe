@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,7 +49,6 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         passInput = (EditText) findViewById(R.id.passInput);
         linkBut = (Button) findViewById(R.id.linkBut);
         loginBut = (Button) findViewById(R.id.loginBut);
-
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
 
     @Override
     public void setInfo(String email, String phone) {
-        Utils.toast(getApplicationContext(), String.valueOf(R.string.request_submitted));
+        Utils.toast(getApplicationContext(), getString(R.string.request_submitted));
         boolean isRegistered = false;
         for (int i = 0; i < usersRegistered.size(); i++) {
             if ((email.equals(usersRegistered.get(i).getEmail()))
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             }
         }
         if (!isRegistered) {
-            Utils.toast(getApplicationContext(), String.valueOf(R.string.user_not_found));
+            Utils.toast(getApplicationContext(), getString(R.string.user_not_found));
         }
 
     }
