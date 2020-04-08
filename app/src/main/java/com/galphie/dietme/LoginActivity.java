@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             passInput.setText(password);
             final Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            TODO: En MainActivity, si se recibe el siguiente extra, realizar cambio de contraseña
             intent.putExtra("Crear contraseña", "crear");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
