@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             passInput.setText(password);
             final Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            TODO: En MainActivity, si se recibe el siguiente extra, realizar cambio de contraseña
+//            TODO: En MainActivity, si se recibe el siguiente extra, realizar cambio de contraseña.
             intent.putExtra("Crear contraseña", "crear");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     public void login(View view) {
         String name = emailInput.getText().toString();
         if (isRegistered(name)) {
-            if (Utils.MD5(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
+            if (Utils.SHA256(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("Welcome", "Bienvenido, " + dbUser);
