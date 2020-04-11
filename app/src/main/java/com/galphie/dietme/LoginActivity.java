@@ -1,9 +1,9 @@
 package com.galphie.dietme;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.SmsManager;
@@ -114,15 +114,21 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 finish();
 
             } else {
-                Snackbar.make(view, R.string.invalid_password, Snackbar.LENGTH_LONG)
+                Snackbar.make(view, getString(R.string.invalid_password), Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .show();
             }
 
         } else {
-            Snackbar.make(view, R.string.no_such_email + emailInput.getText().toString() + ".", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null)
-                    .show();
+            if (emailInput.getText().length() == 0) {
+                Snackbar.make(view, "Por favor, introduce algún correo.", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null)
+                        .show();
+            } else {
+                Snackbar.make(view, getString(R.string.no_such_email) + emailInput.getText().toString() + ".", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null)
+                        .show();
+            }
         }
 
     }
@@ -158,42 +164,50 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
 
     private boolean checkSMSReceivePermission() {
         boolean granted = false;
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECEIVE_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.RECEIVE_SMS)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECEIVE_SMS},
-                        PERMISSION_REQUEST_RECEIVE_SMS);
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.RECEIVE_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        android.Manifest.permission.RECEIVE_SMS)) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.RECEIVE_SMS},
+                            PERMISSION_REQUEST_RECEIVE_SMS);
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.RECEIVE_SMS},
+                            PERMISSION_REQUEST_RECEIVE_SMS);
+                }
             } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECEIVE_SMS},
-                        PERMISSION_REQUEST_RECEIVE_SMS);
+                granted = !granted;
             }
         } else {
-            granted = true;
+            granted = !granted;
         }
         return granted;
     }
 
     protected boolean checkSMSSendPermission() {
         boolean granted = false;
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        PERMISSION_REQUEST_SEND_SMS);
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        android.Manifest.permission.SEND_SMS)) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.SEND_SMS},
+                            PERMISSION_REQUEST_SEND_SMS);
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.SEND_SMS},
+                            PERMISSION_REQUEST_SEND_SMS);
+                }
             } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        PERMISSION_REQUEST_SEND_SMS);
+                granted = !granted;
             }
         } else {
-            granted = true;
+            granted = !granted;
         }
         return granted;
     }
