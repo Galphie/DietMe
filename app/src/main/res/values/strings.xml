@@ -24,4 +24,6 @@
     <string name="no_such_email">"No existe ningún usuario registrado con el correo "</string>
     <string name="request_submitted">Solicitud enviada. En breve recibirá respuesta.</string>
     <string name="user_not_found">No existen coincidencias.</string>
+    <string name="remember_me">Recordarme</string>
+    <string name="show_password">Mostrar contraseña</string>
 </resources>

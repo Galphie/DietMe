@@ -2,13 +2,18 @@ package com.galphie.dietme;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +34,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     public static boolean canFinish = false;
     private static final int PERMISSION_REQUEST_SEND_SMS = 123;
     private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;
+    CheckBox checkRemember, checkShow;
     EditText emailInput, passInput;
     Button linkBut, loginBut;
     DialogFragment confirmDialog;
@@ -46,8 +52,13 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
 
         emailInput = (EditText) findViewById(R.id.emailInput);
         passInput = (EditText) findViewById(R.id.passInput);
+
         linkBut = (Button) findViewById(R.id.linkBut);
         loginBut = (Button) findViewById(R.id.loginBut);
+
+        checkRemember = (CheckBox) findViewById(R.id.checkRemember);
+        checkShow = (CheckBox) findViewById(R.id.checkShow);
+
         canFinish = false;
 
         ValueEventListener postListener = new ValueEventListener() {
@@ -91,7 +102,21 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 }
             }, 1000);
         }
+
+        checkShow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    passInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                } else {
+                    passInput.setInputType(129);
+                }
+            }
+        });
         checkSMSPermissions();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        emailInput.setText(preferences.getString("Email", ""));
+        passInput.setText(preferences.getString("Password", ""));
     }
 
     @Override
@@ -121,6 +146,17 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("Welcome", "Bienvenido, " + dbUser);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                if (checkRemember.isChecked()) {
+                    editor.putString("Email", emailInput.getText().toString());
+                    editor.putString("Password", passInput.getText().toString());
+                    editor.apply();
+                } else {
+                    editor.putString("Email", "");
+                    editor.putString("Password", "");
+                    editor.apply();
+                }
                 startActivity(intent);
                 finish();
 
@@ -234,6 +270,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 "#" + user.getPassword() + "#";
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phone, null, message, null, null);
+        checkRemember.setChecked(false);
     }
 
 }
