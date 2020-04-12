@@ -26,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity implements ConfirmDialogListener {
+    public static boolean canFinish = false;
     private static final int PERMISSION_REQUEST_SEND_SMS = 123;
     private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;
     EditText emailInput, passInput;
@@ -47,6 +48,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         passInput = (EditText) findViewById(R.id.passInput);
         linkBut = (Button) findViewById(R.id.linkBut);
         loginBut = (Button) findViewById(R.id.loginBut);
+        canFinish = false;
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -65,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         linkBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkSMSSendPermission() && checkSMSReceivePermission()) {
+                if (checkSMSPermissions()) {
                     confirmDialog = new ConfirmDialog();
                     confirmDialog.show(getSupportFragmentManager(), "Solicitud código");
                 }
@@ -89,17 +91,26 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 }
             }, 1000);
         }
+        checkSMSPermissions();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                finish();
-            }
-        }, 1000);
+        if (canFinish) {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    finish();
+                }
+            }, 1000);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkSMSPermissions();
     }
 
     @SuppressLint("ResourceAsColor")
@@ -162,46 +173,41 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
 
     }
 
-    private boolean checkSMSReceivePermission() {
+    protected boolean checkSMSPermissions() {
         boolean granted = false;
         if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.RECEIVE_SMS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        android.Manifest.permission.RECEIVE_SMS)) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.RECEIVE_SMS},
-                            PERMISSION_REQUEST_RECEIVE_SMS);
-                } else {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.RECEIVE_SMS},
-                            PERMISSION_REQUEST_RECEIVE_SMS);
-                }
-            } else {
-                granted = !granted;
-            }
-        } else {
-            granted = !granted;
-        }
-        return granted;
-    }
-
-    protected boolean checkSMSSendPermission() {
-        boolean granted = false;
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(this,
+            if ((ContextCompat.checkSelfPermission(this,
                     android.Manifest.permission.SEND_SMS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        android.Manifest.permission.SEND_SMS)) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.SEND_SMS},
-                            PERMISSION_REQUEST_SEND_SMS);
-                } else {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.SEND_SMS},
-                            PERMISSION_REQUEST_SEND_SMS);
+                    != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.RECEIVE_SMS)
+                    != PackageManager.PERMISSION_GRANTED)) {
+                if (ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.SEND_SMS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            android.Manifest.permission.SEND_SMS)) {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{android.Manifest.permission.SEND_SMS},
+                                PERMISSION_REQUEST_SEND_SMS);
+                    } else {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{android.Manifest.permission.SEND_SMS},
+                                PERMISSION_REQUEST_SEND_SMS);
+                    }
+                }
+                if (ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.RECEIVE_SMS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            android.Manifest.permission.RECEIVE_SMS)) {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{android.Manifest.permission.RECEIVE_SMS},
+                                PERMISSION_REQUEST_RECEIVE_SMS);
+                    } else {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{android.Manifest.permission.RECEIVE_SMS},
+                                PERMISSION_REQUEST_RECEIVE_SMS);
+                    }
                 }
             } else {
                 granted = !granted;
@@ -211,7 +217,6 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         }
         return granted;
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

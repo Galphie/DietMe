@@ -21,6 +21,7 @@ public class SmsListener extends BroadcastReceiver {
                 login.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 login.putExtra("Email", username);
                 login.putExtra("Password", password);
+                LoginActivity.canFinish = true;
                 context.startActivity(login);
             }
         }
