@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.text.InputType;
@@ -28,12 +29,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity implements ConfirmDialogListener {
     public static boolean canFinish = false;
     private static final int PERMISSION_REQUEST_SEND_SMS = 123;
     private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;
+    private User currentUser = null;
     CheckBox checkRemember, checkShow;
     EditText emailInput, passInput;
     Button linkBut, loginBut;
@@ -143,9 +146,9 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         String name = emailInput.getText().toString();
         if (isRegistered(name)) {
             if (Utils.SHA256(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("Welcome", "Bienvenido, " + dbUser);
+                intent.putExtra("User", (Parcelable) currentUser);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 if (checkRemember.isChecked()) {
@@ -186,6 +189,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             if ((user.equals(usersRegistered.get(i).getUsername())) || user.equals(usersRegistered.get(i).getEmail())) {
                 dbPass = usersRegistered.get(i).getPassword();
                 dbUser = usersRegistered.get(i).getUsername();
+                currentUser = usersRegistered.get(i);
                 isCorrect = true;
             }
         }
