@@ -11,18 +11,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String welcome;
         Bundle bd = getIntent().getExtras();
-//        if (bd != null) {
-//            welcome = (String) bd.get("Crear contraseña");
-//            if (welcome.equals("crear")){
-//                Intent intent = new Intent(this,ConfigActivity.class);
-//                startActivity(intent);
-//            }
-//        }
         currentUser = getIntent().getParcelableExtra("User");
 
         Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getUsername() + ".");
+        if (bd != null) {
+            if (bd.getBoolean("ForzarCambio")) {
+                Utils.toast(getApplicationContext(), "Yendo a cambio de contraseña");
+            }
+        }
 
     }
 }

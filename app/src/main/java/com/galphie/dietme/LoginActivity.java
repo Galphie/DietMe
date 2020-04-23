@@ -11,6 +11,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,15 +29,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity implements ConfirmDialogListener {
     public static boolean canFinish = false;
     private static final int PERMISSION_REQUEST_SEND_SMS = 123;
     private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;
-    private User currentUser = null;
+    public User currentUser;
     CheckBox checkRemember, checkShow;
     EditText emailInput, passInput;
     Button linkBut, loginBut;
@@ -89,19 +90,23 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         });
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             String mail = extras.getString("Email");
             String password = extras.getString("Password");
             emailInput.setText(mail);
             passInput.setText(password);
+            Gson gson = new Gson();
+            String json = preferences.getString("CurrentUser","");
+            currentUser = gson.fromJson(json, User.class);
             final Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            TODO: En MainActivity, si se recibe el siguiente extra, realizar cambio de contraseña.
-            intent.putExtra("Crear contraseña", "crear");
+            intent.putExtra("User", currentUser);
+            intent.putExtra("ForzarCambio",true);
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    startActivity(intent);
-                    finish();
+                        startActivity(intent);
+                        finish();
                 }
             }, 1000);
         }
@@ -109,7 +114,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         checkShow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
+                if (isChecked) {
                     passInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 } else {
                     passInput.setInputType(129);
@@ -117,9 +122,13 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             }
         });
         checkSMSPermissions();
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        emailInput.setText(preferences.getString("Email", ""));
-        passInput.setText(preferences.getString("Password", ""));
+        if ((preferences.getString("Checked", "")).equals("true")) {
+            emailInput.setText(preferences.getString("Email", ""));
+            passInput.setText(preferences.getString("Password", ""));
+            checkRemember.setChecked(true);
+        }
     }
 
     @Override
@@ -151,11 +160,13 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 intent.putExtra("User", (Parcelable) currentUser);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("Email", emailInput.getText().toString());
+                editor.putString("Password", passInput.getText().toString());
                 if (checkRemember.isChecked()) {
-                    editor.putString("Email", emailInput.getText().toString());
-                    editor.putString("Password", passInput.getText().toString());
+                    editor.putString("Checked", "true");
                     editor.apply();
                 } else {
+                    editor.putString("Checked", "false");
                     editor.putString("Email", "");
                     editor.putString("Password", "");
                     editor.apply();
@@ -204,6 +215,12 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             if ((email.equals(usersRegistered.get(i).getEmail()))
                     && (phone.equals(usersRegistered.get(i).getPhone()) || phone.equals("+34" + usersRegistered.get(i).getPhone()))) {
                 sendSms(usersRegistered.get(i), phone);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                Gson gson = new Gson();
+                String json = gson.toJson(usersRegistered.get(i));
+                editor.putString("CurrentUser",json);
+                editor.commit();
                 isRegistered = true;
             }
         }
