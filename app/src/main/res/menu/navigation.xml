@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_24dp"
+        android:title="Inicio"/>
+
+    <item
+        android:id="@+id/navigation_appointment"
+        android:icon="@drawable/ic_calendar_24dp"
+        android:title="Citas"/>
+
+    <item
+        android:id="@+id/navigation_patients"
+        android:icon="@drawable/ic_person_24dp"
+        android:title="Pacientes"
+        app:showAsAction="always" />
+</menu>
