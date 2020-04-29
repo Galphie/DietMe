@@ -38,4 +38,8 @@
     <string name="menu_profile">Perfil</string>
 
     <string name="home_second">Home Second</string>
+    <string name="patients_title">Pacientes</string>
+    <string name="appointment_title">Citas</string>
+    <string name="home_title">Inicio</string>
+    <string name="empty_email">Por favor, introduce algún correo.</string>
 </resources>

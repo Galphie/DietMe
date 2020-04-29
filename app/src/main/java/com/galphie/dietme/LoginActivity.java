@@ -83,7 +83,10 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             @Override
             public void onClick(View v) {
                 if (checkSMSPermissions()) {
+                    Bundle args = new Bundle();
+                    args.putString("mail",emailInput.getText().toString());
                     confirmDialog = new ConfirmDialog();
+                    confirmDialog.setArguments(args);
                     confirmDialog.show(getSupportFragmentManager(), "Solicitud código");
                 }
             }
@@ -182,7 +185,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
 
         } else {
             if (emailInput.getText().length() == 0) {
-                Snackbar.make(view, "Por favor, introduce algún correo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, getString(R.string.empty_email), Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .show();
             } else {

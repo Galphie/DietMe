@@ -4,19 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
-
-    <fragment
-        android:id="@+id/configFragment"
-        android:name="com.galphie.dietme.ConfigFragment"
-        android:label="fragment_config"
-        tools:layout="@layout/fragment_config" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.galphie.dietme.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_configFragment"
-            app:destination="@id/configFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/appointmentFragment"
+        android:name="com.galphie.dietme.AppointmentFragment"
+        android:label="fragment_appointment"
+        tools:layout="@layout/fragment_appointment" />
+    <fragment
+        android:id="@+id/patientsFragment"
+        android:name="com.galphie.dietme.PatientsFragment"
+        android:label="fragment_patients"
+        tools:layout="@layout/fragment_patients" />
 </navigation>

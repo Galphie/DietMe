@@ -3,17 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_24dp"
-        android:title="Inicio"/>
+        android:icon="@drawable/ic_home_24dp" />
 
     <item
         android:id="@+id/navigation_appointment"
-        android:icon="@drawable/ic_calendar_24dp"
-        android:title="Citas"/>
+        android:icon="@drawable/ic_calendar_24dp" />
 
     <item
         android:id="@+id/navigation_patients"
         android:icon="@drawable/ic_person_24dp"
-        android:title="Pacientes"
         app:showAsAction="always" />
 </menu>

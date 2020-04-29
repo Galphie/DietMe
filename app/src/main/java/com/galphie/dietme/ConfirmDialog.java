@@ -25,6 +25,7 @@ public class ConfirmDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.confirm_dialog, null);
+        Bundle mArgs = getArguments();
 
         builder.setView(view)
                 .setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
@@ -39,6 +40,7 @@ public class ConfirmDialog extends DialogFragment {
                     }
                 });
         emailInput = (EditText) view.findViewById(R.id.emailInput);
+        emailInput.setText(mArgs.getString("mail"));
         phoneInput = (EditText) view.findViewById(R.id.phoneInput);
         return builder.create();
     }

@@ -2,7 +2,10 @@ package com.galphie.dietme;
 
 import android.content.Context;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
