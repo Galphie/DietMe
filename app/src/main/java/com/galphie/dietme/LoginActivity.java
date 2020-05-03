@@ -11,7 +11,6 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -54,6 +53,11 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        decorView.setSystemUiVisibility(uiOptions);
+
+
         emailInput = (EditText) findViewById(R.id.emailInput);
         passInput = (EditText) findViewById(R.id.passInput);
 
@@ -84,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             public void onClick(View v) {
                 if (checkSMSPermissions()) {
                     Bundle args = new Bundle();
-                    args.putString("mail",emailInput.getText().toString());
+                    args.putString("mail", emailInput.getText().toString());
                     confirmDialog = new ConfirmDialog();
                     confirmDialog.setArguments(args);
                     confirmDialog.show(getSupportFragmentManager(), "Solicitud código");
@@ -99,17 +103,17 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             emailInput.setText(mail);
             passInput.setText(password);
             Gson gson = new Gson();
-            String json = preferences.getString("CurrentUser","");
+            String json = preferences.getString("CurrentUser", "");
             currentUser = gson.fromJson(json, User.class);
             final Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("User", currentUser);
-            intent.putExtra("ForzarCambio",true);
+            intent.putExtra("ForzarCambio", true);
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                        startActivity(intent);
-                        finish();
+                    startActivity(intent);
+                    finish();
                 }
             }, 1000);
         }
@@ -151,6 +155,10 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     protected void onResume() {
         super.onResume();
         checkSMSPermissions();
+
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     @SuppressLint("ResourceAsColor")
@@ -222,7 +230,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 SharedPreferences.Editor editor = preferences.edit();
                 Gson gson = new Gson();
                 String json = gson.toJson(usersRegistered.get(i));
-                editor.putString("CurrentUser",json);
+                editor.putString("CurrentUser", json);
                 editor.commit();
                 isRegistered = true;
             }
