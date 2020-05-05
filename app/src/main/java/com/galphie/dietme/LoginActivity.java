@@ -53,10 +53,6 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        decorView.setSystemUiVisibility(uiOptions);
-
 
         emailInput = (EditText) findViewById(R.id.emailInput);
         passInput = (EditText) findViewById(R.id.passInput);
