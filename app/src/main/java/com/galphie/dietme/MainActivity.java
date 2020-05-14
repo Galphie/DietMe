@@ -1,6 +1,8 @@
 package com.galphie.dietme;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,6 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.galphie.dietme.config.ConfigListActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -61,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.config:
-                Utils.toast(getApplicationContext(), "Configuración");
+                Intent intent = new Intent(this, ConfigListActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -81,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.appointmentFragment);
-
                 setTitle(getString(R.string.appointment_title));
                 return true;
             case R.id.navigation_patients:

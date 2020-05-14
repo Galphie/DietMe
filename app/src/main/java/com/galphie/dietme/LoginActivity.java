@@ -151,10 +151,6 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     protected void onResume() {
         super.onResume();
         checkSMSPermissions();
-
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        decorView.setSystemUiVisibility(uiOptions);
     }
 
     @SuppressLint("ResourceAsColor")
