@@ -94,6 +94,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = preferences.edit();
             String mail = extras.getString("Email");
             String password = extras.getString("Password");
             emailInput.setText(mail);
@@ -105,6 +106,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("User", currentUser);
             intent.putExtra("ForzarCambio", true);
+            editor.putString("Checked", "false");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -131,6 +133,8 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             emailInput.setText(preferences.getString("Email", ""));
             passInput.setText(preferences.getString("Password", ""));
             checkRemember.setChecked(true);
+        } else {
+            checkRemember.setChecked(false);
         }
     }
 

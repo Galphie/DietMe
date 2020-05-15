@@ -1,10 +1,11 @@
 package com.galphie.dietme.config;
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
@@ -26,26 +27,31 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
 
         init();
 
-        ConfigOptionsAdapter adapter = new ConfigOptionsAdapter(opciones,this);
+        ConfigOptionsAdapter adapter = new ConfigOptionsAdapter(opciones, this);
         recyclerView.setAdapter(adapter);
 
     }
 
     private void init() {
-        opciones.add(new Option("Cambiar contraseña","password"));
-        opciones.add(new Option("Administrar notificaciones","notifications"));
-        opciones.add(new Option("Opción 3",""));
-        opciones.add(new Option("Opción 4",""));
-        opciones.add(new Option("Opción 5",""));
+        opciones.add(new Option(getString(R.string.change_password), "password"));
+        opciones.add(new Option(getString(R.string.manage_notifications), "notifications"));
+        opciones.add(new Option("Opción 3", ""));
+        opciones.add(new Option("Opción 4", ""));
+        opciones.add(new Option("Opción 5", ""));
+        opciones.add(new Option("Opción 6", ""));
 
     }
 
     @Override
     public void onOptionClick(int position) {
-        if (opciones.get(position).getCode().equals("password")){
-            Utils.toast(getApplicationContext(),"Cambiando contraseña");
-        } else if (opciones.get(position).getCode().equals("notifications")){
-            Utils.toast(getApplicationContext(),"Administrando notificaciones");
+        if (opciones.get(position).getCode().equals("password")) {
+            Intent intent = new Intent(this, ConfigContainerActivity.class);
+            intent.putExtra("Type",1);
+            startActivity(intent);
+        } else if (opciones.get(position).getCode().equals("notifications")) {
+            Intent intent = new Intent(this, ConfigContainerActivity.class);
+            intent.putExtra("Type",2);
+            startActivity(intent);
         }
     }
 }

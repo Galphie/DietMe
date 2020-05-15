@@ -42,4 +42,10 @@
     <string name="appointment_title">Citas</string>
     <string name="home_title">Inicio</string>
     <string name="empty_email">Por favor, introduce algún correo.</string>
+    <string name="change_password">Cambiar contraseña</string>
+    <string name="manage_notifications">Administrar notificaciones</string>
+    <string name="old_password">Introduce tu contraseña actual</string>
+    <string name="new_password">Introduce tu nueva contraseña</string>
+    <string name="repeat_password">Repite la nueva contraseña</string>
+    <string name="update_password">Actualizar contraseña</string>
 </resources>

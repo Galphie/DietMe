@@ -2,7 +2,7 @@ package com.galphie.dietme;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,6 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.galphie.dietme.config.ConfigContainerActivity;
 import com.galphie.dietme.config.ConfigListActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -34,12 +35,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         Bundle bd = getIntent().getExtras();
         currentUser = getIntent().getParcelableExtra("User");
         Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getUsername() + ".");
+        init();
         if (bd != null) {
             if (bd.getBoolean("ForzarCambio")) {
-                Utils.toast(getApplicationContext(), "Redirigiendo a cambio de contraseña");
+                Intent intent = new Intent(this, ConfigContainerActivity.class);
+                intent.putExtra("Type", 1);
+                Handler handler = new Handler();
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(intent);
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
             }
         }
-        init();
     }
 
     @Override
