@@ -14,6 +14,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+    /*
+    PATTERN_PASSWORD explanation
+
+                 ^                 # start-of-string
+                 (?=.*[0-9])       # a digit must occur at least once
+                 (?=.*[a-z])       # a lower case letter must occur at least once
+                 (?=.*[A-Z])       # an upper case letter must occur at least once
+                 (?=.*[@#$%^&+=|"()?¿¡!'*._,;:])  # a special character must occur at least once
+                 .{8,}             # anything, at least eight places though
+                 $                 # end-of-string
+
+     */
+    private static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=|\"()?¿¡!'*._,;:]).{8,}$";
     private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
@@ -21,6 +34,12 @@ public class Utils {
         Toast toast = Toast.makeText(context, mensaje, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER | Gravity.BOTTOM, 0, 0);
         toast.show();
+    }
+
+    public static boolean hasPasswordFormat (String password){
+        Pattern pattern = Pattern.compile(PATTERN_PASSWORD);
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
     }
 
     public static boolean hasEmailFormat(String email) {

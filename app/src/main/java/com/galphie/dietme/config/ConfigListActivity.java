@@ -1,19 +1,23 @@
 package com.galphie.dietme.config;
 
+import android.app.usage.NetworkStatsManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
+import com.galphie.dietme.User;
 import com.galphie.dietme.Utils;
 
 import java.util.ArrayList;
 
 public class ConfigListActivity extends AppCompatActivity implements ConfigOptionsAdapter.OnOptionClickListener {
 
+    private User currentUser;
     ArrayList<Option> opciones = new ArrayList<>();
     RecyclerView recyclerView;
 
@@ -30,6 +34,7 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
         ConfigOptionsAdapter adapter = new ConfigOptionsAdapter(opciones, this);
         recyclerView.setAdapter(adapter);
 
+        currentUser = getIntent().getParcelableExtra("User");
     }
 
     private void init() {
@@ -46,6 +51,7 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
     public void onOptionClick(int position) {
         if (opciones.get(position).getCode().equals("password")) {
             Intent intent = new Intent(this, ConfigContainerActivity.class);
+            intent.putExtra("User", (Parcelable) currentUser);
             intent.putExtra("Type",1);
             startActivity(intent);
         } else if (opciones.get(position).getCode().equals("notifications")) {

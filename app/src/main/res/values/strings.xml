@@ -48,4 +48,7 @@
     <string name="new_password">Introduce tu nueva contraseña</string>
     <string name="repeat_password">Repite la nueva contraseña</string>
     <string name="update_password">Actualizar contraseña</string>
+    <string name="invalid_new_password">La contraseña no cumple los requisitos de seguridad.</string>
+    <string name="invalid_repeat_password">Ambas contraseñas deben coincidir.</string>
+    <string name="password_changed">Contraseña modificada.</string>
 </resources>

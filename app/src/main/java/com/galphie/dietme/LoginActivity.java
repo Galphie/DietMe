@@ -104,9 +104,10 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
             currentUser = gson.fromJson(json, User.class);
             final Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("User", currentUser);
+            intent.putExtra("User", (Parcelable) currentUser);
             intent.putExtra("ForzarCambio", true);
             editor.putString("Checked", "false");
+            editor.apply();
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -227,7 +228,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
                 Gson gson = new Gson();
                 String json = gson.toJson(usersRegistered.get(i));
                 editor.putString("CurrentUser", json);
-                editor.commit();
+                editor.apply();
                 isRegistered = true;
             }
         }

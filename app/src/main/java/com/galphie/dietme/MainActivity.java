@@ -1,8 +1,11 @@
 package com.galphie.dietme;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,11 +38,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         Bundle bd = getIntent().getExtras();
         currentUser = getIntent().getParcelableExtra("User");
         Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getUsername() + ".");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("UserID", Utils.MD5(currentUser.getEmail()).substring(0,6).toUpperCase());
+        editor.apply();
         init();
         if (bd != null) {
             if (bd.getBoolean("ForzarCambio")) {
                 Intent intent = new Intent(this, ConfigContainerActivity.class);
                 intent.putExtra("Type", 1);
+                intent.putExtra("User", currentUser);
+                intent.putExtra("Cambio",true);
                 Handler handler = new Handler();
                 Runnable runnable = new Runnable() {
                     @Override
@@ -75,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         switch (item.getItemId()) {
             case R.id.config:
                 Intent intent = new Intent(this, ConfigListActivity.class);
+                intent.putExtra("User", (Parcelable) currentUser);
                 startActivity(intent);
                 return true;
             default:

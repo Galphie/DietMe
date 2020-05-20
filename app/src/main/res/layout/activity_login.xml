@@ -98,10 +98,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:checked="false"
         android:fontFamily="@font/convergence"
         android:text="@string/remember_me"
-        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintStart_toStartOf="@+id/passText"
         app:layout_constraintTop_toBottomOf="@+id/passText" />
 
@@ -109,10 +107,9 @@
         android:id="@+id/checkShow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:checked="false"
         android:fontFamily="@font/convergence"
         android:text="@string/show_password"
-        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintStart_toStartOf="@+id/checkRemember"
         app:layout_constraintTop_toBottomOf="@+id/checkRemember" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
