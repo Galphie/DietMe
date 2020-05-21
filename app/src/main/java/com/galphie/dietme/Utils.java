@@ -36,7 +36,19 @@ public class Utils {
         toast.show();
     }
 
-    public static boolean hasPasswordFormat (String password){
+    public static boolean hasDigits (String password) {
+        Pattern pattern = Pattern.compile("^(?=.*[0-9])$");
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
+    }
+
+    public static boolean hasSpecial (String password) {
+        Pattern pattern = Pattern.compile("^(?=.*[@#$%^&+=|\"()?¿¡!'*._,;:])$");
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
+    }
+
+    public static boolean hasCompletePasswordFormat(String password){
         Pattern pattern = Pattern.compile(PATTERN_PASSWORD);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();

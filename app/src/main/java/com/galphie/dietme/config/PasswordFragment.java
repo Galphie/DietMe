@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.galphie.dietme.MainActivity;
 import com.galphie.dietme.R;
 import com.galphie.dietme.User;
 import com.galphie.dietme.Utils;
@@ -25,7 +29,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class PasswordFragment extends Fragment {
+public class PasswordFragment extends Fragment implements TextWatcher {
     private static final String CHANGE = "param1";
     private static final String USER = "param2";
 
@@ -33,7 +37,7 @@ public class PasswordFragment extends Fragment {
     DatabaseReference usersRef = database.getReference("Usuario");
 
     private User currentUser;
-    private TextView oldPassText, newPassText, repeatPassText;
+    private TextView oldPassText, newPassText, repeatPassText, textIsStrong;
     private EditText oldPassInput, newPassInput, repeatPassInput;
     private Button updateButton;
     private CheckBox checkShowChange;
@@ -75,9 +79,10 @@ public class PasswordFragment extends Fragment {
         oldPassInput = (EditText) view.findViewById(R.id.oldPassInput);
         newPassInput = (EditText) view.findViewById(R.id.newPassInput);
         repeatPassInput = (EditText) view.findViewById(R.id.repeatPassInput);
-        if (getArguments().getBoolean(CHANGE)) {
-            oldPassInput.setText(currentUser.getPassword());
-        }
+
+        newPassInput.addTextChangedListener(this);
+
+        textIsStrong = (TextView) view.findViewById(R.id.textIsStrong);
         oldPassText = (TextView) view.findViewById(R.id.oldPassText);
         newPassText = (TextView) view.findViewById(R.id.newPassText);
         repeatPassText = (TextView) view.findViewById(R.id.repeatPassText);
@@ -97,7 +102,11 @@ public class PasswordFragment extends Fragment {
                 }
             }
         });
-
+        if (getArguments().getBoolean(CHANGE)) {
+            oldPassInput.setText(currentUser.getPassword());
+            oldPassText.setVisibility(View.INVISIBLE);
+            oldPassInput.setVisibility(View.INVISIBLE);
+        }
         updateButton = (Button) view.findViewById(R.id.updateButton);
         updateButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -105,7 +114,7 @@ public class PasswordFragment extends Fragment {
                 if (oldPassInput.getText().toString().equals(currentUser.getPassword())
                         || Utils.SHA256(oldPassInput.getText().toString()).equals(currentUser.getPassword())) {
                     oldPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
-                    if (Utils.hasPasswordFormat(newPassInput.getText().toString())) {
+                    if (Utils.hasCompletePasswordFormat(newPassInput.getText().toString())) {
                         newPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
                         if (newPassInput.getText().toString().equals(repeatPassInput.getText().toString())) {
                             repeatPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
@@ -137,4 +146,24 @@ public class PasswordFragment extends Fragment {
         });
         return view;
     }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        if (!Utils.hasCompletePasswordFormat(s.toString()) && !s.toString().equals("")) {
+            textIsStrong.setVisibility(View.VISIBLE);
+        } else if (Utils.hasCompletePasswordFormat(s.toString()) || s.toString().equals("")) {
+            textIsStrong.setVisibility(View.GONE);
+        }
+    }
+
 }
