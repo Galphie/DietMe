@@ -16,7 +16,7 @@
         tools:layout="@layout/fragment_appointment" />
     <fragment
         android:id="@+id/patientsFragment"
-        android:name="com.galphie.dietme.PatientsFragment"
+        android:name="com.galphie.dietme.patients.PatientsFragment"
         android:label="fragment_patients"
         tools:layout="@layout/fragment_patients" />
 </navigation>
