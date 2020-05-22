@@ -25,7 +25,7 @@ public class ConfigContainerActivity extends AppCompatActivity {
             int type = bd.getInt("Type");
             switch (type) {
                 case 1:
-                    if (bd.getBoolean("Cambio")){
+                    if (bd.getBoolean("Cambio")) {
                         cambio = true;
                     }
                     PasswordFragment passwordFragment = PasswordFragment.newInstance(cambio, currentUser);
@@ -48,8 +48,26 @@ public class ConfigContainerActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (getIntent().getExtras().getBoolean("Cambio")) {
+            Utils.toast(getApplicationContext(), "Por seguridad, no puedes salir sin haber actualizado la contraseña.");
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         finish();
     }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if (getIntent().getExtras().getBoolean("Cambio")) {
+//            android.os.Process.killProcess(android.os.Process.myPid());
+//        }
+//
+//    }
 }

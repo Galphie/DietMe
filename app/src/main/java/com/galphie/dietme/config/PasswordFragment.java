@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +20,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.galphie.dietme.MainActivity;
 import com.galphie.dietme.R;
 import com.galphie.dietme.User;
 import com.galphie.dietme.Utils;
@@ -156,6 +154,7 @@ public class PasswordFragment extends Fragment implements TextWatcher {
     public void onTextChanged(CharSequence s, int start, int before, int count) {
 
     }
+
 
     @Override
     public void afterTextChanged(Editable s) {

@@ -51,4 +51,5 @@
     <string name="invalid_new_password">La contraseña no cumple los requisitos de seguridad.</string>
     <string name="invalid_repeat_password">Ambas contraseñas deben coincidir.</string>
     <string name="password_changed">Contraseña modificada.</string>
+    <string name="weak_password">"La contraseña es muy débil. Asegúrate de que, al menos, tiene ocho caracteres, incluyendo un dígito, una mayúscula y un carácter especial. "</string>
 </resources>
