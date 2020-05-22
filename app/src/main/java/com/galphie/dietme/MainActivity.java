@@ -93,6 +93,26 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     @Override
+    public void onBackPressed() {
+        if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
+                == R.id.appointmentFragment) {
+            Navigation
+                    .findNavController(this, R.id.nav_host_fragment)
+                    .navigate(R.id.homeFragment);
+            setTitle(getString(R.string.home_title));
+        } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
+                == R.id.patientsFragment) {
+            Navigation
+                    .findNavController(this, R.id.nav_host_fragment)
+                    .navigate(R.id.homeFragment);
+            setTitle(getString(R.string.home_title));
+        } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
+                == R.id.homeFragment) {
+            finish();
+        }
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_home:
