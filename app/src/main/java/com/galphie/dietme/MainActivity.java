@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNav = (BottomNavigationView) findViewById(R.id.bottom_nav);
         Bundle bd = getIntent().getExtras();
         currentUser = getIntent().getParcelableExtra("User");
-        Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getUsername() + ".");
+        Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getName() + ".");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("UserID", Utils.MD5(currentUser.getEmail()).substring(0,6).toUpperCase());
+        editor.putString("UserID", Utils.MD5(currentUser.getEmail()).substring(0, 6).toUpperCase());
         editor.apply();
         init();
         if (bd != null) {
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 Intent intent = new Intent(this, ConfigContainerActivity.class);
                 intent.putExtra("Type", 1);
                 intent.putExtra("User", currentUser);
-                intent.putExtra("Cambio",true);
+                intent.putExtra("Cambio", true);
                 Handler handler = new Handler();
                 Runnable runnable = new Runnable() {
                     @Override

@@ -50,24 +50,10 @@ public class ConfigContainerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (getIntent().getExtras().getBoolean("Cambio")) {
-            Utils.toast(getApplicationContext(), "Por seguridad, no puedes salir sin haber actualizado la contraseña.");
+            Utils.toast(getApplicationContext(), getString(R.string.do_not_exit));
         } else {
             super.onBackPressed();
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        finish();
-    }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        if (getIntent().getExtras().getBoolean("Cambio")) {
-//            android.os.Process.killProcess(android.os.Process.myPid());
-//        }
-//
-//    }
 }

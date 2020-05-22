@@ -205,9 +205,8 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     public boolean isRegistered(String user) {
         boolean isCorrect = false;
         for (int i = 0; i < usersRegistered.size(); i++) {
-            if ((user.equals(usersRegistered.get(i).getUsername())) || user.equals(usersRegistered.get(i).getEmail())) {
+            if (user.equals(usersRegistered.get(i).getEmail())) {
                 dbPass = usersRegistered.get(i).getPassword();
-                dbUser = usersRegistered.get(i).getUsername();
                 currentUser = usersRegistered.get(i);
                 isCorrect = true;
             }
@@ -294,7 +293,7 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     }
 
     public void sendSms(User user, String phone) {
-        String message = user.getUsername() + ", tus credenciales:\n" +
+        String message = user.getName() + ", tus credenciales:\n" +
                 "#" + user.getEmail() + "#\n" +
                 "#" + user.getPassword() + "#";
         SmsManager sms = SmsManager.getDefault();

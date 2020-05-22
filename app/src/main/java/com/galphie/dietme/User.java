@@ -4,23 +4,45 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class User implements Parcelable {
-    private String email, password, username, phone;
+    private String email, forenames, name, password, phone;
 
     public User() {
     }
 
-    public User(String email, String password, String phone, String username) {
-        this.username = username;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getForenames() {
+        return forenames;
+    }
+
+    public void setForenames(String forenames) {
+        this.forenames = forenames;
+    }
+
+    public static Creator<User> getCREATOR() {
+        return CREATOR;
+    }
+
+    public User(String email, String forenames, String name, String password, String phone) {
         this.email = email;
         this.password = password;
         this.phone = phone;
+        this.name = name;
+        this.forenames = forenames;
     }
 
     protected User(Parcel in) {
         email = in.readString();
+        forenames = in.readString();
+        name = in.readString();
         password = in.readString();
         phone = in.readString();
-        username = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -41,14 +63,6 @@ public class User implements Parcelable {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
@@ -76,9 +90,10 @@ public class User implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(email);
+        dest.writeString(forenames);
+        dest.writeString(name);
         dest.writeString(password);
         dest.writeString(phone);
-        dest.writeString(username);
 
     }
 }
