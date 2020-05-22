@@ -45,7 +45,7 @@ public class PatientsListAdapter extends RecyclerView.Adapter<PatientsListAdapte
 
         public ViewHolder(@NonNull View itemView, OnPatientClickListener onPatientClickListener) {
             super(itemView);
-            name = (TextView) itemView.findViewById(R.id.name);
+            name = (TextView) itemView.findViewById(R.id.patient_list_item_name);
             this.onPatientClickListener = onPatientClickListener;
 
             itemView.setOnClickListener(this);

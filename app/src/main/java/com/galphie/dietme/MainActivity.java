@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private BottomNavigationView bottomNav;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference usersRef = database.getReference("Usuario");
+    Toolbar toolbar;
     private ArrayList<User> patientsList = new ArrayList<>();
 
     @Override
@@ -43,10 +44,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
         setTitle("Inicio");
-        bottomNav = (BottomNavigationView) findViewById(R.id.bottom_nav);
+        toolbar.setLogo(R.drawable.ic_home_24dp);
+
+        bottomNav = (BottomNavigationView) findViewById(R.id.activity_main_bottom_nav);
         Bundle bd = getIntent().getExtras();
         currentUser = getIntent().getParcelableExtra("User");
         Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getName() + ".");
@@ -132,12 +135,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     .findNavController(this, R.id.nav_host_fragment)
                     .navigate(R.id.homeFragment);
             setTitle(getString(R.string.home_title));
+            toolbar.setLogo(R.drawable.ic_home_24dp);
+
         } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
                 == R.id.patientsFragment) {
             Navigation
                     .findNavController(this, R.id.nav_host_fragment)
                     .navigate(R.id.homeFragment);
             setTitle(getString(R.string.home_title));
+            toolbar.setLogo(R.drawable.ic_home_24dp);
         } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
                 == R.id.homeFragment) {
             finish();
@@ -152,12 +158,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.homeFragment);
                 setTitle(getString(R.string.home_title));
+                toolbar.setLogo(R.drawable.ic_home_24dp);
                 return true;
             case R.id.navigation_appointment:
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.appointmentFragment);
                 setTitle(getString(R.string.appointment_title));
+                toolbar.setLogo(R.drawable.ic_calendar_24dp);
                 return true;
             case R.id.navigation_patients:
                 Bundle bd = new Bundle();
@@ -167,6 +175,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         .navigate(R.id.patientsFragment,bd);
 
                 setTitle(getString(R.string.patients_title));
+                toolbar.setLogo(R.drawable.ic_person_24dp);
+
                 return true;
         }
         return false;

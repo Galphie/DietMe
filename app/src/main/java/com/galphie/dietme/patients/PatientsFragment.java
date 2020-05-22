@@ -1,6 +1,8 @@
 package com.galphie.dietme.patients;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,8 +62,11 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
 
     @Override
     public void onPatientClick(int position) {
-        Utils.toast(getActivity().getApplicationContext()
-                , "Has tocado a " + patientsList.get(position).getName() + " " + patientsList.get(position).getForenames());
+        String patientId = Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6).toUpperCase();
+        Intent intent = new Intent(getContext(),PatientInfoActivity.class);
+        intent.putExtra("PatientID", patientId);
+        intent.putExtra("Patient", (Parcelable) patientsList.get(position));
+        startActivity(intent);
     }
 
     @Override
