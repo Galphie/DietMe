@@ -44,7 +44,6 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference usersRef = database.getReference("Usuario");
     String dbPass = null;
-    String dbUser = null;
     private ArrayList<User> usersRegistered = new ArrayList();
 
 

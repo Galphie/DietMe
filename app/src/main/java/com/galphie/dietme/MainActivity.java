@@ -20,11 +20,23 @@ import androidx.navigation.ui.NavigationUI;
 import com.galphie.dietme.config.ConfigContainerActivity;
 import com.galphie.dietme.config.ConfigListActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private User currentUser;
     private BottomNavigationView bottomNav;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference usersRef = database.getReference("Usuario");
+    private ArrayList<User> patientsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +71,26 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 handler.postDelayed(runnable, 1000);
             }
         }
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+                    patientsList.add(user);
+                    Collections.sort(patientsList, new Comparator<User>() {
+                        @Override
+                        public int compare(User o1, User o2) {
+                            return o1.getForenames().compareToIgnoreCase(o2.getForenames());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        usersRef.addValueEventListener(postListener);
     }
 
     @Override
@@ -128,9 +160,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 setTitle(getString(R.string.appointment_title));
                 return true;
             case R.id.navigation_patients:
+                Bundle bd = new Bundle();
+                bd.putParcelableArrayList("PatientsList", patientsList);
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
-                        .navigate(R.id.patientsFragment);
+                        .navigate(R.id.patientsFragment,bd);
+
                 setTitle(getString(R.string.patients_title));
                 return true;
         }
