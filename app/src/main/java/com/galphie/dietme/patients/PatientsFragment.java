@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.galphie.dietme.R;
 import com.galphie.dietme.User;
 import com.galphie.dietme.Utils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     private String mParam2;
     private ArrayList<User> patientsList;
     private RecyclerView recyclerView;
+    private FloatingActionButton addPatientButton;
 
     public PatientsFragment() {
     }
@@ -56,6 +58,13 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         PatientsListAdapter adapter = new PatientsListAdapter(patientsList,this);
         recyclerView.setAdapter(adapter);
+        addPatientButton = (FloatingActionButton) view.findViewById(R.id.add_patient_button);
+        addPatientButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.toast(getActivity().getApplicationContext(),"Añadiendo paciente (en desarrollo)");
+            }
+        });
 
         return view;
     }

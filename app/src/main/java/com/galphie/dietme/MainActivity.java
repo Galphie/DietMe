@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Inicio");
-        toolbar.setLogo(R.drawable.ic_home_24dp);
+        getSupportActionBar().setTitle("Inicio");
+        getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
 
         bottomNav = (BottomNavigationView) findViewById(R.id.activity_main_bottom_nav);
         Bundle bd = getIntent().getExtras();
@@ -134,16 +134,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             Navigation
                     .findNavController(this, R.id.nav_host_fragment)
                     .navigate(R.id.homeFragment);
-            setTitle(getString(R.string.home_title));
-            toolbar.setLogo(R.drawable.ic_home_24dp);
+            getSupportActionBar().setTitle(getString(R.string.home_title));
+            getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
 
         } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
                 == R.id.patientsFragment) {
             Navigation
                     .findNavController(this, R.id.nav_host_fragment)
                     .navigate(R.id.homeFragment);
-            setTitle(getString(R.string.home_title));
-            toolbar.setLogo(R.drawable.ic_home_24dp);
+            getSupportActionBar().setTitle(getString(R.string.home_title));
+            getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
         } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
                 == R.id.homeFragment) {
             finish();
@@ -157,15 +157,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.homeFragment);
-                setTitle(getString(R.string.home_title));
-                toolbar.setLogo(R.drawable.ic_home_24dp);
+                getSupportActionBar().setTitle(getString(R.string.home_title));
+                getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
                 return true;
             case R.id.navigation_appointment:
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.appointmentFragment);
-                setTitle(getString(R.string.appointment_title));
-                toolbar.setLogo(R.drawable.ic_calendar_24dp);
+                getSupportActionBar().setTitle(getString(R.string.appointment_title));
+                getSupportActionBar().setLogo(R.drawable.ic_calendar_24dp);
                 return true;
             case R.id.navigation_patients:
                 Bundle bd = new Bundle();
@@ -174,8 +174,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.patientsFragment,bd);
 
-                setTitle(getString(R.string.patients_title));
-                toolbar.setLogo(R.drawable.ic_person_24dp);
+                getSupportActionBar().setTitle(getString(R.string.patients_title));
+                getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
 
                 return true;
         }
