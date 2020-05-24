@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,9 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -45,18 +46,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        toolbar = findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Inicio");
-        getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
-
-        bottomNav = (BottomNavigationView) findViewById(R.id.activity_main_bottom_nav);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Inicio");
+            getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+        }
+        bottomNav = findViewById(R.id.activity_main_bottom_nav);
         Bundle bd = getIntent().getExtras();
         currentUser = getIntent().getParcelableExtra("User");
         Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getName() + ".");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("UserID", Utils.MD5(currentUser.getEmail()).substring(0, 6).toUpperCase());
+        editor.putString("UserID", Objects.requireNonNull(Utils.MD5(currentUser.getEmail())).substring(0, 6).toUpperCase());
         editor.apply();
         init();
         if (bd != null) {
@@ -66,12 +68,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 intent.putExtra("User", currentUser);
                 intent.putExtra("Cambio", true);
                 Handler handler = new Handler();
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(intent);
-                    }
-                };
+                Runnable runnable = () -> startActivity(intent);
                 handler.postDelayed(runnable, 1000);
             }
         }
@@ -82,17 +79,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     patientsList.add(user);
-                    Collections.sort(patientsList, new Comparator<User>() {
-                        @Override
-                        public int compare(User o1, User o2) {
-                            return o1.getForenames().compareToIgnoreCase(o2.getForenames());
-                        }
-                    });
+                    Collections.sort(patientsList, (o1, o2) ->
+                            o1.getForenames().compareToIgnoreCase(o2.getForenames()));
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NotNull DatabaseError databaseError) {
             }
         };
         usersRef.addValueEventListener(postListener);
@@ -118,36 +111,36 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.config:
-                Intent intent = new Intent(this, ConfigListActivity.class);
-                intent.putExtra("User", (Parcelable) currentUser);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.config) {
+            Intent intent = new Intent(this, ConfigListActivity.class);
+            intent.putExtra("User", currentUser);
+            startActivity(intent);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
+        if (Objects.requireNonNull(Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination()).getId()
                 == R.id.appointmentFragment) {
             Navigation
                     .findNavController(this, R.id.nav_host_fragment)
                     .navigate(R.id.homeFragment);
-            getSupportActionBar().setTitle(getString(R.string.home_title));
+            Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.home_title));
             getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
 
-        } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
+        } else if (Objects.requireNonNull(Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination()).getId()
                 == R.id.patientsFragment) {
             Navigation
                     .findNavController(this, R.id.nav_host_fragment)
                     .navigate(R.id.homeFragment);
-            getSupportActionBar().setTitle(getString(R.string.home_title));
-            getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
-        } else if (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()
-                == R.id.homeFragment) {
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(getString(R.string.home_title));
+                getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+            }
+        } else if (Objects.requireNonNull(Navigation.findNavController(this,
+                R.id.nav_host_fragment).getCurrentDestination()).getId() == R.id.homeFragment) {
             finish();
         }
     }
@@ -159,30 +152,36 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.homeFragment);
-                getSupportActionBar().setTitle(getString(R.string.home_title));
-                getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(getString(R.string.home_title));
+                    getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+                }
                 return true;
             case R.id.navigation_appointment:
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.appointmentFragment);
-                getSupportActionBar().setTitle(getString(R.string.appointment_title));
-                getSupportActionBar().setLogo(R.drawable.ic_calendar_24dp);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(getString(R.string.appointment_title));
+                    getSupportActionBar().setLogo(R.drawable.ic_calendar_24dp);
+                }
                 return true;
             case R.id.navigation_patients:
                 Bundle bd = new Bundle();
+                bd.putParcelable("CurrentUser", currentUser);
                 bd.putParcelableArrayList("PatientsList", patientsList);
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.patientsFragment, bd);
-
-                getSupportActionBar().setTitle(getString(R.string.patients_title));
-                getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(getString(R.string.patients_title));
+                    getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
+                }
 
                 return true;
         }
         return false;
     }
-};
+}
 
 

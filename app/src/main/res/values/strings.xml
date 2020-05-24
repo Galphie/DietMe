@@ -60,4 +60,5 @@
     <string name="patient_id">Identificador</string>
     <string name="female">Mujer</string>
     <string name="male">Hombre</string>
+    <string name="developer_only">Información solo accesible para el desarrollador.</string>
 </resources>
