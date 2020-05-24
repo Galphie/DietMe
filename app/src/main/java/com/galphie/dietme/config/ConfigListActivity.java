@@ -40,10 +40,6 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
     private void init() {
         opciones.add(new Option(getString(R.string.change_password), "password"));
         opciones.add(new Option(getString(R.string.manage_notifications), "notifications"));
-        opciones.add(new Option("Opción 3", ""));
-        opciones.add(new Option("Opción 4", ""));
-        opciones.add(new Option("Opción 5", ""));
-        opciones.add(new Option("Opción 6", ""));
 
     }
 
