@@ -46,12 +46,23 @@ public class LoginActivity extends AppCompatActivity implements ConfirmDialogLis
     String dbPass = null;
     private ArrayList<User> usersRegistered = new ArrayList();
 
+    Button pruebita;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        pruebita = (Button) findViewById(R.id.pruebita);
+        pruebita.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.toast(getApplicationContext(),"Nombre: " + usersRegistered.get(8).getName());
+                Utils.toast(getApplicationContext(), "Fecha String: " + usersRegistered.get(8).getBirthdate());
+                Utils.toast(getApplicationContext(), "Fecha Date: " + usersRegistered.get(8).getDateBirthdate());
+                Utils.toast(getApplicationContext(), "Género: " + usersRegistered.get(8).getGender());
+            }
+        });
 
         emailInput = (EditText) findViewById(R.id.emailInput);
         passInput = (EditText) findViewById(R.id.passInput);
