@@ -1,14 +1,16 @@
-package com.galphie.dietme;
+package com.galphie.dietme.instantiable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.galphie.dietme.Utils;
 
 import java.util.Date;
 
 public class User implements Parcelable {
     private String email, forenames, name, password, phone, birthdate;
     private int gender;
-//    private Measures measures;
+    private Measures measures;
 
 
     public User() {
@@ -23,7 +25,7 @@ public class User implements Parcelable {
         this.phone = phone;
         this.birthdate = birthdate;
         this.gender = gender;
-//        this.measures = measures;
+        this.measures = measures;
     }
 
     protected User(Parcel in) {
@@ -31,10 +33,10 @@ public class User implements Parcelable {
         email = in.readString();
         forenames = in.readString();
         gender = in.readInt();
+        measures = in.readParcelable(Measures.class.getClassLoader());
         name = in.readString();
         password = in.readString();
         phone = in.readString();
-//        measures = in.readParcelable(Measures.class.getClassLoader());
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -101,7 +103,7 @@ public class User implements Parcelable {
         this.birthdate = birthDate;
     }
 
-    public void setDateBirthdate (Date birthdate) {
+    public void setDateBirthdate(Date birthdate) {
         this.birthdate = Utils.dateToString(birthdate);
     }
 
@@ -113,13 +115,13 @@ public class User implements Parcelable {
         this.gender = gender;
     }
 
-//    public Measures getMeasures() {
-//        return measures;
-//    }
-//
-//    public void setMeasures(Measures measures) {
-//        this.measures = measures;
-//    }
+    public Measures getMeasures() {
+        return measures;
+    }
+
+    public void setMeasures(Measures measures) {
+        this.measures = measures;
+    }
 
     @Override
     public int describeContents() {
@@ -132,9 +134,9 @@ public class User implements Parcelable {
         dest.writeString(email);
         dest.writeString(forenames);
         dest.writeInt(gender);
+        dest.writeParcelable(measures, flags);
         dest.writeString(name);
         dest.writeString(password);
         dest.writeString(phone);
-//        dest.writeParcelable(measures, flags);
     }
 }

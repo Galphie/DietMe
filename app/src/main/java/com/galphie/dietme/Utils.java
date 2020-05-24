@@ -7,6 +7,8 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,6 +74,17 @@ public class Utils {
         return null;
     }
 
+    public static Date customStringToDate(String date, String customPattern) {
+        DateFormat format = new SimpleDateFormat(customPattern);
+        Date newDate = null;
+        try {
+            newDate = format.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return newDate;
+    }
+
     public static Date stringToDate(String date) {
         DateFormat format = new SimpleDateFormat(PATTERN_DATE);
         Date newDate = null;
@@ -81,6 +94,18 @@ public class Utils {
             e.printStackTrace();
         }
         return newDate;
+    }
+
+    public static int calculateAge(String birthDate) {
+        LocalDate birth = LocalDate.parse(birthDate);
+        LocalDate now = LocalDate.now();
+        return Period.between(birth, now).getYears();
+    }
+
+    public static String dateToCustomString(Date date, String customPattern) {
+        DateFormat df = new SimpleDateFormat(customPattern);
+        String stringDate = df.format(date);
+        return stringDate;
     }
 
     public static String dateToString(Date date) {

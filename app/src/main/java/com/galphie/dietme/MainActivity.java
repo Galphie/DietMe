@@ -19,6 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.galphie.dietme.config.ConfigContainerActivity;
 import com.galphie.dietme.config.ConfigListActivity;
+import com.galphie.dietme.instantiable.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                patientsList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     patientsList.add(user);
@@ -172,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 bd.putParcelableArrayList("PatientsList", patientsList);
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
-                        .navigate(R.id.patientsFragment,bd);
+                        .navigate(R.id.patientsFragment, bd);
 
                 getSupportActionBar().setTitle(getString(R.string.patients_title));
                 getSupportActionBar().setLogo(R.drawable.ic_person_24dp);

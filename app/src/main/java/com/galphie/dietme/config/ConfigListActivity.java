@@ -1,6 +1,5 @@
 package com.galphie.dietme.config;
 
-import android.app.usage.NetworkStatsManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,8 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
-import com.galphie.dietme.User;
-import com.galphie.dietme.Utils;
+import com.galphie.dietme.instantiable.User;
 
 import java.util.ArrayList;
 

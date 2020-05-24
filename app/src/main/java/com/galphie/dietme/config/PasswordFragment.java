@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.galphie.dietme.R;
-import com.galphie.dietme.User;
+import com.galphie.dietme.instantiable.User;
 import com.galphie.dietme.Utils;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;

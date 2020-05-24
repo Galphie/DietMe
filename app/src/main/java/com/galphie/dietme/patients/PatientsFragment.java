@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
-import com.galphie.dietme.User;
+import com.galphie.dietme.instantiable.User;
 import com.galphie.dietme.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -22,6 +24,8 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference usersRef = database.getReference("Usuario");
     private String mParam1;
     private String mParam2;
     private ArrayList<User> patientsList;
@@ -55,9 +59,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
         View view = inflater.inflate(R.layout.fragment_patients, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.patients_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        PatientsListAdapter adapter = new PatientsListAdapter(patientsList,this);
-        recyclerView.setAdapter(adapter);
+        initRecyclerView();
         addPatientButton = (FloatingActionButton) view.findViewById(R.id.add_patient_button);
         addPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,9 +67,15 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                 Utils.toast(getActivity().getApplicationContext(),"Añadiendo paciente (en desarrollo)");
             }
         });
-
         return view;
     }
+
+    public void initRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        PatientsListAdapter adapter = new PatientsListAdapter(patientsList,this);
+        recyclerView.setAdapter(adapter);
+    }
+
 
     @Override
     public void onPatientClick(int position) {
@@ -81,5 +89,10 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }
