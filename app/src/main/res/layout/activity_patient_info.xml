@@ -340,7 +340,7 @@
 
             <FrameLayout
                 android:id="@+id/patient_info_container"
-                android:layout_width="453dp"
+                android:layout_width="0dp"
                 android:layout_height="715dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
