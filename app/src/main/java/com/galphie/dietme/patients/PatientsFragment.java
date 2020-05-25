@@ -3,6 +3,7 @@ package com.galphie.dietme.patients;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.galphie.dietme.MainActivity;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.instantiable.User;

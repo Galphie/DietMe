@@ -6,15 +6,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.galphie.dietme.config.ConfigContainerActivity;
@@ -37,9 +41,9 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private User currentUser;
     private BottomNavigationView bottomNav;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference usersRef = database.getReference("Usuario");
-    Toolbar toolbar;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference usersRef = database.getReference("Usuario");
+    private Toolbar toolbar;
     private ArrayList<User> patientsList = new ArrayList<>();
 
     @Override
@@ -187,6 +191,33 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         return false;
     }
+
+
+//    private void onSwipeLeft() {
+//        switch (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()){
+//            case R.id.homeFragment:
+//                onNavigationItemSelected(bottomNav.getMenu().findItem(R.id.navigation_appointment));
+//                bottomNav.setSelectedItemId(R.id.navigation_appointment);
+//                break;
+//            case R.id.appointmentFragment:
+//                onNavigationItemSelected(bottomNav.getMenu().findItem(R.id.navigation_patients));
+//                bottomNav.setSelectedItemId(R.id.navigation_patients);
+//                break;
+//        }
+//    }
+//
+//    private void onSwipeRight() {
+//        switch (Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId()){
+//            case R.id.patientsFragment:
+//                onNavigationItemSelected(bottomNav.getMenu().findItem(R.id.navigation_appointment));
+//                bottomNav.setSelectedItemId(R.id.navigation_appointment);
+//                break;
+//            case R.id.appointmentFragment:
+//                onNavigationItemSelected(bottomNav.getMenu().findItem(R.id.navigation_home));
+//                bottomNav.setSelectedItemId(R.id.navigation_home);
+//                break;
+//        }
+//    }
 }
 
 

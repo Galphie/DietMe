@@ -31,13 +31,13 @@ public class ConfigContainerActivity extends AppCompatActivity {
                     PasswordFragment passwordFragment = PasswordFragment.newInstance(cambio, currentUser);
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .add(R.id.container, passwordFragment)
+                            .add(R.id.config_container, passwordFragment)
                             .commit();
                     break;
                 case 2:
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .add(R.id.container, notificationFragment)
+                            .add(R.id.config_container, notificationFragment)
                             .commit();
                     break;
                 default:
