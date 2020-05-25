@@ -338,15 +338,13 @@
                     android:text="@string/shared_files" />
             </com.google.android.material.tabs.TabLayout>
 
-            <FrameLayout
-                android:id="@+id/patient_info_container"
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/patient_info_pager"
                 android:layout_width="0dp"
-                android:layout_height="715dp"
+                android:layout_height="703dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/patientInfoTabLayout">
-
-            </FrameLayout>
+                app:layout_constraintTop_toBottomOf="@+id/patientInfoTabLayout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

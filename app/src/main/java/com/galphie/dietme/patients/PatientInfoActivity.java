@@ -1,17 +1,15 @@
 package com.galphie.dietme.patients;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
@@ -21,7 +19,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class PatientInfoActivity extends AppCompatActivity{
+import java.util.ArrayList;
+
+public class PatientInfoActivity extends AppCompatActivity {
 
     private static final String TAG = "PatientInfoActivity";
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -31,8 +31,8 @@ public class PatientInfoActivity extends AppCompatActivity{
     private User patient;
     private User currentUser;
 
-    private GestureDetector mGestureDetector;
-    private FrameLayout container;
+    private ViewPager pager;
+    private PagerAdapter pagerAdapter;
     private TabLayout tabLayout;
     private Toolbar toolbar;
     private TextView patientEmailText, patientPhoneText, patientAgeText,
@@ -49,43 +49,36 @@ public class PatientInfoActivity extends AppCompatActivity{
             this.patientId = getIntent().getExtras().getString("PatientID");
             this.currentUser = getIntent().getExtras().getParcelable("CurrentUser");
         }
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        fragments.add(BodyCompositionFragment.newInstance(patient, patientId));
+        fragments.add(new PatientAppointmentsFragment());
+        fragments.add(new SharedFilesFragment());
 
-        container = findViewById(R.id.patient_info_container);
-        BodyCompositionFragment bodyCompositionFragment = BodyCompositionFragment.newInstance(patient, patientId);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.patient_info_container, bodyCompositionFragment)
-                .commit();
+        pager = findViewById(R.id.patient_info_pager);
+        pagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), fragments);
+        pager.setAdapter(pagerAdapter);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                tabLayout.selectTab(tabLayout.getTabAt(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         tabLayout = findViewById(R.id.patientInfoTabLayout);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                switch (tabLayout.getSelectedTabPosition()) {
-                    case 0:
-                        BodyCompositionFragment bodyCompositionFragment = BodyCompositionFragment.newInstance(patient, patientId);
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.patient_info_container, bodyCompositionFragment)
-                                .commit();
-                        break;
-                    case 1:
-                        PatientAppointmentsFragment patientAppointmentsFragment = PatientAppointmentsFragment.newInstance("", "");
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.patient_info_container, patientAppointmentsFragment)
-                                .commit();
-                        break;
-                    case 2:
-                        SharedFilesFragment sharedFilesFragment = SharedFilesFragment.newInstance("", "");
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.patient_info_container, sharedFilesFragment)
-                                .commit();
-                        break;
-                    default:
-                        break;
-                }
+                pager.setCurrentItem(tabLayout.getSelectedTabPosition());
             }
 
             @Override
@@ -113,17 +106,14 @@ public class PatientInfoActivity extends AppCompatActivity{
                 Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
             }
         });
-        phoneCardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (currentUser.getEmail().equals("algparis96@gmail.com") || currentUser.getPhone().equals("648970252")) {
-                    Utils.copyToClipboard(getApplicationContext(), patient.getPhone());
-                    Utils.toast(getApplicationContext(), getString(R.string.copied_to_clipboard));
-                } else {
-                    Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
-                }
-                return true;
+        phoneCardView.setOnLongClickListener(v -> {
+            if (currentUser.getEmail().equals("algparis96@gmail.com") || currentUser.getPhone().equals("648970252")) {
+                Utils.copyToClipboard(getApplicationContext(), patient.getPhone());
+                Utils.toast(getApplicationContext(), getString(R.string.copied_to_clipboard));
+            } else {
+                Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
             }
+            return true;
         });
 
         emailCardView = findViewById(R.id.emailCardView);
