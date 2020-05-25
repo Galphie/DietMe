@@ -1,5 +1,6 @@
 package com.galphie.dietme;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBackPressed() {
         if (Objects.requireNonNull(Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination()).getId()
@@ -127,8 +129,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             Navigation
                     .findNavController(this, R.id.nav_host_fragment)
                     .navigate(R.id.homeFragment);
-            Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.home_title));
-            getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(getString(R.string.home_title));
+                getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+            }
+            bottomNav.setSelectedItemId(R.id.navigation_home);
 
         } else if (Objects.requireNonNull(Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination()).getId()
                 == R.id.patientsFragment) {
@@ -139,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 getSupportActionBar().setTitle(getString(R.string.home_title));
                 getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
             }
+            bottomNav.setSelectedItemId(R.id.navigation_home);
         } else if (Objects.requireNonNull(Navigation.findNavController(this,
                 R.id.nav_host_fragment).getCurrentDestination()).getId() == R.id.homeFragment) {
             finish();
@@ -177,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     getSupportActionBar().setTitle(getString(R.string.patients_title));
                     getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
                 }
-
                 return true;
         }
         return false;

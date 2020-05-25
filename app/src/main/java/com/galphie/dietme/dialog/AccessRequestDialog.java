@@ -1,4 +1,4 @@
-package com.galphie.dietme;
+package com.galphie.dietme.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -13,45 +13,45 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-public class ConfirmDialog extends DialogFragment {
+import com.galphie.dietme.R;
 
-    ConfirmDialogListener mListener;
-    EditText emailInput, phoneInput;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
+public class AccessRequestDialog extends DialogFragment {
+
+    private AccessRequestDialogListener mListener;
+    private EditText emailInput, phoneInput;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.confirm_dialog, null);
+        View view = inflater.inflate(R.layout.access_request_dialog, null);
         Bundle mArgs = getArguments();
 
         builder.setView(view)
-                .setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                        mListener.setInfo(emailInput.getText().toString(), phoneInput.getText().toString());
-                    }
+                .setPositiveButton(R.string.send, (dialog, id) -> {
+                    dialog.dismiss();
+                    mListener.setInfo(emailInput.getText().toString(), phoneInput.getText().toString());
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        emailInput = (EditText) view.findViewById(R.id.emailInput);
+                .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.dismiss());
+        emailInput = view.findViewById(R.id.emailInput);
         emailInput.setText(mArgs.getString("mail"));
-        phoneInput = (EditText) view.findViewById(R.id.phoneInput);
+        phoneInput = view.findViewById(R.id.phoneInput);
         return builder.create();
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = (ConfirmDialogListener) context;
+            mListener = (AccessRequestDialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(context.toString()

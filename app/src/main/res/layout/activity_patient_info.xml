@@ -23,7 +23,7 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#EDEDED"
+        android:background="@color/colorDefaultDarkBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +33,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <com.google.android.material.tabs.TabLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/basicInfo"
+                app:tabBackground="@color/design_default_color_background">
+
+                <com.google.android.material.tabs.TabItem
+                    android:id="@+id/bodyCompositionTabItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/body_composition" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:id="@+id/appointmentsTabItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/appointment_title" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:id="@+id/sharedFilesTabItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shared_files" />
+            </com.google.android.material.tabs.TabLayout>
+
             <androidx.cardview.widget.CardView
+                android:id="@+id/basicInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/design_default_color_background"
@@ -151,17 +180,18 @@
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/ageCardView"
-                                android:layout_width="206dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginRight="1dp"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_marginRight="0.5dp"
                                 app:cardBackgroundColor="@color/design_default_color_background"
-                                app:layout_constraintEnd_toStartOf="@+id/genderCardView"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/guideline4"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
                                     app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
                                     app:layout_constraintHorizontal_bias="0.5"
                                     app:layout_constraintStart_toStartOf="@+id/genderCardView">
@@ -203,14 +233,15 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="0.5dp"
                                 app:cardBackgroundColor="@color/design_default_color_background"
+                                app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/ageCardView"
+                                app:layout_constraintStart_toEndOf="@id/guideline4"
                                 app:layout_constraintTop_toTopOf="parent">
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:id="@+id/constraintLayout"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintHorizontal_bias="0.5"
                                     app:layout_constraintStart_toStartOf="parent">
@@ -245,6 +276,15 @@
                                         app:layout_constraintTop_toTopOf="parent" />
                                 </androidx.constraintlayout.widget.ConstraintLayout>
                             </androidx.cardview.widget.CardView>
+
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/guideline4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintGuide_percent="0.5"
+                                app:layout_constraintStart_toStartOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </androidx.cardview.widget.CardView>
