@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.galphie.dietme.R;
-import com.galphie.dietme.User;
+import com.galphie.dietme.instantiable.User;
 import com.galphie.dietme.Utils;
 
 public class ConfigContainerActivity extends AppCompatActivity {
@@ -31,13 +31,13 @@ public class ConfigContainerActivity extends AppCompatActivity {
                     PasswordFragment passwordFragment = PasswordFragment.newInstance(cambio, currentUser);
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .add(R.id.container, passwordFragment)
+                            .add(R.id.config_container, passwordFragment)
                             .commit();
                     break;
                 case 2:
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .add(R.id.container, notificationFragment)
+                            .add(R.id.config_container, notificationFragment)
                             .commit();
                     break;
                 default:

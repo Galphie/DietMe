@@ -17,6 +17,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="confirm_ask">¿Desea solicitar un código de acceso?</string>
     <string name="yes">Sí</string>
+    <string name="accept">Aceptar</string>
     <string name="cancel">Cancelar</string>
     <string name="introduce_mail">Introduce tu correo electrónico</string>
     <string name="introduce_phone">Introduce tu número de teléfono</string>
@@ -53,4 +54,16 @@
     <string name="password_changed">Contraseña modificada.</string>
     <string name="weak_password">"La contraseña es muy débil. Asegúrate de que, al menos, tiene ocho caracteres, incluyendo un dígito, una mayúscula y un carácter especial. "</string>
     <string name="do_not_exit">Por seguridad, no puedes salir sin haber actualizado la contraseña.</string>
+    <string name="patient_phone_number">Móvil</string>
+    <string name="patient_email">Correo electrónico</string>
+    <string name="patient_age">Edad</string>
+    <string name="patient_gender">Sexo</string>
+    <string name="patient_id">Identificador</string>
+    <string name="female">Mujer</string>
+    <string name="male">Hombre</string>
+    <string name="developer_info_only">Información accesible solo para el desarrollador.</string>
+    <string name="developer_action_only">Acción disponible solo para el desarrollador.</string>
+    <string name="body_composition">Estudio corporal</string>
+    <string name="shared_files">Archivos compartidos</string>
+    <string name="copied_to_clipboard">Copiado en el portapapeles.</string>
 </resources>

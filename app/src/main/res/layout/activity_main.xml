@@ -39,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:background="@color/colorPrimaryDark"
-        app:itemIconTint="@color/colorAccent"
+        app:itemIconTint="@color/bottom_nav_icon_color_selector"
         app:itemTextColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

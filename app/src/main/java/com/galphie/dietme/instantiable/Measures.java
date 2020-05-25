@@ -1,4 +1,4 @@
-package com.galphie.dietme;
+package com.galphie.dietme.instantiable;
 
 import android.os.Parcel;
 import android.os.Parcelable;

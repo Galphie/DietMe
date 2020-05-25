@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
-import com.galphie.dietme.User;
+import com.galphie.dietme.instantiable.User;
 
 import java.util.ArrayList;
 
