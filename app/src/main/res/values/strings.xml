@@ -84,4 +84,8 @@
     <string name="bicipital_skinfold">Bicipital:</string>
     <string name="tricipital_skinfold">Tricipital:</string>
     <string name="waist_hip_index">Índice cintura-cadera:</string>
+    <string name="bioimpedance">Bioimpedancia</string>
+    <string name="lean_mass">Masa magra:</string>
+    <string name="fat_mass">Masa grasa:</string>
+    <string name="update_measurements">Actualizar datos</string>
 </resources>

@@ -2,8 +2,6 @@ package com.galphie.dietme.patients;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.galphie.dietme.MainActivity;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.instantiable.User;
@@ -63,11 +60,21 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_patients, container, false);
 
-        recyclerView =  view.findViewById(R.id.patients_recycler_view);
+        recyclerView = view.findViewById(R.id.patients_recycler_view);
         initRecyclerView();
-        addPatientButton =  view.findViewById(R.id.add_patient_button);
-        addPatientButton.setOnClickListener(v -> Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(),
-                "Añadiendo paciente (en desarrollo)"));
+        addPatientButton = view.findViewById(R.id.add_patient_button);
+        addPatientButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser.isAdmin()) {
+//                    Intent intent = new Intent(this, NewPatientActivity.class);
+//                    startActivity(intent);
+                } else {
+                    Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
+                }
+
+            }
+        });
         return view;
     }
 
