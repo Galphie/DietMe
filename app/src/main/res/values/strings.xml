@@ -88,4 +88,11 @@
     <string name="lean_mass">Masa magra:</string>
     <string name="fat_mass">Masa grasa:</string>
     <string name="update_measurements">Actualizar datos</string>
+    <string name="patient_name">Nombre</string>
+    <string name="patient_forenames">Apellidos</string>
+    <string name="is_admin">Es administrador</string>
+    <string name="new_patient">Nuevo paciente</string>
+    <string name="patient_birthday">Fecha de nacimiento</string>
+    <string name="create_patient">Crear paciente</string>
+    <string name="patient_created">Paciente creado.</string>
 </resources>

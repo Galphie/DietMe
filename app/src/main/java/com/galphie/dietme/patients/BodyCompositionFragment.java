@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
@@ -91,7 +90,7 @@ public class BodyCompositionFragment extends Fragment {
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.toast(getActivity().getApplicationContext(),"Actualizando...");
+                Utils.toast(getActivity().getApplicationContext(), "Actualizando...");
             }
         });
         init(view);
@@ -126,7 +125,11 @@ public class BodyCompositionFragment extends Fragment {
             waistHipIndexText.setText(String.valueOf(whI));
         }
 
-        leanMassText.setText(String.valueOf(patientMeasures.getLeanMass()) + "%");
+        if (patient.isAdmin()) {
+            leanMassText.setText("Mamadísimo.");
+        } else {
+            leanMassText.setText(String.valueOf(patientMeasures.getLeanMass()) + "%");
+        }
         fatMassText.setText(String.valueOf(patientMeasures.getFatMass()) + "%");
     }
 

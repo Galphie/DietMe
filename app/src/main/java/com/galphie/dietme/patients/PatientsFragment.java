@@ -67,10 +67,10 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
             @Override
             public void onClick(View v) {
                 if (currentUser.isAdmin()) {
-//                    Intent intent = new Intent(this, NewPatientActivity.class);
-//                    startActivity(intent);
+                    Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), NewPatientActivity.class);
+                    startActivity(intent);
                 } else {
-                    Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
+                    Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
                 }
 
             }

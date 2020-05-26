@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".patients.NewPatientActivity"></activity>
         <activity android:name=".patients.PatientInfoActivity" />
         <activity android:name=".config.ConfigContainerActivity" />
         <activity android:name=".config.ConfigListActivity" />
