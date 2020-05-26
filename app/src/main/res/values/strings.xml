@@ -66,4 +66,22 @@
     <string name="body_composition">Estudio corporal</string>
     <string name="shared_files">Archivos compartidos</string>
     <string name="copied_to_clipboard">Copiado en el portapapeles.</string>
+    <string name="height">Altura:</string>
+    <string name="weight">Peso:</string>
+    <string name="basic_body_composition_info">Datos básicos</string>
+    <string name="bmi">IMC:</string>
+    <string name="anthropometrics_measurements">Medidas antropométricas</string>
+    <string name="perimeters">Perímetros</string>
+    <string name="folds">Pliegues</string>
+    <string name="waist">Cintura:</string>
+    <string name="hip">Cadera:</string>
+    <string name="arms">Brazos:</string>
+    <string name="thighs">Muslos:</string>
+    <string name="subscapular_skinfold">Subescapular:</string>
+    <string name="empty_text">-</string>
+    <string name="abdominal_skinfold">Abdominal:</string>
+    <string name="suprailiacal_skinfold">Suprailiaco:</string>
+    <string name="bicipital_skinfold">Bicipital:</string>
+    <string name="tricipital_skinfold">Tricipital:</string>
+    <string name="waist_hip_index">Índice cintura-cadera:</string>
 </resources>

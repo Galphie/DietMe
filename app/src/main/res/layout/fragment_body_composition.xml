@@ -5,26 +5,400 @@
     android:id="@+id/frameLayout6"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorDefaultDarkBackground"
     tools:context=".patients.BodyCompositionFragment">
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/basic_info_cardview"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/body_composition"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/patata"
-        android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/bmi"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.44"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/height_text" />
+
+            <TextView
+                android:id="@+id/height_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/convergence"
+                android:inputType="numberDecimal"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView6"
+                app:layout_constraintStart_toEndOf="@+id/textView6" />
+
+            <TextView
+                android:id="@+id/bmiText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/convergence"
+                android:inputType="numberDecimal"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView18"
+                app:layout_constraintStart_toEndOf="@+id/textView18" />
+
+            <TextView
+                android:id="@+id/weight_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="45dp"
+                android:fontFamily="@font/convergence"
+                android:inputType="numberDecimal"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView16"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/height"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView19" />
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/basic_body_composition_info"
+                android:textAllCaps="true"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/weight"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView6"
+                app:layout_constraintEnd_toStartOf="@+id/weight_text" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/antropometric_measures_cardview"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="54dp"
-        android:text="TextView"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:layout_constraintTop_toBottomOf="@+id/basic_info_cardview">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/anthropometrics_measurements"
+                android:textAllCaps="true"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/perimeters"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView21" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/folds"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView30" />
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/waist"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView22" />
+
+            <TextView
+                android:id="@+id/waistText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="96dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView24"
+                app:layout_constraintStart_toEndOf="@+id/textView24" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/hip"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@+id/textView24"
+                app:layout_constraintTop_toBottomOf="@+id/textView24" />
+
+            <TextView
+                android:id="@+id/hipText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView26"
+                app:layout_constraintStart_toStartOf="@+id/waistText" />
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/arms"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@+id/textView26"
+                app:layout_constraintTop_toBottomOf="@+id/textView26" />
+
+            <TextView
+                android:id="@+id/armsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView28"
+                app:layout_constraintStart_toStartOf="@+id/hipText" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/thighs"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@+id/textView28"
+                app:layout_constraintTop_toBottomOf="@+id/textView28" />
+
+            <TextView
+                android:id="@+id/thighsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView30"
+                app:layout_constraintStart_toStartOf="@+id/armsText" />
+
+            <TextView
+                android:id="@+id/textView32"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/subscapular_skinfold"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView24"
+                app:layout_constraintTop_toBottomOf="@+id/textView23" />
+
+            <TextView
+                android:id="@+id/subscapularisText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView32"
+                app:layout_constraintStart_toStartOf="@+id/thighsText" />
+
+            <TextView
+                android:id="@+id/textView34"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/abdominal_skinfold"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@+id/textView32"
+                app:layout_constraintTop_toBottomOf="@+id/textView32" />
+
+            <TextView
+                android:id="@+id/absText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView34"
+                app:layout_constraintStart_toStartOf="@+id/subscapularisText" />
+
+            <TextView
+                android:id="@+id/textView36"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/suprailiacal_skinfold"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@+id/textView34"
+                app:layout_constraintTop_toBottomOf="@+id/textView34" />
+
+            <TextView
+                android:id="@+id/supraText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView36"
+                app:layout_constraintStart_toStartOf="@+id/absText" />
+
+            <TextView
+                android:id="@+id/textView38"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/bicipital_skinfold"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@+id/textView36"
+                app:layout_constraintTop_toBottomOf="@+id/textView36" />
+
+            <TextView
+                android:id="@+id/bicipitalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView38"
+                app:layout_constraintStart_toStartOf="@+id/supraText" />
+
+            <TextView
+                android:id="@+id/textView40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/tricipital_skinfold"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@+id/textView38"
+                app:layout_constraintTop_toBottomOf="@+id/textView38" />
+
+            <TextView
+                android:id="@+id/tricipitalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView40"
+                app:layout_constraintStart_toStartOf="@+id/bicipitalText" />
+
+            <TextView
+                android:id="@+id/textView42"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/waist_hip_index"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.425"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView40" />
+
+            <TextView
+                android:id="@+id/waistHipIndexText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/convergence"
+                android:text="@string/empty_text"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="18sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView42"
+                app:layout_constraintStart_toEndOf="@+id/textView42" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

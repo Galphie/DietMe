@@ -94,7 +94,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         idCardView = findViewById(R.id.idCardView);
         phoneCardView = findViewById(R.id.phoneCardView);
         phoneCardView.setOnClickListener(v -> {
-            if (currentUser.getEmail().equals("algparis96@gmail.com") || currentUser.getPhone().equals("648970252")) {
+            if (currentUser.isAdmin()) {
                 Bundle args = new Bundle();
                 args.putString("Message", "¿Llamar a " + setPhoneFormat(patient.getPhone()) + "?");
                 args.putString("Type", "Call");
@@ -107,7 +107,7 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
         });
         phoneCardView.setOnLongClickListener(v -> {
-            if (currentUser.getEmail().equals("algparis96@gmail.com") || currentUser.getPhone().equals("648970252")) {
+            if (currentUser.isAdmin()) {
                 Utils.copyToClipboard(getApplicationContext(), patient.getPhone());
                 Utils.toast(getApplicationContext(), getString(R.string.copied_to_clipboard));
             } else {
@@ -118,7 +118,7 @@ public class PatientInfoActivity extends AppCompatActivity {
 
         emailCardView = findViewById(R.id.emailCardView);
         emailCardView.setOnClickListener(v -> {
-            if (currentUser.getEmail().equals("algparis96@gmail.com") || currentUser.getPhone().equals("648970252")) {
+            if (currentUser.isAdmin()) {
                 Bundle args = new Bundle();
                 args.putString("Message", "¿Enviar un correo a " + patient.getEmail() + "?");
                 args.putString("Type", "Email");
@@ -131,7 +131,7 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
         });
         emailCardView.setOnLongClickListener(v -> {
-            if (currentUser.getEmail().equals("algparis96@gmail.com") || currentUser.getPhone().equals("648970252")) {
+            if (currentUser.isAdmin()) {
                 Utils.copyToClipboard(getApplicationContext(), patient.getEmail());
                 Utils.toast(getApplicationContext(), getString(R.string.copied_to_clipboard));
             } else {
@@ -145,7 +145,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         patientAgeText = findViewById(R.id.patient_age);
         patientGenderText = findViewById(R.id.patient_gender);
         patientIdText = findViewById(R.id.patient_id);
-        if (currentUser.getEmail().equals("algparis96@gmail.com") || currentUser.getPhone().equals("648970252")) {
+        if (currentUser.isAdmin()) {
             patientEmailText.setText(patient.getEmail());
             patientPhoneText.setText(setPhoneFormat(patient.getPhone()));
         } else {

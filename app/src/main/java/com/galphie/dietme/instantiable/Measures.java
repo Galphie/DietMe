@@ -6,9 +6,8 @@ import android.os.Parcelable;
 public class Measures implements Parcelable {
     private double height; //m
     private double weight, leanMass, fatMass; //kg
-    private int waist,hip,thigh,arm; //cm
-    private int subscapularisFold, abdominalFold,
-            suprailiacalFold, tricipitalFold, bicipitalFold; //mm
+    private double waist, hip, thigh, arm; //cm
+    private double subscapularisFold, abdominalFold, suprailiacalFold, tricipitalFold, bicipitalFold; //mm
 
     public double getHeight() {
         return height;
@@ -42,84 +41,84 @@ public class Measures implements Parcelable {
         this.fatMass = fatMass;
     }
 
-    public int getWaist() {
+    public double getWaist() {
         return waist;
     }
 
-    public void setWaist(int waist) {
+    public void setWaist(double waist) {
         this.waist = waist;
     }
 
-    public int getHip() {
+    public double getHip() {
         return hip;
     }
 
-    public void setHip(int hip) {
+    public void setHip(double hip) {
         this.hip = hip;
     }
 
-    public int getThigh() {
+    public double getThigh() {
         return thigh;
     }
 
-    public void setThigh(int thigh) {
+    public void setThigh(double thigh) {
         this.thigh = thigh;
     }
 
-    public int getArm() {
+    public double getArm() {
         return arm;
     }
 
-    public void setArm(int arm) {
+    public void setArm(double arm) {
         this.arm = arm;
     }
 
-    public int getSubscapularisFold() {
+    public double getSubscapularisFold() {
         return subscapularisFold;
     }
 
-    public void setSubscapularisFold(int subscapularisFold) {
+    public void setSubscapularisFold(double subscapularisFold) {
         this.subscapularisFold = subscapularisFold;
     }
 
-    public int getAbdominalFold() {
+    public double getAbdominalFold() {
         return abdominalFold;
     }
 
-    public void setAbdominalFold(int abdominalFold) {
+    public void setAbdominalFold(double abdominalFold) {
         this.abdominalFold = abdominalFold;
     }
 
-    public int getSuprailiacalFold() {
+    public double getSuprailiacalFold() {
         return suprailiacalFold;
     }
 
-    public void setSuprailiacalFold(int suprailiacalFold) {
+    public void setSuprailiacalFold(double suprailiacalFold) {
         this.suprailiacalFold = suprailiacalFold;
     }
 
-    public int getTricipitalFold() {
+    public double getTricipitalFold() {
         return tricipitalFold;
     }
 
-    public void setTricipitalFold(int tricipitalFold) {
+    public void setTricipitalFold(double tricipitalFold) {
         this.tricipitalFold = tricipitalFold;
     }
 
-    public int getBicipitalFold() {
+    public double getBicipitalFold() {
         return bicipitalFold;
     }
 
-    public void setBicipitalFold(int bicipitalFold) {
+    public void setBicipitalFold(double bicipitalFold) {
         this.bicipitalFold = bicipitalFold;
     }
 
     public Measures() {
     }
 
-    public Measures(double height, double weight, double leanMass, double fatMass, int waist,
-                    int hip, int thigh, int arm, int subscapularisFold, int abdominalFold,
-                    int suprailiacalFold, int tricipitalFold, int bicipitalFold) {
+    public Measures(double height, double weight, double leanMass, double fatMass, double waist,
+                    double hip, double thigh, double arm, double subscapularisFold, double abdominalFold,
+                    double suprailiacalFold, double tricipitalFold, double bicipitalFold) {
         this.height = height;
         this.weight = weight;
         this.leanMass = leanMass;
@@ -146,15 +145,15 @@ public class Measures implements Parcelable {
         weight = in.readDouble();
         leanMass = in.readDouble();
         fatMass = in.readDouble();
-        waist = in.readInt();
-        hip = in.readInt();
-        thigh = in.readInt();
-        arm = in.readInt();
-        subscapularisFold = in.readInt();
-        abdominalFold = in.readInt();
-        suprailiacalFold = in.readInt();
-        tricipitalFold = in.readInt();
-        bicipitalFold = in.readInt();
+        waist = in.readDouble();
+        hip = in.readDouble();
+        thigh = in.readDouble();
+        arm = in.readDouble();
+        subscapularisFold = in.readDouble();
+        abdominalFold = in.readDouble();
+        suprailiacalFold = in.readDouble();
+        tricipitalFold = in.readDouble();
+        bicipitalFold = in.readDouble();
     }
 
     public static final Creator<Measures> CREATOR = new Creator<Measures>() {
@@ -175,14 +174,14 @@ public class Measures implements Parcelable {
         dest.writeDouble(weight);
         dest.writeDouble(leanMass);
         dest.writeDouble(fatMass);
-        dest.writeInt(waist);
-        dest.writeInt(hip);
-        dest.writeInt(thigh);
-        dest.writeInt(arm);
-        dest.writeInt(subscapularisFold);
-        dest.writeInt(abdominalFold);
-        dest.writeInt(suprailiacalFold);
-        dest.writeInt(tricipitalFold);
-        dest.writeInt(bicipitalFold);
+        dest.writeDouble(waist);
+        dest.writeDouble(hip);
+        dest.writeDouble(thigh);
+        dest.writeDouble(arm);
+        dest.writeDouble(subscapularisFold);
+        dest.writeDouble(abdominalFold);
+        dest.writeDouble(suprailiacalFold);
+        dest.writeDouble(tricipitalFold);
+        dest.writeDouble(bicipitalFold);
     }
 }
