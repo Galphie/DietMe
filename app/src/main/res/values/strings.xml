@@ -10,7 +10,7 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_email">Correo electrónico no válido.</string>
     <string name="invalid_password">Contraseña no válida.</string>
     <string name="login_failed">"Login failed"</string>
     <string name="ask_for_access">Solicitar acceso</string>
@@ -95,4 +95,9 @@
     <string name="patient_birthday">Fecha de nacimiento</string>
     <string name="create_patient">Crear paciente</string>
     <string name="patient_created">Paciente creado.</string>
+    <string name="invalid_create_patient">Todos los campos de texto deben estar completos.</string>
+    <string name="not_specified">No especificado</string>
+    <string name="edit">Editar</string>
+    <string name="remove">Eliminar</string>
+    <string name="edit_patient_title">Editar paciente</string>
 </resources>

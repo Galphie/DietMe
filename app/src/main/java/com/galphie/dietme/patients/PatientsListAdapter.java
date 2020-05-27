@@ -3,6 +3,7 @@ package com.galphie.dietme.patients;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,24 +42,31 @@ public class PatientsListAdapter extends RecyclerView.Adapter<PatientsListAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name;
+        ImageButton optionsButton;
         OnPatientClickListener onPatientClickListener;
 
         public ViewHolder(@NonNull View itemView, OnPatientClickListener onPatientClickListener) {
             super(itemView);
-            name = (TextView) itemView.findViewById(R.id.patient_list_item_name);
+            name = itemView.findViewById(R.id.patient_list_item_name);
+            optionsButton = itemView.findViewById(R.id.more_options_button);
             this.onPatientClickListener = onPatientClickListener;
-
-            itemView.setOnClickListener(this);
+            optionsButton.setOnClickListener(v -> onPatientClickListener.onPatientContextClick(v, getAdapterPosition()));
+            itemView.setOnClickListener(v -> onPatientClickListener.onPatientClick(getAdapterPosition()));
+            itemView.setOnLongClickListener(v -> {
+                onPatientClickListener.onPatientContextClick(v, getAdapterPosition());
+                return true;
+            });
 
         }
 
         @Override
         public void onClick(View v) {
-            onPatientClickListener.onPatientClick(getAdapterPosition());
         }
     }
 
     public interface OnPatientClickListener {
         void onPatientClick(int position);
+
+        void onPatientContextClick(View view, int position);
     }
 }

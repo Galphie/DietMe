@@ -7,7 +7,7 @@
     tools:context=".patients.NewPatientActivity">
 
     <TextView
-        android:id="@+id/textView29"
+        android:id="@+id/newPatientText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
@@ -31,7 +31,7 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView29" />
+        app:layout_constraintTop_toBottomOf="@+id/newPatientText" />
 
     <EditText
         android:id="@+id/new_forenames_input"

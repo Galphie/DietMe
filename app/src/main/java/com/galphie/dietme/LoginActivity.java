@@ -14,7 +14,6 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -78,16 +77,13 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
             }
         };
         usersRef.addValueEventListener(postListener);
-        linkBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkSMSPermissions()) {
-                    Bundle args = new Bundle();
-                    args.putString("mail", emailInput.getText().toString());
-                    DialogFragment accessRequestDialog = new AccessRequestDialog();
-                    accessRequestDialog.setArguments(args);
-                    accessRequestDialog.show(getSupportFragmentManager(), "Solicitud código");
-                }
+        linkBut.setOnClickListener(v -> {
+            if (checkSMSPermissions()) {
+                Bundle args = new Bundle();
+                args.putString("mail", emailInput.getText().toString());
+                DialogFragment accessRequestDialog = new AccessRequestDialog();
+                accessRequestDialog.setArguments(args);
+                accessRequestDialog.show(getSupportFragmentManager(), "Solicitud código");
             }
         });
         Bundle extras = getIntent().getExtras();
@@ -108,22 +104,17 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
             editor.putString("Checked", "false");
             editor.apply();
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    startActivity(intent);
-                    finish();
-                }
+            handler.postDelayed(() -> {
+                startActivity(intent);
+                finish();
             }, 1000);
         }
 
-        checkShow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    passInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                } else {
-                    passInput.setInputType(129);
-                }
+        checkShow.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                passInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            } else {
+                passInput.setInputType(129);
             }
         });
         checkSMSPermissions();
@@ -143,11 +134,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         super.onPause();
         if (canFinish) {
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    finish();
-                }
-            }, 1000);
+            handler.postDelayed(() -> finish(), 1000);
         }
     }
 
@@ -164,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
             if (Utils.SHA256(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("User", (Parcelable) currentUser);
+                intent.putExtra("User", currentUser);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("Email", emailInput.getText().toString());

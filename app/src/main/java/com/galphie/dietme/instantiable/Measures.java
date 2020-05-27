@@ -116,6 +116,24 @@ public class Measures implements Parcelable {
     public Measures() {
     }
 
+    public Measures(boolean empty) {
+        if (empty){
+            this.height = 0;
+            this.weight = 0;
+            this.leanMass = 0;
+            this.fatMass = 0;
+            this.waist = 0;
+            this.hip = 0;
+            this.thigh = 0;
+            this.arm = 0;
+            this.subscapularisFold = 0;
+            this.abdominalFold = 0;
+            this.suprailiacalFold = 0;
+            this.tricipitalFold = 0;
+            this.bicipitalFold = 0;
+        }
+    }
+
     public Measures(double height, double weight, double leanMass, double fatMass, double waist,
                     double hip, double thigh, double arm, double subscapularisFold, double abdominalFold,
                     double suprailiacalFold, double tricipitalFold, double bicipitalFold) {

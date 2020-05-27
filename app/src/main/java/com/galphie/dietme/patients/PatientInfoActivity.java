@@ -156,8 +156,10 @@ public class PatientInfoActivity extends AppCompatActivity {
         patientAgeText.setText(String.valueOf(age));
         if (patient.getGender() == 1) {
             patientGenderText.setText(getString(R.string.female));
-        } else {
+        } else if (patient.getGender() == 2){
             patientGenderText.setText(getString(R.string.male));
+        } else {
+            patientGenderText.setText(R.string.not_specified);
         }
         patientIdText.setText(patientId);
         toolbar = findViewById(R.id.activity_patient_info_toolbar);
