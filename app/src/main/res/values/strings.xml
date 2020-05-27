@@ -100,4 +100,7 @@
     <string name="edit">Editar</string>
     <string name="remove">Eliminar</string>
     <string name="edit_patient_title">Editar paciente</string>
+    <string name="update">Actualizar</string>
+    <string name="updating">Actualizando...</string>
+    <string name="updated">Datos actualizados.</string>
 </resources>

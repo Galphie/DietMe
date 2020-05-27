@@ -7,14 +7,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.galphie.dietme.R;
-import com.galphie.dietme.Utils;
+import com.galphie.dietme.dialog.UpdateBodyCompositionDialog;
 import com.galphie.dietme.instantiable.Measures;
 import com.galphie.dietme.instantiable.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -25,10 +30,10 @@ public class BodyCompositionFragment extends Fragment {
     private static final String ARG_PARAM1 = "Patient";
     private static final String ARG_PARAM2 = "PatientID";
 
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference usersRef = database.getReference("Usuario");
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference usersRef = database.getReference("Usuario");
     private User patient;
-    private Measures patientMeasures;
+    private Measures patientMeasures, dbMeasures;
     private String patientId;
 
     private Button updateButton;
@@ -38,7 +43,6 @@ public class BodyCompositionFragment extends Fragment {
 
 
     public BodyCompositionFragment() {
-        // Required empty public constructor
     }
 
     static BodyCompositionFragment newInstance(User patient, String patientId) {
@@ -59,6 +63,19 @@ public class BodyCompositionFragment extends Fragment {
 
             patientMeasures = patient.getMeasures();
             DatabaseReference patientRef = database.getReference("Usuario/" + patientId);
+
+            patientRef.child("measures").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    dbMeasures = dataSnapshot.getValue(Measures.class);
+                    init(dbMeasures);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
@@ -90,47 +107,46 @@ public class BodyCompositionFragment extends Fragment {
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.toast(getActivity().getApplicationContext(), "Actualizando...");
+                DialogFragment dialogFragment = new UpdateBodyCompositionDialog();
+                Bundle args = new Bundle();
+                args.putParcelable("Patient", patientMeasures);
+                args.putString("PatientId", patientId);
+                dialogFragment.setArguments(args);
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "Update");
             }
         });
-        init(view);
 
         return view;
     }
 
-    private void init(View view) {
-        heightText.setText(patientMeasures.getHeight() + "m");
-        weightText.setText(patientMeasures.getWeight() + "kg");
-        double bmi = calculateBMI(patientMeasures.getWeight(), patientMeasures.getHeight());
-        if (patientMeasures.getWeight() == 0 && patientMeasures.getHeight() == 0) {
+    private void init(Measures measures) {
+        heightText.setText(String.format("%sm", measures.getHeight()));
+        weightText.setText(String.format("%skg", measures.getWeight()));
+        if (patientMeasures.getWeight() == 0 && measures.getHeight() == 0) {
             bmiText.setText(R.string.empty_text);
         } else {
+            double bmi = calculateBMI(measures.getWeight(), measures.getHeight());
             bmiText.setText(String.valueOf(bmi));
         }
 
-        waistText.setText(patientMeasures.getWaist() + "cm");
-        hipText.setText(patientMeasures.getHip() + "cm");
-        armsText.setText(patientMeasures.getArm() + "cm");
-        thighText.setText(patientMeasures.getThigh() + "cm");
+        waistText.setText(String.format("%scm", measures.getWaist()));
+        hipText.setText(String.format("%scm", measures.getHip()));
+        armsText.setText(String.format("%scm", measures.getArm()));
+        thighText.setText(String.format("%scm", measures.getThigh()));
 
-        subscapularisText.setText(patientMeasures.getSubscapularisFold() + "mm");
-        supraText.setText(patientMeasures.getSuprailiacalFold() + "mm");
-        absText.setText(patientMeasures.getAbdominalFold() + "mm");
-        bicipitalText.setText(patientMeasures.getBicipitalFold() + "mm");
-        tricipitalText.setText(patientMeasures.getTricipitalFold() + "mm");
-        double whI = calculateWaistHipIndex(patientMeasures.getWaist(), patientMeasures.getHip());
-        if (patientMeasures.getWaist() == 0 && patientMeasures.getHip() == 0) {
+        subscapularisText.setText(String.format("%smm", measures.getSubscapularisFold()));
+        supraText.setText(String.format("%smm", measures.getSuprailiacalFold()));
+        absText.setText(String.format("%smm", measures.getAbdominalFold()));
+        bicipitalText.setText(String.format("%smm", measures.getBicipitalFold()));
+        tricipitalText.setText(String.format("%smm", measures.getTricipitalFold()));
+        if (measures.getWaist() == 0 && measures.getHip() == 0) {
             waistHipIndexText.setText(R.string.empty_text);
         } else {
+            double whI = calculateWaistHipIndex(measures.getWaist(), measures.getHip());
             waistHipIndexText.setText(String.valueOf(whI));
         }
-
-        if (patient.isAdmin()) {
-            leanMassText.setText("Mamadísimo.");
-        } else {
-            leanMassText.setText(String.valueOf(patientMeasures.getLeanMass()) + "%");
-        }
-        fatMassText.setText(String.valueOf(patientMeasures.getFatMass()) + "%");
+        leanMassText.setText(String.format("%s%%", String.valueOf(measures.getLeanMass())));
+        fatMassText.setText(String.format("%s%%", String.valueOf(measures.getFatMass())));
     }
 
     public static double calculateWaistHipIndex(double waist, double hip) {
@@ -153,5 +169,11 @@ public class BodyCompositionFragment extends Fragment {
             e.printStackTrace();
         }
         return bmi;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().finish();
     }
 }

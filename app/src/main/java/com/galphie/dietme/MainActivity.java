@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 handler.postDelayed(runnable, 1000);
             }
         }
-        ValueEventListener postListener = new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 patientsList.clear();
@@ -90,8 +90,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public void onCancelled(@NotNull DatabaseError databaseError) {
             }
-        };
-        usersRef.addValueEventListener(postListener);
+        });
     }
 
     @Override

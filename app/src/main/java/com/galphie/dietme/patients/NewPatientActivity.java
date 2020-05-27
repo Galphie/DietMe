@@ -129,7 +129,7 @@ public class NewPatientActivity extends AppCompatActivity {
         newBirthdateInput.setOnClickListener(v -> {
             datePickerDialog = new DatePickerDialog(NewPatientActivity.this, (view, year1, month1, dayOfMonth) -> {
                 String year2 = String.valueOf(year1);
-                String month2 = String.valueOf(month1);
+                String month2 = String.valueOf(month1+1);
                 String day1 = String.valueOf(dayOfMonth);
                 if (month1 < 10) {
                     month2 = "0" + month2;

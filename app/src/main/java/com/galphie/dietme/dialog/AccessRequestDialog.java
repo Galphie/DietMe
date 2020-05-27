@@ -34,7 +34,7 @@ public class AccessRequestDialog extends DialogFragment {
         Bundle mArgs = getArguments();
 
         builder.setView(view)
-                .setPositiveButton(R.string.send, (dialog, id) -> {
+                .setPositiveButton(R.string.update, (dialog, id) -> {
                     dialog.dismiss();
                     mListener.setInfo(emailInput.getText().toString(), phoneInput.getText().toString());
                 })

@@ -24,8 +24,8 @@ import java.util.ArrayList;
 public class PatientInfoActivity extends AppCompatActivity {
 
     private static final String TAG = "PatientInfoActivity";
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference usersRef = database.getReference("Usuario");
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference usersRef = database.getReference("Usuario");
     private CardView emailCardView, phoneCardView, ageGenderCardView, idCardView;
     private String patientId;
     private User patient;
@@ -101,7 +101,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 args.putString("Object", patient.getPhone());
                 DialogFragment confirmActionDialog = new ConfirmActionDialog();
                 confirmActionDialog.setArguments(args);
-                confirmActionDialog.show(getSupportFragmentManager(), "Confirmar");
+                confirmActionDialog.show(getSupportFragmentManager(), "Confirm");
             } else {
                 Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
             }
@@ -125,7 +125,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 args.putString("Object", patient.getEmail());
                 DialogFragment confirmActionDialog = new ConfirmActionDialog();
                 confirmActionDialog.setArguments(args);
-                confirmActionDialog.show(getSupportFragmentManager(), "Confirmar");
+                confirmActionDialog.show(getSupportFragmentManager(), "Confirm");
             } else {
                 Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
             }
