@@ -1,4 +1,4 @@
-package com.galphie.dietme.config;
+package com.galphie.dietme.instantiable;
 
 public class Option {
     private String name;

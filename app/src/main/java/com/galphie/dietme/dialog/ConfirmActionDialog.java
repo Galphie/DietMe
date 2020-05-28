@@ -12,17 +12,18 @@ import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
-import com.galphie.dietme.patients.PatientsFragment;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ConfirmActionDialog extends DialogFragment {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usersRef = database.getReference("Usuario");
+    private DatabaseReference appointmentsRef = database.getReference("Citas");
 
     @NonNull
     @Override
@@ -38,13 +39,30 @@ public class ConfirmActionDialog extends DialogFragment {
                             dialog.dismiss();
                         } else if (mArgs.getString("Type").equals("Email")) {
                             Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                                    "mailto",mArgs.getString("Object"), null));
+                                    "mailto", mArgs.getString("Object"), null));
                             startActivity(intent);
                             dialog.dismiss();
                         } else if (mArgs.getString("Type").equals("Delete")) {
                             usersRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
 
                             dialog.dismiss();
+                        } else if (mArgs.getString("Type").equals("Restart")) {
+                            String start = "2020/05/25/09:00";
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
+                            LocalDateTime firstDay = LocalDateTime.parse(start, formatter);
+                            String stringFirstDay;
+                            for (int i = 0; i < 1000; i++) {
+                                stringFirstDay = firstDay.format(formatter);
+                                appointmentsRef.child(stringFirstDay).child("picked").setValue(false);
+                                if(firstDay.getHour()==18){
+                                    firstDay = firstDay.plusHours(14);
+                                }
+                                if (firstDay.getDayOfWeek() == DayOfWeek.SATURDAY) {
+                                    firstDay = firstDay.plusDays(2);
+                                }
+                                firstDay = firstDay.plusHours(1);
+                            }
+                            Utils.toast(getActivity().getApplicationContext(),getString(R.string.database_restarted));
                         }
                     })
                     .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.dismiss());

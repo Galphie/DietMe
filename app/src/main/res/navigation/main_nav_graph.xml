@@ -11,7 +11,7 @@
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/appointmentFragment"
-        android:name="com.galphie.dietme.AppointmentFragment"
+        android:name="com.galphie.dietme.appointment.AppointmentFragment"
         android:label="fragment_appointment"
         tools:layout="@layout/fragment_appointment" />
     <fragment

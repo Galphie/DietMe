@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
+import com.galphie.dietme.instantiable.Option;
 import com.galphie.dietme.instantiable.User;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
     private void init() {
         opciones.add(new Option(getString(R.string.change_password), "password"));
         opciones.add(new Option(getString(R.string.manage_notifications), "notifications"));
+        opciones.add(new Option(getString(R.string.manage_appointments),"appointments"));
 
     }
 
@@ -45,12 +47,17 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
     public void onOptionClick(int position) {
         if (opciones.get(position).getCode().equals("password")) {
             Intent intent = new Intent(this, ConfigContainerActivity.class);
-            intent.putExtra("User", (Parcelable) currentUser);
+            intent.putExtra("User", currentUser);
             intent.putExtra("Type",1);
             startActivity(intent);
         } else if (opciones.get(position).getCode().equals("notifications")) {
             Intent intent = new Intent(this, ConfigContainerActivity.class);
             intent.putExtra("Type",2);
+            startActivity(intent);
+        } else if(opciones.get(position).getCode().equals("appointments")) {
+            Intent intent = new Intent(this,ConfigContainerActivity.class);
+            intent.putExtra("User", currentUser);
+            intent.putExtra("Type",3);
             startActivity(intent);
         }
     }

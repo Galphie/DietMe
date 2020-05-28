@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
+import com.galphie.dietme.instantiable.Option;
 
 import java.util.ArrayList;
 

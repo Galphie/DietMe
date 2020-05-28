@@ -10,7 +10,6 @@ import com.galphie.dietme.Utils;
 
 public class ConfigContainerActivity extends AppCompatActivity {
 
-    private boolean cambio = false;
     private User currentUser;
     private NotificationFragment notificationFragment = new NotificationFragment();
 
@@ -25,6 +24,7 @@ public class ConfigContainerActivity extends AppCompatActivity {
             int type = bd.getInt("Type");
             switch (type) {
                 case 1:
+                    boolean cambio = false;
                     if (bd.getBoolean("Cambio")) {
                         cambio = true;
                     }
@@ -40,6 +40,12 @@ public class ConfigContainerActivity extends AppCompatActivity {
                             .add(R.id.config_container, notificationFragment)
                             .commit();
                     break;
+                case 3:
+                    AppointmentsManagementFragment appointmentsManagementFragment = AppointmentsManagementFragment.newInstance(null, currentUser);
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(R.id.config_container, appointmentsManagementFragment)
+                            .commit();
                 default:
                     break;
             }

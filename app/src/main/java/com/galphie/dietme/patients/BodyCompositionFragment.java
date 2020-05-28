@@ -149,7 +149,7 @@ public class BodyCompositionFragment extends Fragment {
         fatMassText.setText(String.format("%s%%", String.valueOf(measures.getFatMass())));
     }
 
-    public static double calculateWaistHipIndex(double waist, double hip) {
+    private static double calculateWaistHipIndex(double waist, double hip) {
         DecimalFormat f = new DecimalFormat("0.00");
         double whI = (double) waist / hip;
         try {
@@ -160,7 +160,7 @@ public class BodyCompositionFragment extends Fragment {
         return whI;
     }
 
-    public static double calculateBMI(double weight, double height) {
+    private static double calculateBMI(double weight, double height) {
         DecimalFormat f = new DecimalFormat("0.00");
         double bmi = (double) (weight / Math.pow(height, 2));
         try {
@@ -169,11 +169,5 @@ public class BodyCompositionFragment extends Fragment {
             e.printStackTrace();
         }
         return bmi;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getActivity().finish();
     }
 }
