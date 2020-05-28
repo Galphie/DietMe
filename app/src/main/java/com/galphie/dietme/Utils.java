@@ -9,8 +9,11 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +31,10 @@ public class Utils {
                  $                 # end-of-string
 
      */
-    private final static String PATTERN_DATE = "yyyy-MM-dd";
+
+    private static final String PATTERN_LOCALDATETIME = "yyyy-MM-dd HH:mm:ss";
+    private static final String PATTERN_PHONE = "^(?=.*[0-9]).{9,13}$";
+    private static final String PATTERN_DATE = "yyyy-MM-dd";
     private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=|\"()?¿¡!'*._,;:]).{8,}$";
 
@@ -36,6 +42,12 @@ public class Utils {
     public static boolean hasCompletePasswordFormat(String password) {
         Pattern pattern = Pattern.compile(PATTERN_PASSWORD);
         Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
+    }
+
+    public static boolean hasPhoneFormat(String phone) {
+        Pattern pattern = Pattern.compile(PATTERN_PHONE);
+        Matcher matcher = pattern.matcher(phone);
         return matcher.matches();
     }
 
@@ -85,6 +97,57 @@ public class Utils {
         LocalDate birth = LocalDate.parse(birthDate);
         LocalDate now = LocalDate.now();
         return Period.between(birth, now).getYears();
+    }
+
+    public static String timeBetween(LocalDateTime date) {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(date, now);
+        String time = "";
+        time = checkDuration(duration, time);
+        return time;
+    }
+
+    private static String checkDuration(Duration duration, String time) {
+        if (duration.toMinutes() < 1) {
+            time = "Hace menos de un minuto";
+        } else if (duration.toMinutes() >= 1 && duration.toMinutes() < 60) {
+            if (duration.toMinutes() == 1) {
+                time = "Hace un minuto";
+            } else {
+                time = "Hace " + duration.toMinutes() + " minutos";
+            }
+        } else if (duration.toMinutes() >= 60 && duration.toHours() < 24) {
+            if (duration.toHours() == 1) {
+                time = "Hace una hora";
+            } else {
+                time = "Hace " + duration.toHours() + " horas";
+            }
+        } else if (duration.toHours() >= 24) {
+            if (duration.toDays() == 1) {
+                time = "Hace un día";
+            } else {
+                time = "Hace " + duration.toDays() + "días.";
+            }
+        }
+        return time;
+    }
+
+    public static String localDateTimeToSaveString(LocalDateTime date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss");
+        String newDate = date.format(formatter);
+        return newDate;
+    }
+
+    public static String localDateTimeToDisplayString(LocalDateTime date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_LOCALDATETIME);
+        String newDate = date.format(formatter);
+        return newDate;
+    }
+
+    public static LocalDateTime stringToLocalDateTime(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_LOCALDATETIME);
+        LocalDateTime newDate = LocalDateTime.parse(date, formatter);
+        return newDate;
     }
 
     public static String dateToCustomString(Date date, String customPattern) {

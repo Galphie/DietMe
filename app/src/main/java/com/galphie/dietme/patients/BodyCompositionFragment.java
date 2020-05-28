@@ -21,9 +21,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-
 
 public class BodyCompositionFragment extends Fragment {
 
@@ -33,7 +30,7 @@ public class BodyCompositionFragment extends Fragment {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usersRef = database.getReference("Usuario");
     private User patient;
-    private Measures patientMeasures, dbMeasures;
+    private Measures dbMeasures;
     private String patientId;
 
     private Button updateButton;
@@ -61,7 +58,6 @@ public class BodyCompositionFragment extends Fragment {
             patient = getArguments().getParcelable(ARG_PARAM1);
             patientId = getArguments().getString(ARG_PARAM2);
 
-            patientMeasures = patient.getMeasures();
             DatabaseReference patientRef = database.getReference("Usuario/" + patientId);
 
             patientRef.child("measures").addValueEventListener(new ValueEventListener() {
@@ -104,16 +100,13 @@ public class BodyCompositionFragment extends Fragment {
         fatMassText = view.findViewById(R.id.fatMassText);
 
         updateButton = view.findViewById(R.id.update_measures_button);
-        updateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment dialogFragment = new UpdateBodyCompositionDialog();
-                Bundle args = new Bundle();
-                args.putParcelable("Patient", patientMeasures);
-                args.putString("PatientId", patientId);
-                dialogFragment.setArguments(args);
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "Update");
-            }
+        updateButton.setOnClickListener(v -> {
+            DialogFragment dialogFragment = new UpdateBodyCompositionDialog();
+            Bundle args = new Bundle();
+            args.putParcelable("Patient", dbMeasures);
+            args.putString("PatientId", patientId);
+            dialogFragment.setArguments(args);
+            dialogFragment.show(getActivity().getSupportFragmentManager(), "Update");
         });
 
         return view;
@@ -122,13 +115,12 @@ public class BodyCompositionFragment extends Fragment {
     private void init(Measures measures) {
         heightText.setText(String.format("%sm", measures.getHeight()));
         weightText.setText(String.format("%skg", measures.getWeight()));
-        if (patientMeasures.getWeight() == 0 && measures.getHeight() == 0) {
+        if (measures.getWeight() == 0 || measures.getHeight() == 0) {
             bmiText.setText(R.string.empty_text);
         } else {
             double bmi = calculateBMI(measures.getWeight(), measures.getHeight());
             bmiText.setText(String.valueOf(bmi));
         }
-
         waistText.setText(String.format("%scm", measures.getWaist()));
         hipText.setText(String.format("%scm", measures.getHip()));
         armsText.setText(String.format("%scm", measures.getArm()));
@@ -150,24 +142,14 @@ public class BodyCompositionFragment extends Fragment {
     }
 
     private static double calculateWaistHipIndex(double waist, double hip) {
-        DecimalFormat f = new DecimalFormat("0.00");
-        double whI = (double) waist / hip;
-        try {
-            whI = (double) f.parse(f.format(whI));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        double whI = waist / hip;
+        whI = Math.floor(whI * 100) / 100;
         return whI;
     }
 
     private static double calculateBMI(double weight, double height) {
-        DecimalFormat f = new DecimalFormat("0.00");
-        double bmi = (double) (weight / Math.pow(height, 2));
-        try {
-            bmi = (double) f.parse(f.format(bmi));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        double bmi = (weight / Math.pow(height, 2));
+        bmi = Math.floor(bmi * 100) / 100;
         return bmi;
     }
 }

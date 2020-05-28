@@ -1,6 +1,5 @@
 package com.galphie.dietme.patients;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,9 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -21,10 +21,16 @@ import com.galphie.dietme.Utils;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 public class PatientsFragment extends Fragment implements PatientsListAdapter.OnPatientClickListener {
@@ -33,9 +39,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usersRef = database.getReference("Usuario");
-    private String mParam1;
-    private String mParam2;
-    private ArrayList<User> patientsList;
+    private ArrayList<User> patientsList = new ArrayList<>();
     private User currentUser;
     private RecyclerView recyclerView;
     private FloatingActionButton addPatientButton;
@@ -58,9 +62,36 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            patientsList = getArguments().getParcelableArrayList("PatientsList");
             currentUser = getArguments().getParcelable("CurrentUser");
         }
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                patientsList.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+                    patientsList.add(user);
+                    Collections.sort(patientsList, (o1, o2) ->
+                            o1.getForenames().compareToIgnoreCase(o2.getForenames()));
+                }
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NotNull DatabaseError databaseError) {
+            }
+        });
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Bundle homeBd = new Bundle();
+                homeBd.putParcelable("CurrentUser", currentUser);
+                Navigation
+                        .findNavController(getActivity(), R.id.nav_host_fragment)
+                        .navigate(R.id.homeFragment, homeBd);
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
@@ -83,7 +114,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
 
             }
         });
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout = view.findViewById(R.id.patients_swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -131,17 +162,21 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                             intent.putExtra("Patient", patientsList.get(position));
                             startActivity(intent);
                         } else {
-                            Utils.toast(getActivity().getApplicationContext(),getString(R.string.developer_action_only));
+                            Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
                         }
                         return true;
                     case R.id.remove_option:
-                        Bundle args = new Bundle();
-                        args.putString("Message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
-                        args.putString("Type", "Delete");
-                        args.putString("Object", Utils.MD5(patientsList.get(position).getEmail()).substring(0,6));
-                        DialogFragment confirmActionDialog = new ConfirmActionDialog();
-                        confirmActionDialog.setArguments(args);
-                        confirmActionDialog.show(getActivity().getSupportFragmentManager(),"Confirm");
+                        if (currentUser.isAdmin()) {
+                            Bundle args = new Bundle();
+                            args.putString("Message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
+                            args.putString("Type", "Delete");
+                            args.putString("Object", Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6));
+                            DialogFragment confirmActionDialog = new ConfirmActionDialog();
+                            confirmActionDialog.setArguments(args);
+                            confirmActionDialog.show(getActivity().getSupportFragmentManager(), "Confirm");
+                        } else {
+                            Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
+                        }
                         return true;
                     default:
                         return false;
