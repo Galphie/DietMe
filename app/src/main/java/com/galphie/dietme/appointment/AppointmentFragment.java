@@ -2,34 +2,38 @@ package com.galphie.dietme.appointment;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.galphie.dietme.R;
+import com.galphie.dietme.Utils;
+import com.galphie.dietme.instantiable.User;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class AppointmentFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM2 = "CurrentUser";
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference appointmentsRef = database.getReference("Citas");
 
     private String mParam1;
-    private String mParam2;
+    private User currentUser;
 
     public AppointmentFragment() {
     }
 
-    public static AppointmentFragment newInstance(String param1, String param2) {
+    public static AppointmentFragment newInstance(String param1, User currentUser) {
         AppointmentFragment fragment = new AppointmentFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_PARAM2, currentUser);
         fragment.setArguments(args);
         return fragment;
     }
@@ -39,8 +43,20 @@ public class AppointmentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            currentUser= getArguments().getParcelable("CurrentUser");
         }
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Bundle homeBd = new Bundle();
+                homeBd.putParcelable("CurrentUser", currentUser);
+                Navigation
+                        .findNavController(getActivity(), R.id.nav_host_fragment)
+                        .navigate(R.id.homeFragment, homeBd);
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this,callback);
     }
 
     @Override

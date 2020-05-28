@@ -52,14 +52,14 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        emailInput = (EditText) findViewById(R.id.emailInput);
-        passInput = (EditText) findViewById(R.id.passInput);
+        emailInput = findViewById(R.id.emailInput);
+        passInput = findViewById(R.id.passInput);
 
-        linkBut = (Button) findViewById(R.id.linkBut);
-        loginBut = (Button) findViewById(R.id.loginBut);
+        linkBut = findViewById(R.id.linkBut);
+        loginBut = findViewById(R.id.loginBut);
 
-        checkRemember = (CheckBox) findViewById(R.id.checkRemember);
-        checkShow = (CheckBox) findViewById(R.id.checkShow);
+        checkRemember = findViewById(R.id.checkRemember);
+        checkShow = findViewById(R.id.checkShow);
 
         canFinish = false;
 

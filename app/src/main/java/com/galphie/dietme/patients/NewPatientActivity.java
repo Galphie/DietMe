@@ -85,34 +85,44 @@ public class NewPatientActivity extends AppCompatActivity {
                         .show();
             } else {
                 if (Utils.hasEmailFormat(newEmailInput.getText().toString())) {
-                    newEmailInput.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
-                    int gender = 0;
-                    boolean admin = false;
-                    if (manButton.isChecked()) {
-                        gender = 2;
-                    } else if (womanButton.isChecked()) {
-                        gender = 1;
-                    }
-                    if (checkIsAdmin.isChecked()) {
-                        admin = true;
-                    }
+                    if(Utils.hasPhoneFormat(newPhoneInput.getText().toString())) {
+                        newEmailInput.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
+                        int gender = 0;
+                        boolean admin = false;
+                        if (newPhoneInput.getText().toString().startsWith("+34")) {
+                            newPhoneInput.setText(newPhoneInput.getText().toString().replace("+34", ""));
+                        }
+                        if (manButton.isChecked()) {
+                            gender = 2;
+                        } else if (womanButton.isChecked()) {
+                            gender = 1;
+                        }
+                        if (checkIsAdmin.isChecked()) {
+                            admin = true;
+                        }
 
-                    User user = new User(newBirthdateInput.getText().toString(),
-                            newEmailInput.getText().toString(),
-                            newForenamesInput.getText().toString(),
-                            gender,
-                            admin,
-                            measures,
-                            newNameInput.getText().toString(),
-                            password,
-                            newPhoneInput.getText().toString());
-                    String patientId = Utils.MD5(user.getEmail()).substring(0, 6).toUpperCase();
-                    if (user.getPassword() == null) {
-                        user.setPassword(patientId);
+                        User user = new User(newBirthdateInput.getText().toString(),
+                                newEmailInput.getText().toString(),
+                                newForenamesInput.getText().toString(),
+                                gender,
+                                admin,
+                                measures,
+                                newNameInput.getText().toString(),
+                                password,
+                                newPhoneInput.getText().toString());
+                        String patientId = Utils.MD5(user.getEmail()).substring(0, 6).toUpperCase();
+                        if (user.getPassword() == null) {
+                            user.setPassword(patientId);
+                        }
+                        usersRef.child(patientId).setValue(user);
+                        Utils.toast(getApplicationContext(), getString(R.string.patient_created));
+                        finish();
+                    } else {
+                        Snackbar.make(v, getString(R.string.invalid_phone), Snackbar.LENGTH_LONG)
+                                .setAction("Action", null)
+                                .show();
+                        newPhoneInput.setTextColor(getResources().getColor(R.color.design_default_color_error));
                     }
-                    usersRef.child(patientId).setValue(user);
-                    Utils.toast(getApplicationContext(), getString(R.string.patient_created));
-                    finish();
                 } else {
                     Snackbar.make(v, getString(R.string.invalid_email), Snackbar.LENGTH_LONG)
                             .setAction("Action", null)
