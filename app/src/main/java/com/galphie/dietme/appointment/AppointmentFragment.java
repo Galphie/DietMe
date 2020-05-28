@@ -19,8 +19,6 @@ public class AppointmentFragment extends Fragment {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference appointmentsRef = database.getReference("Citas");
 
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
