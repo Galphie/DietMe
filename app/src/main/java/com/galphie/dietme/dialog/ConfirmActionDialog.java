@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
+import com.galphie.dietme.instantiable.Appointment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -51,9 +52,10 @@ public class ConfirmActionDialog extends DialogFragment {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
                             LocalDateTime firstDay = LocalDateTime.parse(start, formatter);
                             String stringFirstDay;
+                            Appointment emptyAppointment = new Appointment(false);
                             for (int i = 0; i < 1000; i++) {
                                 stringFirstDay = firstDay.format(formatter);
-                                appointmentsRef.child(stringFirstDay).child("picked").setValue(false);
+                                appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);
                                 if(firstDay.getHour()==18){
                                     firstDay = firstDay.plusHours(14);
                                 }
