@@ -64,23 +64,6 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
         if (getArguments() != null) {
             currentUser = getArguments().getParcelable("CurrentUser");
         }
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                patientsList.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
-                    patientsList.add(user);
-                    Collections.sort(patientsList, (o1, o2) ->
-                            o1.getForenames().compareToIgnoreCase(o2.getForenames()));
-                }
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-            @Override
-            public void onCancelled(@NotNull DatabaseError databaseError) {
-            }
-        });
-
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -106,6 +89,22 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
 
         recyclerView = view.findViewById(R.id.patients_recycler_view);
         initRecyclerView();
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                patientsList.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+                    patientsList.add(user);
+                    Collections.sort(patientsList, (o1, o2) ->
+                            o1.getForenames().compareToIgnoreCase(o2.getForenames()));
+                }
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NotNull DatabaseError databaseError) {
+            }
+        });
         addPatientButton = view.findViewById(R.id.add_patient_button);
         addPatientButton.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {

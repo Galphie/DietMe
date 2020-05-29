@@ -65,24 +65,7 @@ public class HomeFragment extends Fragment {
             currentUser = getArguments().getParcelable("CurrentUser");
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        postsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                postArrayList.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Post post = ds.getValue(Post.class);
-                    postArrayList.add(post);
-                }
-                Collections.sort(postArrayList, (o1, o2) -> Utils.stringToLocalDateTime(o2.getPublishDate())
-                        .compareTo(Utils.stringToLocalDateTime(o1.getPublishDate())));
-                Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -105,8 +88,28 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.postRecyclerView);
         initRecyclerView();
+        postsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                postArrayList.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Post post = ds.getValue(Post.class);
+                    postArrayList.add(post);
+                }
+                Collections.sort(postArrayList, (o1, o2) -> Utils.stringToLocalDateTime(o2.getPublishDate())
+                        .compareTo(Utils.stringToLocalDateTime(o1.getPublishDate())));
+                Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         addPostButton = view.findViewById(R.id.add_post_button);
         if (currentUser.isAdmin()) {
+            //TODO Mejorar el editText
             addPostButton.setVisibility(View.VISIBLE);
         }
         addPostButton.setOnClickListener(v -> {

@@ -138,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         getSupportActionBar().setTitle(getString(R.string.home_title));
         getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+        bottomNav.setSelectedItemId(R.id.navigation_home);
     }
 
     public void goHome() {
