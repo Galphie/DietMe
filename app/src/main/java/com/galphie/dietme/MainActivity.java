@@ -132,6 +132,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        getSupportActionBar().setTitle(getString(R.string.home_title));
+        getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
+    }
+
     public void goHome() {
         Bundle homeBd = new Bundle();
         homeBd.putParcelable("CurrentUser", currentUser);

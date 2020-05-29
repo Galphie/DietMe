@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -78,7 +79,12 @@ public class BodyCompositionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_body_composition, container, false);
+        return inflater.inflate(R.layout.fragment_body_composition, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         heightText = view.findViewById(R.id.height_text);
         weightText = view.findViewById(R.id.weight_text);
@@ -108,8 +114,6 @@ public class BodyCompositionFragment extends Fragment {
             dialogFragment.setArguments(args);
             dialogFragment.show(getActivity().getSupportFragmentManager(), "Update");
         });
-
-        return view;
     }
 
     private void init(Measures measures) {

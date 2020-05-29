@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -94,7 +95,13 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_home, container, false);
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.postRecyclerView);
         initRecyclerView();
@@ -102,31 +109,21 @@ public class HomeFragment extends Fragment {
         if (currentUser.isAdmin()) {
             addPostButton.setVisibility(View.VISIBLE);
         }
-        addPostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment dialogFragment = new PostDialog();
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "Post");
-            }
+        addPostButton.setOnClickListener(v -> {
+            DialogFragment dialogFragment = new PostDialog();
+            dialogFragment.show(getActivity().getSupportFragmentManager(), "Post");
         });
         swipeRefreshLayout = view.findViewById(R.id.post_swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                initRecyclerView();
-                recyclerView.getAdapter().notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            initRecyclerView();
+            recyclerView.getAdapter().notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
         });
-
-        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        initRecyclerView();
     }
 
     private void initRecyclerView() {

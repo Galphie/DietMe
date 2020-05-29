@@ -3,12 +3,13 @@ package com.galphie.dietme.patients;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -48,7 +49,6 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     public PatientsFragment() {
     }
 
-    // TODO: Rename and change types and number of parameters
     public static PatientsFragment newInstance(String param1, String param2) {
         PatientsFragment fragment = new PatientsFragment();
         Bundle args = new Bundle();
@@ -76,11 +76,11 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                 }
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
-
             @Override
             public void onCancelled(@NotNull DatabaseError databaseError) {
             }
         });
+
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -97,33 +97,31 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_patients, container, false);
+        return inflater.inflate(R.layout.fragment_patients, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.patients_recycler_view);
         initRecyclerView();
         addPatientButton = view.findViewById(R.id.add_patient_button);
-        addPatientButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentUser.isAdmin()) {
-                    Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), NewPatientActivity.class);
-                    startActivity(intent);
-                } else {
-                    Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
-                }
-
+        addPatientButton.setOnClickListener(v -> {
+            if (currentUser.isAdmin()) {
+                Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), NewPatientActivity.class);
+                startActivity(intent);
+            } else {
+                Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
             }
+
         });
         swipeRefreshLayout = view.findViewById(R.id.patients_swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                initRecyclerView();
-                recyclerView.getAdapter().notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            initRecyclerView();
+            recyclerView.getAdapter().notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
         });
-        return view;
     }
 
     private void initRecyclerView() {
@@ -131,7 +129,6 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
         PatientsListAdapter adapter = new PatientsListAdapter(patientsList, this);
         recyclerView.setAdapter(adapter);
     }
-
 
     @Override
     public void onPatientClick(int position) {
@@ -151,36 +148,33 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     private void showPopUp(View view, int position) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.inflate(R.menu.patient_contextual_menu);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.edit_option:
-                        if (currentUser.isAdmin()) {
-                            Intent intent = new Intent(getActivity().getApplicationContext(), NewPatientActivity.class);
-                            intent.putExtra("Edit", true);
-                            intent.putExtra("Patient", patientsList.get(position));
-                            startActivity(intent);
-                        } else {
-                            Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
-                        }
-                        return true;
-                    case R.id.remove_option:
-                        if (currentUser.isAdmin()) {
-                            Bundle args = new Bundle();
-                            args.putString("Message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
-                            args.putString("Type", "Delete");
-                            args.putString("Object", Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6));
-                            DialogFragment confirmActionDialog = new ConfirmActionDialog();
-                            confirmActionDialog.setArguments(args);
-                            confirmActionDialog.show(getActivity().getSupportFragmentManager(), "Confirm");
-                        } else {
-                            Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
-                        }
-                        return true;
-                    default:
-                        return false;
-                }
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.edit_option:
+                    if (currentUser.isAdmin()) {
+                        Intent intent = new Intent(getActivity().getApplicationContext(), NewPatientActivity.class);
+                        intent.putExtra("Edit", true);
+                        intent.putExtra("Patient", patientsList.get(position));
+                        startActivity(intent);
+                    } else {
+                        Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
+                    }
+                    return true;
+                case R.id.remove_option:
+                    if (currentUser.isAdmin()) {
+                        Bundle args = new Bundle();
+                        args.putString("Message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
+                        args.putString("Type", "Delete");
+                        args.putString("Object", Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6));
+                        DialogFragment confirmActionDialog = new ConfirmActionDialog();
+                        confirmActionDialog.setArguments(args);
+                        confirmActionDialog.show(getActivity().getSupportFragmentManager(), "Confirm");
+                    } else {
+                        Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
+                    }
+                    return true;
+                default:
+                    return false;
             }
         });
         popupMenu.show();
