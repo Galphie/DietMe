@@ -64,8 +64,10 @@ public class BodyCompositionFragment extends Fragment {
             patientRef.child("measures").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    dbMeasures = dataSnapshot.getValue(Measures.class);
-                    init(dbMeasures);
+                    if (dataSnapshot.getValue() != null) {
+                        dbMeasures = dataSnapshot.getValue(Measures.class);
+                        init(dbMeasures);
+                    }
                 }
 
                 @Override

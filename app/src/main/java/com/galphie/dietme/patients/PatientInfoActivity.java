@@ -110,29 +110,36 @@ public class PatientInfoActivity extends AppCompatActivity {
         patientRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                patient.setName(dataSnapshot.getValue(User.class).getName());
-                patient.setForenames(dataSnapshot.getValue(User.class).getForenames());
-                patient.setEmail(dataSnapshot.getValue(User.class).getEmail());
-                patient.setBirthdate(dataSnapshot.getValue(User.class).getBirthdate());
-                patient.setGender(dataSnapshot.getValue(User.class).getGender());
-                patient.setPhone(dataSnapshot.getValue(User.class).getPhone());
-                patient.setMeasures(dataSnapshot.getValue(User.class).getMeasures());
+                if (dataSnapshot.getValue() == null) {
+                    finish();
+                } else {
+                    patient.setName(dataSnapshot.getValue(User.class).getName());
+                    patient.setForenames(dataSnapshot.getValue(User.class).getForenames());
+                    patient.setEmail(dataSnapshot.getValue(User.class).getEmail());
+                    patient.setBirthdate(dataSnapshot.getValue(User.class).getBirthdate());
+                    patient.setGender(dataSnapshot.getValue(User.class).getGender());
+                    patient.setPhone(dataSnapshot.getValue(User.class).getPhone());
+                    patient.setMeasures(dataSnapshot.getValue(User.class).getMeasures());
 
-                int age = Utils.calculateAge(patient.getBirthdate());
-                patientAgeText.setText(String.valueOf(age));
-                if (currentUser.isAdmin()) {
-                    patientEmailText.setText(patient.getEmail());
-                    patientPhoneText.setText(setPhoneFormat(patient.getPhone()));
-                } else {
-                    patientEmailText.setText(R.string.developer_info_only);
-                    patientPhoneText.setText(R.string.developer_info_only);
-                }
-                if (patient.getGender() == 1) {
-                    patientGenderText.setText(getString(R.string.female));
-                } else if (patient.getGender() == 2) {
-                    patientGenderText.setText(getString(R.string.male));
-                } else {
-                    patientGenderText.setText(R.string.not_specified);
+                    int age = Utils.calculateAge(patient.getBirthdate());
+                    patientAgeText.setText(String.valueOf(age));
+                    if (currentUser.isAdmin()) {
+                        patientEmailText.setText(patient.getEmail());
+                        patientPhoneText.setText(setPhoneFormat(patient.getPhone()));
+                    } else {
+                        patientEmailText.setText(R.string.developer_info_only);
+                        patientPhoneText.setText(R.string.developer_info_only);
+                    }
+                    if (patient.getGender() == 1) {
+                        patientGenderText.setText(getString(R.string.female));
+                    } else if (patient.getGender() == 2) {
+                        patientGenderText.setText(getString(R.string.male));
+                    } else {
+                        patientGenderText.setText(R.string.not_specified);
+                    }
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setTitle(patient.getName() + " " + patient.getForenames());
+                    }
                 }
             }
 

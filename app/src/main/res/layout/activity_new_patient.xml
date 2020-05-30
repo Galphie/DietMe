@@ -65,6 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:ems="10"
+        android:fontFamily="@font/convergence"
         android:hint="@string/patient_phone_number"
         android:inputType="phone"
         app:layout_constraintEnd_toEndOf="parent"

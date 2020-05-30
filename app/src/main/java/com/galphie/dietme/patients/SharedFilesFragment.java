@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,8 +23,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +36,7 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     private String patientId;
 
     private RecyclerView recyclerView;
+    private TextView noSharedFilesText;
     private ArrayList<CustomFile> sharedFiles = new ArrayList<>();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -73,18 +73,27 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
 
         DatabaseReference userFilesRef = database.getReference("Archivos/users").child(patientId);
         recyclerView = view.findViewById(R.id.shared_files_recycler_view);
+        noSharedFilesText = view.findViewById(R.id.no_shared_files_text);
         initRecyclerView();
         sharedFiles.clear();
         userFilesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    CustomFile customFile = new CustomFile(ds.getValue(CustomFile.class).getName(),
-                            ds.getValue(CustomFile.class).getUrl());
-                    sharedFiles.add(customFile);
-                    Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+                if (!dataSnapshot.hasChildren()) {
+                    noSharedFilesText.setVisibility(View.VISIBLE);
+                    sharedFiles.clear();
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                } else {
+                    sharedFiles.clear();
+                    noSharedFilesText.setVisibility(View.INVISIBLE);
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        CustomFile customFile = new CustomFile(ds.getValue(CustomFile.class).getName(),
+                                ds.getValue(CustomFile.class).getUrl());
+                        sharedFiles.add(customFile);
+                        Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+                    }
+                    recyclerView.getAdapter().notifyDataSetChanged();
                 }
-                recyclerView.getAdapter().notifyDataSetChanged();
             }
 
             @Override
