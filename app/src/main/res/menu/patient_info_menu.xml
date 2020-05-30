@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/patient_info_edit"
+        android:title="@string/edit_patient_title" />
+    <item
+        android:id="@+id/patient_info_upload"
+        android:title="@string/upload_new_file" />
+    <item
+        android:id="@+id/patient_info_remove"
+        android:title="@string/remove" />
+</menu>

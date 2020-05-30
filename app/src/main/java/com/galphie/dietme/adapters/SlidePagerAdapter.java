@@ -1,4 +1,4 @@
-package com.galphie.dietme.patients;
+package com.galphie.dietme.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
+import com.galphie.dietme.adapters.PostListAdapter;
 import com.galphie.dietme.dialog.PostDialog;
 import com.galphie.dietme.instantiable.Post;
 import com.galphie.dietme.instantiable.User;

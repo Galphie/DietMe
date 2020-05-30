@@ -2,17 +2,18 @@ package com.galphie.dietme.config;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
+import com.galphie.dietme.adapters.ConfigOptionsAdapter;
 import com.galphie.dietme.instantiable.Option;
 import com.galphie.dietme.instantiable.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ConfigListActivity extends AppCompatActivity implements ConfigOptionsAdapter.OnOptionClickListener {
 
@@ -25,7 +26,7 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_list);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         init();
@@ -40,7 +41,7 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
         opciones.add(new Option(getString(R.string.change_password), "password"));
         opciones.add(new Option(getString(R.string.manage_notifications), "notifications"));
         opciones.add(new Option(getString(R.string.manage_appointments),"appointments"));
-
+        Collections.sort(opciones, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
     }
 
     @Override

@@ -110,4 +110,6 @@
     <string name="invalid_phone">Número de teléfono no válido.</string>
     <string name="lorem_ipsum">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis leo pulvinar, viverra neque ut, dapibus augue. Integer sit amet leo tincidunt, finibus leo eu, consectetur velit. Etiam laoreet dignissim lacus vitae ornare. Integer elementum, elit vel vehicula auctor, ipsum mauris dapibus nulla, at cursus sem quam eget lacus. Donec tempus dolor ac rutrum sodales. Cras sed nibh leo. Morbi imperdiet euismod dolor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vivamus porttitor, metus eu tincidunt pharetra, ligula est aliquam libero, vel commodo odio nulla id ante. "</string>
     <string name="a_minute_ago">Hace menos de un minuto</string>
+    <string name="upload_new_file">Subir nuevo archivo</string>
+    <string name="patient_edited">Paciente editado</string>
 </resources>

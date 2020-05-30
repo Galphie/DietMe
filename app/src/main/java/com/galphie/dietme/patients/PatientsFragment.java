@@ -19,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
+import com.galphie.dietme.adapters.PatientsListAdapter;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -109,6 +110,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
         addPatientButton.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), NewPatientActivity.class);
+                intent.putExtra("Edit", false);
                 startActivity(intent);
             } else {
                 Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));

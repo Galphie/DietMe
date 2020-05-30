@@ -1,6 +1,5 @@
 package com.galphie.dietme.patients;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -15,38 +14,37 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
+import com.galphie.dietme.adapters.SharedFileListAdapter;
 import com.galphie.dietme.instantiable.CustomFile;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.galphie.dietme.instantiable.User;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class SharedFilesFragment extends Fragment implements SharedFileListAdapter.OnSharedFileClickListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "patient";
+    private static final String ARG_PARAM2 = "patientId";
 
-    private String mParam1;
-    private String mParam2;
+    private User patient;
+    private String patientId;
 
     private RecyclerView recyclerView;
     private ArrayList<CustomFile> sharedFiles = new ArrayList<>();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageRef = storage.getReference();
-    private StorageReference pdfFiles = storageRef.child("documents/pdf");
 
 
     public SharedFilesFragment() {
     }
 
-    public static SharedFilesFragment newInstance(String param1, String param2) {
+    public static SharedFilesFragment newInstance(User patient, String patientId) {
         SharedFilesFragment fragment = new SharedFilesFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_PARAM1, patient);
+        args.putString(ARG_PARAM2, patientId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,8 +53,8 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            patient = getArguments().getParcelable(ARG_PARAM1);
+            patientId = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -70,36 +68,23 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        StorageReference patientFiles = storageRef.child("users").child(patientId);
         recyclerView = view.findViewById(R.id.shared_files_recycler_view);
         initRecyclerView();
-        pdfFiles.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference item : listResult.getItems()) {
-
-                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    CustomFile file = new CustomFile(item.getName(), uri.toString());
-                                    sharedFiles.add(file);
-                                    recyclerView.getAdapter().notifyDataSetChanged();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Utils.toast(getActivity().getApplicationContext(), "Fallo recogiendo uri");
-                                }
-                            });
-                        }
+        sharedFiles.clear();
+        patientFiles.listAll()
+                .addOnSuccessListener(listResult -> {
+                    for (StorageReference item : listResult.getItems()) {
+                        item.getDownloadUrl().addOnSuccessListener(uri -> {
+                            CustomFile file = new CustomFile(item.getName(), uri.toString());
+                            Utils.toast(getActivity().getApplicationContext(),item.getName());
+                            sharedFiles.add(file);
+                            Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+                            recyclerView.getAdapter().notifyDataSetChanged();
+                        }).addOnFailureListener(e -> Utils.toast(getActivity().getApplicationContext(),
+                                "Fallo recogiendo uri"));
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
-
+                });
     }
 
     private void initRecyclerView() {
@@ -123,5 +108,4 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
 
         Utils.toast(getActivity().getApplicationContext(), "Descargando...");
     }
-
 }

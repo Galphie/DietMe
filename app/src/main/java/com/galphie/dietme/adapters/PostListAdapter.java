@@ -1,4 +1,4 @@
-package com.galphie.dietme.home;
+package com.galphie.dietme.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;

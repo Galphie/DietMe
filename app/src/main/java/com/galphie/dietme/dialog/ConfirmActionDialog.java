@@ -47,6 +47,7 @@ public class ConfirmActionDialog extends DialogFragment {
                             usersRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
 
                             dialog.dismiss();
+                            getActivity().finish();
                         } else if (mArgs.getString("Type").equals("Restart")) {
                             String start = "2020/05/25/09:00";
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");

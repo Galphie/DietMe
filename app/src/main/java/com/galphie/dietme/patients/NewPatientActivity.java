@@ -85,7 +85,7 @@ public class NewPatientActivity extends AppCompatActivity {
                         .show();
             } else {
                 if (Utils.hasEmailFormat(newEmailInput.getText().toString())) {
-                    if(Utils.hasPhoneFormat(newPhoneInput.getText().toString())) {
+                    if (Utils.hasPhoneFormat(newPhoneInput.getText().toString())) {
                         newEmailInput.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
                         int gender = 0;
                         boolean admin = false;
@@ -115,7 +115,11 @@ public class NewPatientActivity extends AppCompatActivity {
                             user.setPassword(patientId);
                         }
                         usersRef.child(patientId).setValue(user);
-                        Utils.toast(getApplicationContext(), getString(R.string.patient_created));
+                        if (!bundle.getBoolean("Edit")) {
+                            Utils.toast(getApplicationContext(), getString(R.string.patient_created));
+                        } else {
+                            Utils.toast(getApplicationContext(), getString(R.string.patient_edited));
+                        }
                         finish();
                     } else {
                         Snackbar.make(v, getString(R.string.invalid_phone), Snackbar.LENGTH_LONG)
@@ -139,7 +143,7 @@ public class NewPatientActivity extends AppCompatActivity {
         newBirthdateInput.setOnClickListener(v -> {
             datePickerDialog = new DatePickerDialog(NewPatientActivity.this, (view, year1, month1, dayOfMonth) -> {
                 String year2 = String.valueOf(year1);
-                String month2 = String.valueOf(month1+1);
+                String month2 = String.valueOf(month1 + 1);
                 String day1 = String.valueOf(dayOfMonth);
                 if (month1 < 10) {
                     month2 = "0" + month2;
