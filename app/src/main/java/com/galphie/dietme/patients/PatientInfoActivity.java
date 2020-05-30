@@ -232,7 +232,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.patient_info_upload:
-                Utils.toast(getApplicationContext(),"Subir archivo");
+                Utils.toast(getApplicationContext(), "Subir archivo");
                 return true;
             case R.id.patient_info_remove:
                 if (currentUser.isAdmin()) {

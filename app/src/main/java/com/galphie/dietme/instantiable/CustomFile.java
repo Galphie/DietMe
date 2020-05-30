@@ -7,6 +7,8 @@ public class CustomFile implements Parcelable {
 
     private String name, url;
 
+    public CustomFile() {
+    }
 
     protected CustomFile(Parcel in) {
         name = in.readString();

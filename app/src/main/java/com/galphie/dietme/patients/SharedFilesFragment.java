@@ -17,6 +17,11 @@ import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.SharedFileListAdapter;
 import com.galphie.dietme.instantiable.CustomFile;
 import com.galphie.dietme.instantiable.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -33,9 +38,7 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
 
     private RecyclerView recyclerView;
     private ArrayList<CustomFile> sharedFiles = new ArrayList<>();
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference storageRef = storage.getReference();
-
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     public SharedFilesFragment() {
     }
@@ -68,23 +71,27 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        StorageReference patientFiles = storageRef.child("users").child(patientId);
+        DatabaseReference userFilesRef = database.getReference("Archivos/users").child(patientId);
         recyclerView = view.findViewById(R.id.shared_files_recycler_view);
         initRecyclerView();
         sharedFiles.clear();
-        patientFiles.listAll()
-                .addOnSuccessListener(listResult -> {
-                    for (StorageReference item : listResult.getItems()) {
-                        item.getDownloadUrl().addOnSuccessListener(uri -> {
-                            CustomFile file = new CustomFile(item.getName(), uri.toString());
-                            Utils.toast(getActivity().getApplicationContext(),item.getName());
-                            sharedFiles.add(file);
-                            Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
-                            recyclerView.getAdapter().notifyDataSetChanged();
-                        }).addOnFailureListener(e -> Utils.toast(getActivity().getApplicationContext(),
-                                "Fallo recogiendo uri"));
-                    }
-                });
+        userFilesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    CustomFile customFile = new CustomFile(ds.getValue(CustomFile.class).getName(),
+                            ds.getValue(CustomFile.class).getUrl());
+                    sharedFiles.add(customFile);
+                    Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+                }
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void initRecyclerView() {
