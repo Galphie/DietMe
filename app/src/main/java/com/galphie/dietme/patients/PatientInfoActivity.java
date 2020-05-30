@@ -22,13 +22,19 @@ import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.SlidePagerAdapter;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
+import com.galphie.dietme.instantiable.CustomFile;
 import com.galphie.dietme.instantiable.User;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +45,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     private static final String TAG = "PatientInfoActivity";
     private static final int PDF_CODE = 1000;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private CardView emailCardView, phoneCardView, ageGenderCardView, idCardView;
     private String patientId;
     private User patient;
@@ -108,7 +115,6 @@ public class PatientInfoActivity extends AppCompatActivity {
         patientGenderText = findViewById(R.id.patient_gender);
         patientIdText = findViewById(R.id.patient_id);
 
-        DatabaseReference userFilesRef = database.getReference("Archivos/users").child(patientId);
         DatabaseReference patientRef = database.getReference("Usuario").child(patientId);
         patientRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -268,10 +274,33 @@ public class PatientInfoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == PDF_CODE && resultCode == RESULT_OK && data != null) {
-            Uri selectedPdf = data.getData();
 
+            String newFileName = "Alfonso Gil París - Plan nutricional (30-05-2020)";
+            newFileName = newFileName.concat(".pdf");
+            Uri selectedPdf = data.getData();
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setContentType("application/pdf")
+                    .build();
+            StorageReference userFiles = storage.getReference().child("users/" + patientId);
+            DatabaseReference userFilesDatabase = database.getReference().child("Archivos/users/" + patientId);
+            StorageReference selectedPdfRef = userFiles.child(newFileName);
+            UploadTask uploadTask = selectedPdfRef.putFile(selectedPdf, metadata);
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                Utils.toast(getApplicationContext(), getString(R.string.succesfully_upload));
+            });
+            Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                return selectedPdfRef.getDownloadUrl();
+            }).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    CustomFile uploadedFile = new CustomFile(selectedPdfRef.getName(), downloadUri.toString());
+                    userFilesDatabase.child(Utils.MD5(uploadedFile.getName())).setValue(uploadedFile);
+                }
+            });
         }
     }
 }
