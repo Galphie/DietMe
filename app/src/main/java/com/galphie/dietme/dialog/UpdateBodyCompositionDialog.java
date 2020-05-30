@@ -18,12 +18,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class UpdateBodyCompositionDialog extends DialogFragment {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usersRef = database.getReference("Usuario");
+    private DatabaseReference registersRef = database.getReference("Registros");
     private Measures patientMeasures;
     private String patientId;
     private double height; //m
@@ -42,7 +44,8 @@ public class UpdateBodyCompositionDialog extends DialogFragment {
 
         patientMeasures = getArguments().getParcelable("Patient");
         patientId = getArguments().getString("PatientId");
-        DatabaseReference patientRef = usersRef.child(patientId);
+        DatabaseReference patientMeasuresRef = usersRef.child(patientId + "/measures");
+        DatabaseReference registeredMeasuresRef = registersRef.child(patientId);
 
         editWaist = view.findViewById(R.id.editWaist);
         editHip = view.findViewById(R.id.editHip);
@@ -77,8 +80,8 @@ public class UpdateBodyCompositionDialog extends DialogFragment {
                             bicipitalFold);
 
 
-                    patientRef.child("measures").setValue(measures);
-                    patientRef.child("measures").child("registered").child(LocalDate.now().toString()).setValue(measures);
+                    patientMeasuresRef.setValue(measures);
+                    registeredMeasuresRef.child(LocalDate.now().toString()).setValue(measures);
                     Utils.toast(getActivity().getApplicationContext(), getString(R.string.updated));
                     dialog.dismiss();
                 })
