@@ -1,5 +1,6 @@
 package com.galphie.dietme.patients;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.galphie.dietme.PdfViewerActivity;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.SharedFileListAdapter;
@@ -110,7 +112,7 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     }
 
     @Override
-    public void onSharedFileClick(int position) {
+    public void onSharedFileDownloadClick(int position) {
         String name = sharedFiles.get(position).getName();
         String[] parts = name.split("\\.");
         String fileName = parts[0];
@@ -123,5 +125,14 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
                 fileUrl);
 
         Utils.toast(getActivity().getApplicationContext(), "Descargando...");
+    }
+
+    @Override
+    public void onSharedFileItemClick(int position) {
+        String fileUrl = sharedFiles.get(position).getUrl();
+        Intent intent = new Intent(getActivity().getApplicationContext(), PdfViewerActivity.class);
+        intent.putExtra("ViewType", "external");
+        intent.putExtra("Url", fileUrl);
+        startActivity(intent);
     }
 }

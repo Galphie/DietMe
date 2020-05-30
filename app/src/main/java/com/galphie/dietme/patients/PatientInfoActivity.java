@@ -1,6 +1,7 @@
 package com.galphie.dietme.patients;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -35,8 +37,8 @@ import java.util.ArrayList;
 public class PatientInfoActivity extends AppCompatActivity {
 
     private static final String TAG = "PatientInfoActivity";
+    private static final int PDF_CODE = 1000;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference usersRef = database.getReference("Usuario");
     private CardView emailCardView, phoneCardView, ageGenderCardView, idCardView;
     private String patientId;
     private User patient;
@@ -106,6 +108,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         patientGenderText = findViewById(R.id.patient_gender);
         patientIdText = findViewById(R.id.patient_id);
 
+        DatabaseReference userFilesRef = database.getReference("Archivos/users").child(patientId);
         DatabaseReference patientRef = database.getReference("Usuario").child(patientId);
         patientRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -239,7 +242,10 @@ public class PatientInfoActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.patient_info_upload:
-                Utils.toast(getApplicationContext(), "Subir archivo");
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("application/pdf");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(Intent.createChooser(intent, "Selecciona un pdf"), PDF_CODE);
                 return true;
             case R.id.patient_info_remove:
                 if (currentUser.isAdmin()) {
@@ -256,6 +262,16 @@ public class PatientInfoActivity extends AppCompatActivity {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PDF_CODE && resultCode == RESULT_OK && data != null) {
+            Uri selectedPdf = data.getData();
+
         }
     }
 }

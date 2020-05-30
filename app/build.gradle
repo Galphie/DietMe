@@ -50,5 +50,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.firebase:firebase-database:19.2.1'
     implementation 'com.google.firebase:firebase-storage:19.1.0'
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'com.github.kk121:File-Loader:1.2'
 
 }

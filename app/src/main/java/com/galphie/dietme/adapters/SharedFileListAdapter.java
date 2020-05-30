@@ -54,15 +54,17 @@ public class SharedFileListAdapter extends RecyclerView.Adapter<SharedFileListAd
             this.mListener = mListener;
 
             button.setOnClickListener(this);
+            itemView.setOnClickListener(v -> mListener.onSharedFileItemClick(getAdapterPosition()));
         }
 
         @Override
         public void onClick(View v) {
-            mListener.onSharedFileClick(getAdapterPosition());
+            mListener.onSharedFileDownloadClick(getAdapterPosition());
         }
     }
 
     public interface OnSharedFileClickListener {
-        void onSharedFileClick (int position);
+        void onSharedFileDownloadClick(int position);
+        void onSharedFileItemClick (int position);
     }
 }
