@@ -2,7 +2,6 @@ package com.galphie.dietme.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,10 +13,11 @@ import androidx.fragment.app.DialogFragment;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.instantiable.Appointment;
-import com.galphie.dietme.instantiable.CustomFile;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -27,9 +27,6 @@ public class ConfirmActionDialog extends DialogFragment {
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference sharedFilesRef = database.getReference("Archivos").child("users");
-    private DatabaseReference usersRef = database.getReference("Usuario");
-    private DatabaseReference appointmentsRef = database.getReference("Citas");
 
     @NonNull
     @Override
@@ -49,10 +46,15 @@ public class ConfirmActionDialog extends DialogFragment {
                             startActivity(intent);
                             dialog.dismiss();
                         } else if (mArgs.getString("Type").equals("DeletePatient")) {
+                            DatabaseReference sharedFilesRef = database.getReference("Archivos").child("users");
+                            DatabaseReference usersRef = database.getReference("Usuario");
+                            StorageReference usersFilesRef = storage.getReference().child("users");
                             usersRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
                             sharedFilesRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
+                            usersFilesRef.child(mArgs.getString("Object")).delete();
                             dialog.dismiss();
                         } else if (mArgs.getString("Type").equals("Restart")) {
+                            DatabaseReference appointmentsRef = database.getReference("Citas");
                             String start = "2020/05/25/09:00";
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
                             LocalDateTime firstDay = LocalDateTime.parse(start, formatter);
@@ -70,6 +72,16 @@ public class ConfirmActionDialog extends DialogFragment {
                                 firstDay = firstDay.plusHours(1);
                             }
                             Utils.toast(getActivity().getApplicationContext(), getString(R.string.database_restarted));
+                        } else if (mArgs.getString("Type").equals("DeleteFile")) {
+                            String patientId = mArgs.getString("PatientId");
+                            String fileName = mArgs.getString("FileName");
+                            String path = mArgs.getString("Path");
+                            StorageReference fileCloudRef = storage.getReference().child(path);
+                            DatabaseReference fileDatabaseRef = database.getReference().child("Archivos/users").child(patientId + "/" + Utils.MD5(fileName));
+                            fileCloudRef.delete().addOnSuccessListener(aVoid -> {
+                                fileDatabaseRef.removeValue();
+                            });
+                            dialog.dismiss();
                         }
                     })
                     .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.dismiss());
@@ -77,4 +89,5 @@ public class ConfirmActionDialog extends DialogFragment {
 
         return builder.create();
     }
+
 }

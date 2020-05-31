@@ -28,7 +28,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -125,10 +124,18 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
 
     @Override
     public void onSharedFileItemLongClick(int position) {
-        CustomFile fileToDelete = sharedFiles.get(position);
-        StorageReference fileCloudRef = storage.getReference().child(fileToDelete.getPath());
-        DatabaseReference fileDatabaseRef = database.getReference().child("Archivos/users").child(patientId + "/" + Utils.MD5(fileToDelete.getName()));
-        deleteSharedFile(fileCloudRef, fileDatabaseRef);
+        if (currentUser.isAdmin()) {
+            CustomFile fileToDelete = sharedFiles.get(position);
+            DialogFragment dialogFragment = new ConfirmActionDialog();
+            Bundle bundle = new Bundle();
+            bundle.putString("Message", "¿Eliminar " + fileToDelete.getName() + "?");
+            bundle.putString("Type", "DeleteFile");
+            bundle.putString("PatientId", patientId);
+            bundle.putString("FileName", fileToDelete.getName());
+            bundle.putString("Path", fileToDelete.getPath());
+            dialogFragment.setArguments(bundle);
+            dialogFragment.show(getParentFragmentManager(), "Delete file");
+        }
     }
 
 
@@ -160,12 +167,5 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     @Override
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
-    }
-
-    private void deleteSharedFile(StorageReference fileToDeleteCloudRef, DatabaseReference fileToDeleteDatabaseRef) {
-        fileToDeleteCloudRef.delete().addOnSuccessListener(aVoid -> {
-            fileToDeleteDatabaseRef.removeValue();
-            Utils.toast(SharedFilesFragment.this.getActivity().getApplicationContext(), "Archivo eliminado.");
-        }).addOnFailureListener(e -> Utils.toast(getActivity().getApplicationContext(), "Error al eliminar el archivo."));
     }
 }
