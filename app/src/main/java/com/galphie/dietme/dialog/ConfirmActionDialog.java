@@ -46,12 +46,8 @@ public class ConfirmActionDialog extends DialogFragment {
                             startActivity(intent);
                             dialog.dismiss();
                         } else if (mArgs.getString("Type").equals("DeletePatient")) {
-                            DatabaseReference sharedFilesRef = database.getReference("Archivos").child("users");
                             DatabaseReference usersRef = database.getReference("Usuario");
-                            StorageReference usersFilesRef = storage.getReference().child("users");
                             usersRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
-                            sharedFilesRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
-                            usersFilesRef.child(mArgs.getString("Object")).delete();
                             dialog.dismiss();
                         } else if (mArgs.getString("Type").equals("Restart")) {
                             DatabaseReference appointmentsRef = database.getReference("Citas");
