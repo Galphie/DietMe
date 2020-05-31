@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import com.galphie.dietme.PdfViewerActivity;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.SharedFileListAdapter;
+import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.CustomFile;
 import com.galphie.dietme.instantiable.User;
 import com.google.firebase.database.DataSnapshot;
@@ -25,32 +27,39 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 
-public class SharedFilesFragment extends Fragment implements SharedFileListAdapter.OnSharedFileClickListener {
-    private static final String ARG_PARAM1 = "patient";
-    private static final String ARG_PARAM2 = "patientId";
+public class SharedFilesFragment extends Fragment implements SharedFileListAdapter.OnSharedFileClickListener,
+        ValueEventListener {
 
-    private User patient;
+    private static final String ARG_PATIENT = "currentUser";
+    private static final String ARG_PATIENT_ID = "patientId";
+
+    private User currentUser;
     private String patientId;
 
     private RecyclerView recyclerView;
     private TextView noSharedFilesText;
     private ArrayList<CustomFile> sharedFiles = new ArrayList<>();
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     public SharedFilesFragment() {
     }
 
-    public static SharedFilesFragment newInstance(User patient, String patientId) {
+    public static SharedFilesFragment newInstance(User currentUser, String patientId) {
         SharedFilesFragment fragment = new SharedFilesFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PARAM1, patient);
-        args.putString(ARG_PARAM2, patientId);
+        args.putParcelable(ARG_PATIENT, currentUser);
+        args.putString(ARG_PATIENT_ID, patientId);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -58,8 +67,8 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            patient = getArguments().getParcelable(ARG_PARAM1);
-            patientId = getArguments().getString(ARG_PARAM2);
+            currentUser = getArguments().getParcelable(ARG_PATIENT);
+            patientId = getArguments().getString(ARG_PATIENT_ID);
         }
     }
 
@@ -73,52 +82,33 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DatabaseReference userFilesRef = database.getReference("Archivos/users").child(patientId);
         recyclerView = view.findViewById(R.id.shared_files_recycler_view);
         noSharedFilesText = view.findViewById(R.id.no_shared_files_text);
         initRecyclerView();
-        sharedFiles.clear();
-        userFilesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.hasChildren()) {
-                    noSharedFilesText.setVisibility(View.VISIBLE);
-                    sharedFiles.clear();
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                } else {
-                    sharedFiles.clear();
-                    noSharedFilesText.setVisibility(View.INVISIBLE);
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        CustomFile customFile = new CustomFile(ds.getValue(CustomFile.class).getName(),
-                                ds.getValue(CustomFile.class).getUrl());
-                        sharedFiles.add(customFile);
-                        Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
-                    }
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        DatabaseReference userFilesRef = database.getReference("Archivos/users").child(patientId);
+        userFilesRef.addValueEventListener(this);
     }
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         SharedFileListAdapter adapter = new SharedFileListAdapter(sharedFiles, this);
         recyclerView.setAdapter(adapter);
+        sharedFiles.clear();
     }
 
     @Override
     public void onSharedFileDownloadClick(int position) {
         String name = sharedFiles.get(position).getName();
+        String fileUrl = sharedFiles.get(position).getUrl();
+        downloadSharedFile(name, fileUrl);
+    }
+
+    private void downloadSharedFile(String name, String fileUrl) {
         String[] parts = name.split("\\.");
         String fileName = parts[0];
-        String fileExtension = "." + parts[1];
-        String fileUrl = sharedFiles.get(position).getUrl();
-        Utils.downloadFileFromUrl(getActivity().getApplicationContext(),
+        String fileExtension = ".".concat(parts[1]);
+        Utils.downloadFileFromUrl(Objects.requireNonNull(getActivity()).getApplicationContext(),
                 fileName,
                 fileExtension,
                 Environment.DIRECTORY_DOWNLOADS,
@@ -130,9 +120,52 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     @Override
     public void onSharedFileItemClick(int position) {
         String fileUrl = sharedFiles.get(position).getUrl();
+        viewPdfInViewer(fileUrl);
+    }
+
+    @Override
+    public void onSharedFileItemLongClick(int position) {
+        CustomFile fileToDelete = sharedFiles.get(position);
+        StorageReference fileCloudRef = storage.getReference().child(fileToDelete.getPath());
+        DatabaseReference fileDatabaseRef = database.getReference().child("Archivos/users").child(patientId + "/" + Utils.MD5(fileToDelete.getName()));
+        deleteSharedFile(fileCloudRef, fileDatabaseRef);
+    }
+
+
+    private void viewPdfInViewer(String fileUrl) {
         Intent intent = new Intent(getActivity().getApplicationContext(), PdfViewerActivity.class);
         intent.putExtra("ViewType", "external");
         intent.putExtra("Url", fileUrl);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (!dataSnapshot.hasChildren()) {
+            noSharedFilesText.setVisibility(View.VISIBLE);
+            sharedFiles.clear();
+            recyclerView.getAdapter().notifyDataSetChanged();
+        } else {
+            sharedFiles.clear();
+            noSharedFilesText.setVisibility(View.INVISIBLE);
+            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                CustomFile customFile = ds.getValue(CustomFile.class);
+                sharedFiles.add(customFile);
+                Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+            }
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+    }
+
+    private void deleteSharedFile(StorageReference fileToDeleteCloudRef, DatabaseReference fileToDeleteDatabaseRef) {
+        fileToDeleteCloudRef.delete().addOnSuccessListener(aVoid -> {
+            fileToDeleteDatabaseRef.removeValue();
+            Utils.toast(SharedFilesFragment.this.getActivity().getApplicationContext(), "Archivo eliminado.");
+        }).addOnFailureListener(e -> Utils.toast(getActivity().getApplicationContext(), "Error al eliminar el archivo."));
     }
 }

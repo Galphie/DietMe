@@ -22,6 +22,7 @@ import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.SlidePagerAdapter;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
+import com.galphie.dietme.dialog.UploadFileDialog;
 import com.galphie.dietme.instantiable.CustomFile;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.gms.tasks.Task;
@@ -218,7 +219,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         ArrayList<Fragment> fragments = new ArrayList<>();
         fragments.add(BodyCompositionFragment.newInstance(patient, patientId));
         fragments.add(new PatientAppointmentsFragment());
-        fragments.add(SharedFilesFragment.newInstance(patient, patientId));
+        fragments.add(SharedFilesFragment.newInstance(currentUser, patientId));
         return fragments;
     }
 
@@ -257,7 +258,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 if (currentUser.isAdmin()) {
                     Bundle args = new Bundle();
                     args.putString("Message", "¿Eliminar a " + patient.getName() + "?");
-                    args.putString("Type", "Delete");
+                    args.putString("Type", "DeletePatient");
                     args.putString("Object", Utils.MD5(patient.getEmail()).substring(0, 6));
                     DialogFragment confirmActionDialog = new ConfirmActionDialog();
                     confirmActionDialog.setArguments(args);
@@ -276,31 +277,12 @@ public class PatientInfoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PDF_CODE && resultCode == RESULT_OK && data != null) {
 
-            String newFileName = "Alfonso Gil París - Plan nutricional (30-05-2020)";
-            newFileName = newFileName.concat(".pdf");
-            Uri selectedPdf = data.getData();
-            StorageMetadata metadata = new StorageMetadata.Builder()
-                    .setContentType("application/pdf")
-                    .build();
-            StorageReference userFiles = storage.getReference().child("users/" + patientId);
-            DatabaseReference userFilesDatabase = database.getReference().child("Archivos/users/" + patientId);
-            StorageReference selectedPdfRef = userFiles.child(newFileName);
-            UploadTask uploadTask = selectedPdfRef.putFile(selectedPdf, metadata);
-            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                Utils.toast(getApplicationContext(), getString(R.string.succesfully_upload));
-            });
-            Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-                return selectedPdfRef.getDownloadUrl();
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    CustomFile uploadedFile = new CustomFile(selectedPdfRef.getName(), downloadUri.toString());
-                    userFilesDatabase.child(Utils.MD5(uploadedFile.getName())).setValue(uploadedFile);
-                }
-            });
+            UploadFileDialog dialog = new UploadFileDialog();
+            Bundle bundle = new Bundle();
+            bundle.putString("PatientId",patientId);
+            bundle.putString("PDF", data.getData().toString());
+            dialog.setArguments(bundle);
+            dialog.show(getSupportFragmentManager(),"Upload");
         }
     }
 }

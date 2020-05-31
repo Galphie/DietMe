@@ -101,7 +101,7 @@
     <string name="remove">Eliminar</string>
     <string name="edit_patient_title">Editar paciente</string>
     <string name="update">Actualizar</string>
-    <string name="updating">Actualizando...</string>
+    <string name="updating">Actualizando…</string>
     <string name="updated">Datos actualizados.</string>
     <string name="manage_appointments">Administrar citas</string>
     <string name="restart_database">Reiniciar base de datos</string>
@@ -114,4 +114,7 @@
     <string name="patient_edited">Paciente editado</string>
     <string name="no_shared_files">Parece que no se han compartido archivos con este paciente</string>
     <string name="succesfully_upload">Archivo subido con éxito.</string>
+    <string name="pdf_extension">.pdf</string>
+    <string name="upload">Subir</string>
+    <string name="request_access">Solicitar acceso</string>
 </resources>

@@ -28,7 +28,7 @@ public class SharedFileListAdapter extends RecyclerView.Adapter<SharedFileListAd
     @Override
     public SharedFileListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.shared_file_item, parent, false);
-        return new ViewHolder(view,mListener);
+        return new ViewHolder(view, mListener);
     }
 
     @Override
@@ -41,11 +41,12 @@ public class SharedFileListAdapter extends RecyclerView.Adapter<SharedFileListAd
         return sharedFiles.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         TextView name;
         ImageButton button;
         OnSharedFileClickListener mListener;
+
         public ViewHolder(@NonNull View itemView, OnSharedFileClickListener mListener) {
             super(itemView);
 
@@ -53,18 +54,28 @@ public class SharedFileListAdapter extends RecyclerView.Adapter<SharedFileListAd
             button = itemView.findViewById(R.id.shared_file_download);
             this.mListener = mListener;
 
-            button.setOnClickListener(this);
-            itemView.setOnClickListener(v -> mListener.onSharedFileItemClick(getAdapterPosition()));
+            button.setOnClickListener(v -> mListener.onSharedFileDownloadClick(getAdapterPosition()));
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            mListener.onSharedFileDownloadClick(getAdapterPosition());
+            mListener.onSharedFileItemClick(getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            mListener.onSharedFileItemLongClick(getAdapterPosition());
+            return true;
         }
     }
 
     public interface OnSharedFileClickListener {
         void onSharedFileDownloadClick(int position);
-        void onSharedFileItemClick (int position);
+
+        void onSharedFileItemClick(int position);
+
+        void onSharedFileItemLongClick(int position);
     }
 }

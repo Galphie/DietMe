@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.dialog.AccessRequestDialog;
-import com.galphie.dietme.dialog.AccessRequestDialogListener;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
@@ -34,7 +33,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class LoginActivity extends AppCompatActivity implements AccessRequestDialogListener {
+public class LoginActivity extends AppCompatActivity implements AccessRequestDialog.AccessRequestDialogListener {
     public static boolean canFinish = false;
     private static final int PERMISSION_REQUEST_SEND_SMS = 123;
     private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;

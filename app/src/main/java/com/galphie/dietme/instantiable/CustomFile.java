@@ -5,14 +5,29 @@ import android.os.Parcelable;
 
 public class CustomFile implements Parcelable {
 
-    private String name, url;
+    private String name;
+    private String url;
+    private String path;
+
 
     public CustomFile() {
+    }
+
+    public CustomFile(String name, String url) {
+        this.name = name;
+        this.url = url;
+    }
+
+    public CustomFile(String name, String url, String path) {
+        this.name = name;
+        this.url = url;
+        this.path = path;
     }
 
     protected CustomFile(Parcel in) {
         name = in.readString();
         url = in.readString();
+        path = in.readString();
     }
 
     public static final Creator<CustomFile> CREATOR = new Creator<CustomFile>() {
@@ -26,6 +41,14 @@ public class CustomFile implements Parcelable {
             return new CustomFile[size];
         }
     };
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public String getName() {
         return name;
@@ -43,11 +66,6 @@ public class CustomFile implements Parcelable {
         this.url = url;
     }
 
-    public CustomFile(String name, String url) {
-        this.name = name;
-        this.url = url;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -57,5 +75,6 @@ public class CustomFile implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(url);
+        dest.writeString(path);
     }
 }

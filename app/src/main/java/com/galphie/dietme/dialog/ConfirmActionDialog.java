@@ -2,6 +2,7 @@ package com.galphie.dietme.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,8 +14,10 @@ import androidx.fragment.app.DialogFragment;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.instantiable.Appointment;
+import com.galphie.dietme.instantiable.CustomFile;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -22,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 
 public class ConfirmActionDialog extends DialogFragment {
 
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference sharedFilesRef = database.getReference("Archivos").child("users");
     private DatabaseReference usersRef = database.getReference("Usuario");
@@ -44,7 +48,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                     "mailto", mArgs.getString("Object"), null));
                             startActivity(intent);
                             dialog.dismiss();
-                        } else if (mArgs.getString("Type").equals("Delete")) {
+                        } else if (mArgs.getString("Type").equals("DeletePatient")) {
                             usersRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
                             sharedFilesRef.child(mArgs.getString("Object").toUpperCase()).removeValue();
                             dialog.dismiss();
@@ -57,7 +61,7 @@ public class ConfirmActionDialog extends DialogFragment {
                             for (int i = 0; i < 1000; i++) {
                                 stringFirstDay = firstDay.format(formatter);
                                 appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);
-                                if(firstDay.getHour()==18){
+                                if (firstDay.getHour() == 18) {
                                     firstDay = firstDay.plusHours(14);
                                 }
                                 if (firstDay.getDayOfWeek() == DayOfWeek.SATURDAY) {
@@ -65,15 +69,12 @@ public class ConfirmActionDialog extends DialogFragment {
                                 }
                                 firstDay = firstDay.plusHours(1);
                             }
-                            Utils.toast(getActivity().getApplicationContext(),getString(R.string.database_restarted));
+                            Utils.toast(getActivity().getApplicationContext(), getString(R.string.database_restarted));
                         }
                     })
                     .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.dismiss());
         }
 
-
         return builder.create();
     }
-
-
 }

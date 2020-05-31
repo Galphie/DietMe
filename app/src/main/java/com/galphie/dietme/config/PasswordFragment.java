@@ -27,7 +27,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class PasswordFragment extends Fragment implements TextWatcher {
+public class PasswordFragment extends Fragment {
     private static final String CHANGE = "param1";
     private static final String USER = "param2";
 
@@ -74,30 +74,46 @@ public class PasswordFragment extends Fragment implements TextWatcher {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String userID = preferences.getString("UserID", "");
-        oldPassInput = (EditText) view.findViewById(R.id.oldPassInput);
-        newPassInput = (EditText) view.findViewById(R.id.newPassInput);
-        repeatPassInput = (EditText) view.findViewById(R.id.repeatPassInput);
+        oldPassInput = view.findViewById(R.id.oldPassInput);
+        newPassInput = view.findViewById(R.id.newPassInput);
+        repeatPassInput = view.findViewById(R.id.repeatPassInput);
 
-        newPassInput.addTextChangedListener(this);
-
-        textIsStrong = (TextView) view.findViewById(R.id.textIsStrong);
-        oldPassText = (TextView) view.findViewById(R.id.oldPassText);
-        newPassText = (TextView) view.findViewById(R.id.newPassText);
-        repeatPassText = (TextView) view.findViewById(R.id.repeatPassText);
-
-        checkShowChange = (CheckBox) view.findViewById(R.id.checkShowChange);
-        checkShowChange.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        newPassInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    oldPassInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    newPassInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    repeatPassInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                } else {
-                    oldPassInput.setInputType(129);
-                    newPassInput.setInputType(129);
-                    repeatPassInput.setInputType(129);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!Utils.hasCompletePasswordFormat(s.toString()) && !s.toString().equals("")) {
+                    textIsStrong.setVisibility(View.VISIBLE);
+                } else if (Utils.hasCompletePasswordFormat(s.toString()) || s.toString().equals("")) {
+                    textIsStrong.setVisibility(View.GONE);
                 }
+            }
+        });
+
+        textIsStrong = view.findViewById(R.id.textIsStrong);
+        oldPassText = view.findViewById(R.id.oldPassText);
+        newPassText = view.findViewById(R.id.newPassText);
+        repeatPassText = view.findViewById(R.id.repeatPassText);
+
+        checkShowChange = view.findViewById(R.id.checkShowChange);
+        checkShowChange.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                oldPassInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                newPassInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                repeatPassInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            } else {
+                oldPassInput.setInputType(129);
+                newPassInput.setInputType(129);
+                repeatPassInput.setInputType(129);
             }
         });
         if (getArguments().getBoolean(CHANGE)) {
@@ -105,64 +121,40 @@ public class PasswordFragment extends Fragment implements TextWatcher {
             oldPassText.setVisibility(View.INVISIBLE);
             oldPassInput.setVisibility(View.INVISIBLE);
         }
-        updateButton = (Button) view.findViewById(R.id.updateButton);
-        updateButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (oldPassInput.getText().toString().equals(currentUser.getPassword())
-                        || Utils.SHA256(oldPassInput.getText().toString()).equals(currentUser.getPassword())) {
-                    oldPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
-                    if (Utils.hasCompletePasswordFormat(newPassInput.getText().toString())) {
-                        newPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
-                        if (newPassInput.getText().toString().equals(repeatPassInput.getText().toString())) {
-                            repeatPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
-                            usersRef.child(userID)
-                                    .child("password")
-                                    .setValue(Utils.SHA256(newPassInput.getText().toString()));
-                            Utils.toast(getActivity().getApplicationContext(), getString(R.string.password_changed));
-                            getActivity().finish();
-                        } else {
-                            repeatPassText.setTextColor(getResources().getColor(R.color.design_default_color_error));
-                            Snackbar.make(view, getString(R.string.invalid_repeat_password), Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null)
-                                    .show();
-                        }
+        updateButton = view.findViewById(R.id.updateButton);
+        updateButton.setOnClickListener(v -> {
+            if (oldPassInput.getText().toString().equals(currentUser.getPassword())
+                    || Utils.SHA256(oldPassInput.getText().toString()).equals(currentUser.getPassword())) {
+                oldPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
+                if (Utils.hasCompletePasswordFormat(newPassInput.getText().toString())) {
+                    newPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
+                    if (newPassInput.getText().toString().equals(repeatPassInput.getText().toString())) {
+                        repeatPassText.setTextColor(getResources().getColor(R.color.design_default_color_on_secondary));
+                        usersRef.child(userID)
+                                .child("password")
+                                .setValue(Utils.SHA256(newPassInput.getText().toString()));
+                        Utils.toast(getActivity().getApplicationContext(), getString(R.string.password_changed));
+                        getActivity().finish();
                     } else {
-                        newPassText.setTextColor(getResources().getColor(R.color.design_default_color_error));
-                        Snackbar.make(view, getString(R.string.invalid_new_password), Snackbar.LENGTH_LONG)
+                        repeatPassText.setTextColor(getResources().getColor(R.color.design_default_color_error));
+                        Snackbar.make(view, getString(R.string.invalid_repeat_password), Snackbar.LENGTH_LONG)
                                 .setAction("Action", null)
                                 .show();
                     }
-
                 } else {
-                    oldPassText.setTextColor(getResources().getColor(R.color.design_default_color_error));
-                    Snackbar.make(view, getString(R.string.invalid_password), Snackbar.LENGTH_LONG)
+                    newPassText.setTextColor(getResources().getColor(R.color.design_default_color_error));
+                    Snackbar.make(view, getString(R.string.invalid_new_password), Snackbar.LENGTH_LONG)
                             .setAction("Action", null)
                             .show();
                 }
+
+            } else {
+                oldPassText.setTextColor(getResources().getColor(R.color.design_default_color_error));
+                Snackbar.make(view, getString(R.string.invalid_password), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null)
+                        .show();
             }
         });
         return view;
     }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-    }
-
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        if (!Utils.hasCompletePasswordFormat(s.toString()) && !s.toString().equals("")) {
-            textIsStrong.setVisibility(View.VISIBLE);
-        } else if (Utils.hasCompletePasswordFormat(s.toString()) || s.toString().equals("")) {
-            textIsStrong.setVisibility(View.GONE);
-        }
-    }
-
 }

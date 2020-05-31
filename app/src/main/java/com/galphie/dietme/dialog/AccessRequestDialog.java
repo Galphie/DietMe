@@ -34,7 +34,7 @@ public class AccessRequestDialog extends DialogFragment {
         Bundle mArgs = getArguments();
 
         builder.setView(view)
-                .setPositiveButton(R.string.update, (dialog, id) -> {
+                .setPositiveButton(R.string.request_access, (dialog, id) -> {
                     dialog.dismiss();
                     mListener.setInfo(emailInput.getText().toString(), phoneInput.getText().toString());
                 })
@@ -57,5 +57,9 @@ public class AccessRequestDialog extends DialogFragment {
             throw new ClassCastException(context.toString()
                     + " must implement NoticeDialogListener");
         }
+    }
+
+    public interface AccessRequestDialogListener {
+        void setInfo(String email, String phone);
     }
 }

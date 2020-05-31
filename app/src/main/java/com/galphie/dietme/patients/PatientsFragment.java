@@ -165,7 +165,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                     if (currentUser.isAdmin()) {
                         Bundle args = new Bundle();
                         args.putString("Message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
-                        args.putString("Type", "Delete");
+                        args.putString("Type", "DeletePatient");
                         args.putString("Object", Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6));
                         DialogFragment confirmActionDialog = new ConfirmActionDialog();
                         confirmActionDialog.setArguments(args);
