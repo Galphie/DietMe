@@ -34,9 +34,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
-public class LoginActivity extends AppCompatActivity implements AccessRequestDialog.AccessRequestDialogListener,
-        ValueEventListener {
+public class LoginActivity extends AppCompatActivity implements AccessRequestDialog.AccessRequestDialogListener, ValueEventListener {
+    public static boolean splashed = false;
     public static boolean canFinish = false;
     private static final int PERMISSION_REQUEST_SEND_SMS = 123;
     private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;
@@ -52,11 +53,23 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+
+        if (!splashed) {
+            Intent intent = new Intent(this, SplashScreen.class);
+            startActivity(intent);
+            try {
+                Thread.sleep(800);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         DatabaseReference usersRef = database.getReference("Usuario");
         usersRef.addValueEventListener(this);
+
+        setContentView(R.layout.activity_login);
 
         emailInput = findViewById(R.id.emailInput);
         passInput = findViewById(R.id.passInput);
@@ -65,6 +78,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         checkRemember = findViewById(R.id.checkRemember);
         checkShow = findViewById(R.id.checkShow);
 
+        splashed = false;
         canFinish = false;
 
         loginBut.setOnClickListener(v -> login(v));
@@ -140,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
     public void login(View view) {
         String userEmail = emailInput.getText().toString();
         if (isRegistered(userEmail)) {
-            if (Utils.SHA256(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
+            if (Objects.equals(Utils.SHA256(passInput.getText().toString()), dbPass) || passInput.getText().toString().equals(dbPass)) {
                 checkIfRemember();
                 startLoginActivity(false);
                 finish();
