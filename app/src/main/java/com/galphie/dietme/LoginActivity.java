@@ -138,31 +138,17 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
     @SuppressLint("ResourceAsColor")
     public void login(View view) {
-        String name = emailInput.getText().toString();
-        if (isRegistered(name)) {
+        String userEmail = emailInput.getText().toString();
+        if (isRegistered(userEmail)) {
             if (Utils.SHA256(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("Email", emailInput.getText().toString());
-                editor.putString("Password", passInput.getText().toString());
-                if (checkRemember.isChecked()) {
-                    editor.putBoolean("isChecked", true);
-                    editor.apply();
-                } else {
-                    editor.putBoolean("isChecked", false);
-                    editor.putString("Email", "");
-                    editor.putString("Password", "");
-                    editor.apply();
-                }
+                checkIfRemember();
                 startLoginActivity(false);
                 finish();
-
             } else {
                 Snackbar.make(view, getString(R.string.invalid_password), Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .show();
             }
-
         } else {
             if (emailInput.getText().length() == 0) {
                 Snackbar.make(view, getString(R.string.empty_email), Snackbar.LENGTH_LONG)
@@ -174,7 +160,22 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
                         .show();
             }
         }
+    }
 
+    private void checkIfRemember() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        if (checkRemember.isChecked()) {
+            editor.putString("Email", emailInput.getText().toString());
+            editor.putString("Password", passInput.getText().toString());
+            editor.putBoolean("isChecked", true);
+            editor.apply();
+        } else {
+            editor.putString("Email", "");
+            editor.putString("Password", "");
+            editor.putBoolean("isChecked", false);
+            editor.apply();
+        }
     }
 
     public boolean isRegistered(String user) {
@@ -267,8 +268,8 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         String message = user.getName() + ", tus credenciales:\n" +
                 "#" + user.getEmail() + "#\n" +
                 "#" + user.getPassword() + "#";
-        SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phone, null, message, null, null);
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(phone, null, message, null, null);
         checkRemember.setChecked(false);
     }
 
@@ -284,7 +285,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
     @Override
     public void onCancelled(@NonNull DatabaseError databaseError) {
-        Utils.toast(getApplicationContext(),getString(R.string.database_snapshot_failure));
+        Utils.toast(getApplicationContext(), getString(R.string.database_snapshot_failure));
     }
 
     @Override
