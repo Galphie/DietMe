@@ -13,31 +13,22 @@ import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.User;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 public class AppointmentsManagementFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "User";
+    private static final String CURRENT_USER = "currentUser";
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference appointmentsRef = database.getReference("Citas");
-
-    private String mParam1;
     private User currentUser;
-
-    private Button restartButton;
 
     public AppointmentsManagementFragment() {
     }
 
-    // TODO: Rename and change types and number of parameters
-    public static AppointmentsManagementFragment newInstance(String param1, User currentUser) {
+    public static AppointmentsManagementFragment newInstance(User currentUser) {
         AppointmentsManagementFragment fragment = new AppointmentsManagementFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putParcelable(ARG_PARAM2, currentUser);
+        args.putParcelable(CURRENT_USER, currentUser);
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,8 +37,7 @@ public class AppointmentsManagementFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            currentUser = getArguments().getParcelable(ARG_PARAM2);
+            currentUser = getArguments().getParcelable(CURRENT_USER);
         }
     }
 
@@ -56,7 +46,7 @@ public class AppointmentsManagementFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_appointments_management, container, false);
 
-        restartButton = view.findViewById(R.id.restartDatabaseButton);
+        Button restartButton = view.findViewById(R.id.restartDatabaseButton);
         restartButton.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Bundle args = new Bundle();
@@ -64,12 +54,11 @@ public class AppointmentsManagementFragment extends Fragment {
                 args.putString("Type", "Restart");
                 DialogFragment confirmActionDialog = new ConfirmActionDialog();
                 confirmActionDialog.setArguments(args);
-                confirmActionDialog.show(getActivity().getSupportFragmentManager(), "Confirm");
+                confirmActionDialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Confirm");
             } else {
-                Utils.toast(getActivity().getApplicationContext(),getString(R.string.developer_action_only));
+                Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
             }
         });
-
         return view;
     }
 }

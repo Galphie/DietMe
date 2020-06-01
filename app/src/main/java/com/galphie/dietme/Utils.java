@@ -193,8 +193,6 @@ public class Utils {
         clipboard.setPrimaryClip(clip);
     }
 
-//    Environment.DIRECTORY_DOWNLOADS
-//    Environment.*****
     public static void downloadFileFromUri(Context context, String fileName, String fileExtension, String destinationDirectory, Uri uri) {
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(uri);

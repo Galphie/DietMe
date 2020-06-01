@@ -10,38 +10,40 @@ import com.galphie.dietme.Utils;
 
 public class ConfigContainerActivity extends AppCompatActivity {
 
-    private User currentUser;
-    private NotificationFragment notificationFragment = new NotificationFragment();
+    public static final int PASSWORD_CODE = 1998;
+    public static final int NOTIFICATION_CODE = 1987;
+    public static final int APPOINTMENTS_CODE = 1991;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_container);
 
-        currentUser = getIntent().getParcelableExtra("User");
+        User currentUser = getIntent().getParcelableExtra("currentUser");
         Bundle bd = getIntent().getExtras();
         if (bd != null) {
-            int type = bd.getInt("Type");
+            int type = bd.getInt("type");
             switch (type) {
-                case 1:
-                    boolean cambio = false;
-                    if (bd.getBoolean("Cambio")) {
-                        cambio = true;
+                case PASSWORD_CODE:
+                    boolean accessRequested = false;
+                    if (bd.getBoolean("accessRequested")) {
+                        accessRequested = true;
                     }
-                    PasswordFragment passwordFragment = PasswordFragment.newInstance(cambio, currentUser);
+                    PasswordFragment passwordFragment = PasswordFragment.newInstance(accessRequested, currentUser);
                     getSupportFragmentManager()
                             .beginTransaction()
                             .add(R.id.config_container, passwordFragment)
                             .commit();
                     break;
-                case 2:
+                case NOTIFICATION_CODE:
+                    NotificationFragment notificationFragment = new NotificationFragment();
                     getSupportFragmentManager()
                             .beginTransaction()
                             .add(R.id.config_container, notificationFragment)
                             .commit();
                     break;
-                case 3:
-                    AppointmentsManagementFragment appointmentsManagementFragment = AppointmentsManagementFragment.newInstance(null, currentUser);
+                case APPOINTMENTS_CODE:
+                    AppointmentsManagementFragment appointmentsManagementFragment = AppointmentsManagementFragment.newInstance(currentUser);
                     getSupportFragmentManager()
                             .beginTransaction()
                             .add(R.id.config_container, appointmentsManagementFragment)
@@ -55,7 +57,7 @@ public class ConfigContainerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getIntent().getExtras().getBoolean("Cambio")) {
+        if (getIntent().getExtras().getBoolean("accessRequested")) {
             Utils.toast(getApplicationContext(), getString(R.string.do_not_exit));
         } else {
             super.onBackPressed();

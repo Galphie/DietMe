@@ -63,13 +63,13 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentUser = getArguments().getParcelable("CurrentUser");
+            currentUser = getArguments().getParcelable("currentUser");
         }
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 Bundle homeBd = new Bundle();
-                homeBd.putParcelable("CurrentUser", currentUser);
+                homeBd.putParcelable("currentUser", currentUser);
                 Navigation
                         .findNavController(getActivity(), R.id.nav_host_fragment)
                         .navigate(R.id.homeFragment, homeBd);
@@ -97,11 +97,12 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     patientsList.add(user);
-                    Collections.sort(patientsList, (o1, o2) ->
-                            o1.getForenames().compareToIgnoreCase(o2.getForenames()));
                 }
+                Collections.sort(patientsList, (o1, o2) ->
+                        o1.getForenames().compareToIgnoreCase(o2.getForenames()));
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
+
             @Override
             public void onCancelled(@NotNull DatabaseError databaseError) {
             }

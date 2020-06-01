@@ -128,10 +128,9 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
     private void startLoginActivity(boolean accessRequested) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("User", currentUser);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("currentUser", currentUser);
         if (accessRequested) {
-            intent.putExtra("ForzarCambio", true);
+            intent.putExtra("accessRequested", true);
             Handler handler = new Handler();
             handler.postDelayed(() -> {
                 startActivity(intent);

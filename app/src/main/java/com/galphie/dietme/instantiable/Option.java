@@ -2,7 +2,7 @@ package com.galphie.dietme.instantiable;
 
 public class Option {
     private String name;
-    private String code;
+    private int code;
 
     public String getName() {
         return name;
@@ -12,18 +12,18 @@ public class Option {
         this.name = name;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
     public Option() {
     }
 
-    public Option(String name, String code) {
+    public Option(String name, int code) {
         this.name = name;
         this.code = code;
     }

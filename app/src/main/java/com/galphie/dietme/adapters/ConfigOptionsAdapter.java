@@ -39,13 +39,13 @@ public class ConfigOptionsAdapter extends RecyclerView.Adapter<ConfigOptionsAdap
         return mOptions.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name;
         OnOptionClickListener onOptionClickListener;
 
-        public ViewHolder(@NonNull View itemView, OnOptionClickListener onOptionClickListener) {
+        ViewHolder(@NonNull View itemView, OnOptionClickListener onOptionClickListener) {
             super(itemView);
-            name = (TextView) itemView.findViewById(R.id.name);
+            name = itemView.findViewById(R.id.name);
             this.onOptionClickListener = onOptionClickListener;
 
             itemView.setOnClickListener(this);

@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentUser = getArguments().getParcelable("CurrentUser");
+            currentUser = getArguments().getParcelable("currentUser");
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 

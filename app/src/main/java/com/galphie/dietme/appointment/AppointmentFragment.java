@@ -18,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class AppointmentFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "CurrentUser";
+    private static final String ARG_PARAM2 = "currentUser";
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference appointmentsRef = database.getReference("Citas");
@@ -43,14 +43,14 @@ public class AppointmentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            currentUser = getArguments().getParcelable("CurrentUser");
+            currentUser = getArguments().getParcelable("currentUser");
         }
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 Bundle homeBd = new Bundle();
-                homeBd.putParcelable("CurrentUser", currentUser);
+                homeBd.putParcelable("currentUser", currentUser);
                 Navigation
                         .findNavController(getActivity(), R.id.nav_host_fragment)
                         .navigate(R.id.homeFragment, homeBd);

@@ -18,7 +18,7 @@ import java.util.Collections;
 public class ConfigListActivity extends AppCompatActivity implements ConfigOptionsAdapter.OnOptionClickListener {
 
     private User currentUser;
-    ArrayList<Option> opciones = new ArrayList<>();
+    ArrayList<Option> options = new ArrayList<>();
     RecyclerView recyclerView;
 
     @Override
@@ -31,35 +31,38 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
 
         init();
 
-        ConfigOptionsAdapter adapter = new ConfigOptionsAdapter(opciones, this);
+        ConfigOptionsAdapter adapter = new ConfigOptionsAdapter(options, this);
         recyclerView.setAdapter(adapter);
 
-        currentUser = getIntent().getParcelableExtra("User");
+        currentUser = getIntent().getParcelableExtra("currentUser");
     }
 
     private void init() {
-        opciones.add(new Option(getString(R.string.change_password), "password"));
-        opciones.add(new Option(getString(R.string.manage_notifications), "notifications"));
-        opciones.add(new Option(getString(R.string.manage_appointments),"appointments"));
-        Collections.sort(opciones, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        options.add(new Option(getString(R.string.change_password), ConfigContainerActivity.PASSWORD_CODE));
+        options.add(new Option(getString(R.string.manage_notifications), ConfigContainerActivity.NOTIFICATION_CODE));
+        options.add(new Option(getString(R.string.manage_appointments), ConfigContainerActivity.APPOINTMENTS_CODE));
+        Collections.sort(options, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
     }
 
     @Override
     public void onOptionClick(int position) {
-        if (opciones.get(position).getCode().equals("password")) {
-            Intent intent = new Intent(this, ConfigContainerActivity.class);
-            intent.putExtra("User", currentUser);
-            intent.putExtra("Type",1);
-            startActivity(intent);
-        } else if (opciones.get(position).getCode().equals("notifications")) {
-            Intent intent = new Intent(this, ConfigContainerActivity.class);
-            intent.putExtra("Type",2);
-            startActivity(intent);
-        } else if(opciones.get(position).getCode().equals("appointments")) {
-            Intent intent = new Intent(this,ConfigContainerActivity.class);
-            intent.putExtra("User", currentUser);
-            intent.putExtra("Type",3);
-            startActivity(intent);
+        switch (options.get(position).getCode()) {
+            case ConfigContainerActivity.PASSWORD_CODE:
+                startConfigContainerActivity(ConfigContainerActivity.PASSWORD_CODE);
+                break;
+            case ConfigContainerActivity.NOTIFICATION_CODE:
+                startConfigContainerActivity(ConfigContainerActivity.NOTIFICATION_CODE);
+                break;
+            case ConfigContainerActivity.APPOINTMENTS_CODE:
+                startConfigContainerActivity(ConfigContainerActivity.APPOINTMENTS_CODE);
+                break;
         }
+    }
+
+    private void startConfigContainerActivity(int passwordCode) {
+        Intent passwordChange = new Intent(this, ConfigContainerActivity.class);
+        passwordChange.putExtra("currentUser", currentUser);
+        passwordChange.putExtra("type", passwordCode);
+        startActivity(passwordChange);
     }
 }

@@ -1,10 +1,7 @@
 package com.galphie.dietme;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,8 +17,6 @@ import com.galphie.dietme.config.ConfigContainerActivity;
 import com.galphie.dietme.config.ConfigListActivity;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -42,23 +37,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         bottomNav = findViewById(R.id.activity_main_bottom_nav);
         Bundle bd = getIntent().getExtras();
-        currentUser = getIntent().getParcelableExtra("User");
-        Utils.toast(getApplicationContext(), "Bienvenido, " + currentUser.getName() + ".");
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("UserID", Objects.requireNonNull(Utils.MD5(currentUser.getEmail())).substring(0, 6).toUpperCase());
-        editor.apply();
+        currentUser = getIntent().getParcelableExtra("currentUser");
         init();
         goHome();
         if (bd != null) {
-            if (bd.getBoolean("ForzarCambio")) {
+            if (bd.getBoolean("accessRequested")) {
                 Intent intent = new Intent(this, ConfigContainerActivity.class);
-                intent.putExtra("Type", 1);
-                intent.putExtra("User", currentUser);
-                intent.putExtra("Cambio", true);
-                Handler handler = new Handler();
-                Runnable runnable = () -> startActivity(intent);
-                handler.postDelayed(runnable, 1000);
+                intent.putExtra("type", 1);
+                intent.putExtra("currentUser", currentUser);
+                intent.putExtra("accessRequested", true);
+                startActivity(intent);
             }
         }
     }
@@ -85,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.config) {
             Intent intent = new Intent(this, ConfigListActivity.class);
-            intent.putExtra("User", currentUser);
+            intent.putExtra("currentUser", currentUser);
             startActivity(intent);
             return true;
         }
@@ -97,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         switch (item.getItemId()) {
             case R.id.navigation_home:
                 Bundle homeBd = new Bundle();
-                homeBd.putParcelable("CurrentUser", currentUser);
+                homeBd.putParcelable("currentUser", currentUser);
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.homeFragment, homeBd);
@@ -108,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
             case R.id.navigation_appointment:
                 Bundle apptBd = new Bundle();
-                apptBd.putParcelable("CurrentUser", currentUser);
+                apptBd.putParcelable("currentUser", currentUser);
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.appointmentFragment, apptBd);
@@ -119,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
             case R.id.navigation_patients:
                 Bundle patBd = new Bundle();
-                patBd.putParcelable("CurrentUser", currentUser);
+                patBd.putParcelable("currentUser", currentUser);
                 Navigation
                         .findNavController(this, R.id.nav_host_fragment)
                         .navigate(R.id.patientsFragment, patBd);
@@ -143,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     public void goHome() {
         Bundle homeBd = new Bundle();
-        homeBd.putParcelable("CurrentUser", currentUser);
+        homeBd.putParcelable("currentUser", currentUser);
         Navigation
                 .findNavController(this, R.id.nav_host_fragment)
                 .navigate(R.id.homeFragment, homeBd);
