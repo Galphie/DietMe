@@ -1,9 +1,11 @@
 package com.galphie.dietme.home;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.PostListAdapter;
+import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.dialog.PostDialog;
 import com.galphie.dietme.instantiable.Post;
 import com.galphie.dietme.instantiable.User;
@@ -32,31 +35,17 @@ import java.util.Collections;
 import java.util.Objects;
 
 
-public class HomeFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class HomeFragment extends Fragment implements ValueEventListener, PostListAdapter.OnPostClickListener {
 
     private User currentUser;
-    private String mParam2;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference postsRef = database.getReference("Publicaciones");
 
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Post> postArrayList = new ArrayList<>();
-    private FloatingActionButton addPostButton;
 
     public HomeFragment() {
-    }
-
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -64,13 +53,12 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             currentUser = getArguments().getParcelable("currentUser");
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                getActivity().finish();
+                Objects.requireNonNull(getActivity()).finish();
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
@@ -87,42 +75,28 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        FloatingActionButton addPostButton = view.findViewById(R.id.add_post_button);
+        swipeRefreshLayout = view.findViewById(R.id.post_swipe_refresh);
         recyclerView = view.findViewById(R.id.postRecyclerView);
+
         initRecyclerView();
-        postsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                postArrayList.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Post post = ds.getValue(Post.class);
-                    postArrayList.add(post);
-                }
-                Collections.sort(postArrayList, (o1, o2) -> Utils.stringToLocalDateTime(o2.getPublishDate())
-                        .compareTo(Utils.stringToLocalDateTime(o1.getPublishDate())));
-                Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        DatabaseReference postsRef = database.getReference("Publicaciones");
+        postsRef.addValueEventListener(this);
 
-            }
-        });
-
-        addPostButton = view.findViewById(R.id.add_post_button);
-        if (currentUser.isAdmin()) {
-            //TODO Mejorar el editText
-            addPostButton.setVisibility(View.VISIBLE);
-        }
         addPostButton.setOnClickListener(v -> {
             DialogFragment dialogFragment = new PostDialog();
-            dialogFragment.show(getActivity().getSupportFragmentManager(), "Post");
+            dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Post");
         });
-        swipeRefreshLayout = view.findViewById(R.id.post_swipe_refresh);
+
         swipeRefreshLayout.setOnRefreshListener(() -> {
             initRecyclerView();
-            recyclerView.getAdapter().notifyDataSetChanged();
+            Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
             swipeRefreshLayout.setRefreshing(false);
         });
+        if (currentUser.isAdmin()) {
+            addPostButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -132,8 +106,70 @@ public class HomeFragment extends Fragment {
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        PostListAdapter adapter = new PostListAdapter(postArrayList);
+        PostListAdapter adapter = new PostListAdapter(postArrayList, this);
         recyclerView.setAdapter(adapter);
     }
 
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        postArrayList.clear();
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            Post post = ds.getValue(Post.class);
+            postArrayList.add(post);
+        }
+        Collections.sort(postArrayList, (o1, o2) -> Utils.stringToLocalDateTime(o2.getPublishDate())
+                .compareTo(Utils.stringToLocalDateTime(o1.getPublishDate())));
+        Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+    }
+
+    @Override
+    public void onPostClick(View v, int position) {
+        if (currentUser.isAdmin()) {
+            showPopUp(v, position);
+        }
+    }
+
+    private void showPopUp(View view, int position) {
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+        popupMenu.inflate(R.menu.patient_contextual_menu);
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.edit_option:
+                    if (currentUser.isAdmin()) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("post_message", postArrayList.get(position).getMessage());
+                        bundle.putString("post_publish_date", postArrayList.get(position).getPublishDate());
+                        DialogFragment dialogFragment = new PostDialog();
+                        dialogFragment.setArguments(bundle);
+                        dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Post");
+                    } else {
+                        Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
+                    }
+                    return true;
+                case R.id.remove_option:
+                    if (currentUser.isAdmin()) {
+                        DialogFragment dialogFragment = new ConfirmActionDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("Message", "¿Eliminar publicación?");
+                        bundle.putString("Type","DeletePost");
+                        bundle.putString("post_publish_date", postArrayList.get(position).getPublishDate());
+                        dialogFragment.setArguments(bundle);
+                        dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(),"DeletePost");
+                    } else {
+                        Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        });
+
+        popupMenu.show();
+    }
 }

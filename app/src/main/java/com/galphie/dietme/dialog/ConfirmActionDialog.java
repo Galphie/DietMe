@@ -78,6 +78,10 @@ public class ConfirmActionDialog extends DialogFragment {
                                 fileDatabaseRef.removeValue();
                             });
                             dialog.dismiss();
+                        } else if (mArgs.getString("Type").equals("DeletePost")) {
+                            String postPublishDate = mArgs.getString("post_publish_date");
+                            database.getReference().child("Publicaciones").child(postPublishDate).removeValue();
+                            dialog.dismiss();
                         }
                     })
                     .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.dismiss());

@@ -128,7 +128,7 @@ public class Utils {
             if (duration.toDays() == 1) {
                 time = "Hace un día";
             } else {
-                time = "Hace " + duration.toDays() + "días.";
+                time = "Hace " + duration.toDays() + " días.";
             }
         }
         return time;

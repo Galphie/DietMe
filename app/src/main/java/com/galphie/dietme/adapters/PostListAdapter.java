@@ -16,9 +16,11 @@ import java.util.ArrayList;
 
 public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
     private ArrayList<Post> postArrayList;
+    private OnPostClickListener mListener;
 
-    public PostListAdapter(ArrayList<Post> postArrayList) {
+    public PostListAdapter(ArrayList<Post> postArrayList, OnPostClickListener mListener) {
         this.postArrayList = postArrayList;
+        this.mListener = mListener;
     }
 
     @NonNull
@@ -40,14 +42,25 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHo
         return postArrayList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView postPublishDate, postMessage;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             postPublishDate = itemView.findViewById(R.id.post_publish_date);
             postMessage = itemView.findViewById(R.id.post_message);
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onPostClick(v, getAdapterPosition());
+        }
+    }
+
+    public interface OnPostClickListener{
+        void onPostClick(View view, int position);
     }
 }
