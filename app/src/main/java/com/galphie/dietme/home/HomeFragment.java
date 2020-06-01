@@ -1,6 +1,5 @@
 package com.galphie.dietme.home;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -156,11 +155,11 @@ public class HomeFragment extends Fragment implements ValueEventListener, PostLi
                     if (currentUser.isAdmin()) {
                         DialogFragment dialogFragment = new ConfirmActionDialog();
                         Bundle bundle = new Bundle();
-                        bundle.putString("Message", "¿Eliminar publicación?");
-                        bundle.putString("Type","DeletePost");
-                        bundle.putString("post_publish_date", postArrayList.get(position).getPublishDate());
+                        bundle.putString("confirm_action_dialog_message", "¿Eliminar publicación?");
+                        bundle.putInt("type", ConfirmActionDialog.DELETE_POST_CODE);
+                        bundle.putString("object", postArrayList.get(position).getPublishDate());
                         dialogFragment.setArguments(bundle);
-                        dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(),"DeletePost");
+                        dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "DeletePost");
                     } else {
                         Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
                     }

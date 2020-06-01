@@ -165,9 +165,9 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                 case R.id.remove_option:
                     if (currentUser.isAdmin()) {
                         Bundle args = new Bundle();
-                        args.putString("Message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
-                        args.putString("Type", "DeletePatient");
-                        args.putString("Object", Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6));
+                        args.putString("confirm_action_dialog_message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
+                        args.putInt("type", ConfirmActionDialog.DELETE_PATIENT_CODE);
+                        args.putString("object", Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6));
                         DialogFragment confirmActionDialog = new ConfirmActionDialog();
                         confirmActionDialog.setArguments(args);
                         confirmActionDialog.show(getActivity().getSupportFragmentManager(), "Confirm");

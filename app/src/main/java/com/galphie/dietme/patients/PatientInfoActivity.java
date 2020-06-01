@@ -161,9 +161,9 @@ public class PatientInfoActivity extends AppCompatActivity {
         phoneCardView.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Bundle args = new Bundle();
-                args.putString("Message", "¿Llamar a " + setPhoneFormat(patient.getPhone()) + "?");
-                args.putString("Type", "Call");
-                args.putString("Object", patient.getPhone());
+                args.putString("confirm_action_dialog_message", "¿Llamar a " + setPhoneFormat(patient.getPhone()) + "?");
+                args.putInt("type", ConfirmActionDialog.CALL_CODE);
+                args.putString("object", patient.getPhone());
                 DialogFragment confirmActionDialog = new ConfirmActionDialog();
                 confirmActionDialog.setArguments(args);
                 confirmActionDialog.show(getSupportFragmentManager(), "Confirm");
@@ -183,9 +183,9 @@ public class PatientInfoActivity extends AppCompatActivity {
         emailCardView.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Bundle args = new Bundle();
-                args.putString("Message", "¿Enviar un correo a " + patient.getEmail() + "?");
-                args.putString("Type", "Email");
-                args.putString("Object", patient.getEmail());
+                args.putString("confirm_action_dialog_message", "¿Enviar un correo a " + patient.getEmail() + "?");
+                args.putInt("type", ConfirmActionDialog.EMAIL_CODE);
+                args.putString("object", patient.getEmail());
                 DialogFragment confirmActionDialog = new ConfirmActionDialog();
                 confirmActionDialog.setArguments(args);
                 confirmActionDialog.show(getSupportFragmentManager(), "Confirm");
@@ -257,9 +257,9 @@ public class PatientInfoActivity extends AppCompatActivity {
             case R.id.patient_info_remove:
                 if (currentUser.isAdmin()) {
                     Bundle args = new Bundle();
-                    args.putString("Message", "¿Eliminar a " + patient.getName() + "?");
-                    args.putString("Type", "DeletePatient");
-                    args.putString("Object", Utils.MD5(patient.getEmail()).substring(0, 6));
+                    args.putString("confirm_action_dialog_message", "¿Eliminar a " + patient.getName() + "?");
+                    args.putInt("type", ConfirmActionDialog.DELETE_PATIENT_CODE);
+                    args.putString("object", Utils.MD5(patient.getEmail()).substring(0, 6));
                     DialogFragment confirmActionDialog = new ConfirmActionDialog();
                     confirmActionDialog.setArguments(args);
                     confirmActionDialog.show(getSupportFragmentManager(), "Confirm");

@@ -128,11 +128,11 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
             CustomFile fileToDelete = sharedFiles.get(position);
             DialogFragment dialogFragment = new ConfirmActionDialog();
             Bundle bundle = new Bundle();
-            bundle.putString("Message", "¿Eliminar " + fileToDelete.getName() + "?");
-            bundle.putString("Type", "DeleteFile");
-            bundle.putString("PatientId", patientId);
-            bundle.putString("FileName", fileToDelete.getName());
-            bundle.putString("Path", fileToDelete.getPath());
+            bundle.putString("confirm_action_dialog_message", "¿Eliminar " + fileToDelete.getName() + "?");
+            bundle.putInt("type", ConfirmActionDialog.DELETE_FILE_CODE);
+            bundle.putString("patientId", patientId);
+            bundle.putString("fileName", fileToDelete.getName());
+            bundle.putString("path", fileToDelete.getPath());
             dialogFragment.setArguments(bundle);
             dialogFragment.show(getParentFragmentManager(), "Delete file");
         }

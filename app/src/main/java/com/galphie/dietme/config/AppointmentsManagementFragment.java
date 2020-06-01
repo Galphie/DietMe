@@ -50,8 +50,8 @@ public class AppointmentsManagementFragment extends Fragment {
         restartButton.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Bundle args = new Bundle();
-                args.putString("Message", getString(R.string.restarting_conditions));
-                args.putString("Type", "Restart");
+                args.putString("confirm_action_dialog_message", getString(R.string.restarting_conditions));
+                args.putInt("type", ConfirmActionDialog.RESTART_CODE);
                 DialogFragment confirmActionDialog = new ConfirmActionDialog();
                 confirmActionDialog.setArguments(args);
                 confirmActionDialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Confirm");
