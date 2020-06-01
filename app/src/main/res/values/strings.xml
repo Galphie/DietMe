@@ -118,4 +118,6 @@
     <string name="upload">Subir</string>
     <string name="request_access">Solicitar acceso</string>
     <string name="database_snapshot_failure">Error al capturar base de datos.</string>
+    <string name="downloading">Descargando...</string>
+    <string name="error_opening_page">\"Error al abrir página \"</string>
 </resources>

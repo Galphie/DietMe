@@ -55,9 +55,9 @@ public class UploadFileDialog extends DialogFragment implements TextWatcher {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String newFileName = nameEdit.getText().toString();
-                        String patientId = getArguments().getString("PatientId");
+                        String patientId = getArguments().getString("patientId");
                         newFileName = newFileName.concat(".pdf");
-                        Uri selectedPdf = Uri.parse(getArguments().getString("PDF"));
+                        Uri selectedPdf = Uri.parse(getArguments().getString("pdf"));
                         StorageMetadata metadata = new StorageMetadata.Builder()
                                 .setContentType("application/pdf")
                                 .build();

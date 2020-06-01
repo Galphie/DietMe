@@ -1,22 +1,14 @@
 package com.galphie.dietme;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnDrawListener;
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
-import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
-import com.github.barteksc.pdfviewer.listener.OnRenderListener;
-import com.github.barteksc.pdfviewer.listener.OnTapListener;
 import com.krishna.fileloader.FileLoader;
 import com.krishna.fileloader.listener.FileRequestListener;
 import com.krishna.fileloader.pojo.FileResponse;
@@ -28,6 +20,7 @@ public class PdfViewerActivity extends AppCompatActivity {
 
     PDFView pdfView;
     ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +31,7 @@ public class PdfViewerActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String viewType = getIntent().getStringExtra("ViewType");
-            if (viewType != null || !TextUtils.isEmpty(viewType)) {
+            if (viewType != null) {
                 if (viewType.equals("storage")) {
                     Uri pdfFile = Uri.parse(bundle.getString("FileUri"));
                     pdfView.fromUri(pdfFile)
@@ -47,10 +40,13 @@ public class PdfViewerActivity extends AppCompatActivity {
                             .enableSwipe(true)
                             .swipeHorizontal(false)
                             .enableDoubletap(true)
-                            .onDraw((canvas, pageWidth, pageHeight, displayedPage) -> {})
-                            .onDrawAll((canvas, pageWidth, pageHeight, displayedPage) -> {})
-                            .onPageError((page, t) -> Utils.toast(getApplicationContext(),"Error al abrir página " + page))
-                            .onPageChange((page, pageCount) -> {})
+                            .onDraw((canvas, pageWidth, pageHeight, displayedPage) -> {
+                            })
+                            .onDrawAll((canvas, pageWidth, pageHeight, displayedPage) -> {
+                            })
+                            .onPageError((page, t) -> Utils.toast(getApplicationContext(), getString(R.string.error_opening_page) + page))
+                            .onPageChange((page, pageCount) -> {
+                            })
                             .onTap(e -> true)
                             .onRender((nbPages, pageWidth, pageHeight) -> pdfView.fitToWidth())
                             .enableAnnotationRendering(true)
@@ -73,10 +69,13 @@ public class PdfViewerActivity extends AppCompatActivity {
                                             .enableSwipe(true)
                                             .swipeHorizontal(false)
                                             .enableDoubletap(true)
-                                            .onDraw((canvas, pageWidth, pageHeight, displayedPage) -> {})
-                                            .onDrawAll((canvas, pageWidth, pageHeight, displayedPage) -> {})
-                                            .onPageError((page, t) -> Utils.toast(getApplicationContext(),"Error al abrir página " + page))
-                                            .onPageChange((page, pageCount) -> {})
+                                            .onDraw((canvas, pageWidth, pageHeight, displayedPage) -> {
+                                            })
+                                            .onDrawAll((canvas, pageWidth, pageHeight, displayedPage) -> {
+                                            })
+                                            .onPageError((page, t) -> Utils.toast(getApplicationContext(), getString(R.string.error_opening_page) + page))
+                                            .onPageChange((page, pageCount) -> {
+                                            })
                                             .onTap(e -> true)
                                             .onRender((nbPages, pageWidth, pageHeight) -> pdfView.fitToWidth())
                                             .enableAnnotationRendering(true)
@@ -87,8 +86,8 @@ public class PdfViewerActivity extends AppCompatActivity {
                                 @Override
                                 public void onError(FileLoadRequest request, Throwable t) {
                                     progressBar.setVisibility(View.GONE);
-                                    Utils.toast(getApplicationContext(),t.getMessage());
-                                    Utils.copyToClipboard(getApplicationContext(),t.getMessage());
+                                    Utils.toast(getApplicationContext(), t.getMessage());
+                                    Utils.copyToClipboard(getApplicationContext(), t.getMessage());
                                 }
                             });
                 }

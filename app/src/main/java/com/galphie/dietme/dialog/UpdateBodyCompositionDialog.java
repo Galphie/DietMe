@@ -1,5 +1,6 @@
 package com.galphie.dietme.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,7 +19,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class UpdateBodyCompositionDialog extends DialogFragment {
@@ -27,7 +27,6 @@ public class UpdateBodyCompositionDialog extends DialogFragment {
     private DatabaseReference usersRef = database.getReference("Usuario");
     private DatabaseReference registersRef = database.getReference("Registros");
     private Measures patientMeasures;
-    private String patientId;
     private double height; //m
     private double weight, leanMass, fatMass; //kg
     private double waist, hip, thigh, arm; //cm
@@ -40,12 +39,12 @@ public class UpdateBodyCompositionDialog extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.update_body_composition_dialog, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.update_body_composition_dialog, null);
 
-        patientMeasures = getArguments().getParcelable("Patient");
-        patientId = getArguments().getString("PatientId");
+        patientMeasures = Objects.requireNonNull(getArguments()).getParcelable("patientMeasures");
+        String patientId = getArguments().getString("patientId");
         DatabaseReference patientMeasuresRef = usersRef.child(patientId + "/measures");
-        DatabaseReference registeredMeasuresRef = registersRef.child(patientId);
+        DatabaseReference registeredMeasuresRef = registersRef.child(Objects.requireNonNull(patientId));
 
         editWaist = view.findViewById(R.id.editWaist);
         editHip = view.findViewById(R.id.editHip);

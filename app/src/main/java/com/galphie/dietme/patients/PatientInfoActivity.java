@@ -1,7 +1,6 @@
 package com.galphie.dietme.patients;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,41 +22,34 @@ import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.SlidePagerAdapter;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.dialog.UploadFileDialog;
-import com.galphie.dietme.instantiable.CustomFile;
 import com.galphie.dietme.instantiable.User;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class PatientInfoActivity extends AppCompatActivity {
+public class PatientInfoActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
+        TabLayout.OnTabSelectedListener, ValueEventListener {
 
-    private static final String TAG = "PatientInfoActivity";
     private static final int PDF_CODE = 1000;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private CardView emailCardView, phoneCardView, ageGenderCardView, idCardView;
     private String patientId;
     private User patient;
     private User currentUser;
 
     private ViewPager pager;
-    private PagerAdapter pagerAdapter;
     private TabLayout tabLayout;
-    private Toolbar toolbar;
-    private TextView patientEmailText, patientPhoneText, patientAgeText,
-            patientGenderText, patientIdText;
+    private TextView patientEmailText;
+    private TextView patientPhoneText;
+    private TextView patientAgeText;
+    private TextView patientGenderText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,96 +60,40 @@ public class PatientInfoActivity extends AppCompatActivity {
             this.patient = getIntent().getExtras().getParcelable("patient");
             this.currentUser = getIntent().getExtras().getParcelable("currentUser");
 
-            this.patientId = Utils.MD5(patient.getEmail()).substring(0,6).toUpperCase();
+            this.patientId = Objects.requireNonNull(Utils.MD5(patient.getEmail())).substring(0, 6).toUpperCase();
         }
+
+        Toolbar toolbar = findViewById(R.id.activity_patient_info_toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(patient.getName() + " " + patient.getForenames());
+        }
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setOverflowIcon(getDrawable(R.drawable.ic_more_vert_white_24dp));
 
         ArrayList<Fragment> fragments = setTabs();
 
-        pager = findViewById(R.id.patient_info_pager);
-        pagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), fragments);
-        pager.setAdapter(pagerAdapter);
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                tabLayout.selectTab(tabLayout.getTabAt(position));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
-
         tabLayout = findViewById(R.id.patientInfoTabLayout);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                pager.setCurrentItem(tabLayout.getSelectedTabPosition());
-            }
+        pager = findViewById(R.id.patient_info_pager);
+        PagerAdapter pagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), fragments);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
+        pager.setAdapter(pagerAdapter);
+        pager.addOnPageChangeListener(this);
+        tabLayout.addOnTabSelectedListener(this);
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-
-        ageGenderCardView = findViewById(R.id.age_genderCardView);
-        idCardView = findViewById(R.id.idCardView);
-        phoneCardView = findViewById(R.id.phoneCardView);
-        emailCardView = findViewById(R.id.emailCardView);
+        CardView phoneCardView = findViewById(R.id.phoneCardView);
+        CardView emailCardView = findViewById(R.id.emailCardView);
         patientEmailText = findViewById(R.id.patient_email);
         patientPhoneText = findViewById(R.id.patient_phone);
         patientAgeText = findViewById(R.id.patient_age);
         patientGenderText = findViewById(R.id.patient_gender);
-        patientIdText = findViewById(R.id.patient_id);
+        TextView patientIdText = findViewById(R.id.patient_id);
+
+        patientIdText.setText(patientId);
 
         DatabaseReference patientRef = database.getReference("Usuario").child(patientId);
-        patientRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null) {
-                    finish();
-                } else {
-                    patient.setName(dataSnapshot.getValue(User.class).getName());
-                    patient.setForenames(dataSnapshot.getValue(User.class).getForenames());
-                    patient.setEmail(dataSnapshot.getValue(User.class).getEmail());
-                    patient.setBirthdate(dataSnapshot.getValue(User.class).getBirthdate());
-                    patient.setGender(dataSnapshot.getValue(User.class).getGender());
-                    patient.setPhone(dataSnapshot.getValue(User.class).getPhone());
-                    patient.setMeasures(dataSnapshot.getValue(User.class).getMeasures());
-
-                    int age = Utils.calculateAge(patient.getBirthdate());
-                    patientAgeText.setText(String.valueOf(age));
-                    if (currentUser.isAdmin()) {
-                        patientEmailText.setText(patient.getEmail());
-                        patientPhoneText.setText(setPhoneFormat(patient.getPhone()));
-                    } else {
-                        patientEmailText.setText(R.string.developer_info_only);
-                        patientPhoneText.setText(R.string.developer_info_only);
-                    }
-                    if (patient.getGender() == 1) {
-                        patientGenderText.setText(getString(R.string.female));
-                    } else if (patient.getGender() == 2) {
-                        patientGenderText.setText(getString(R.string.male));
-                    } else {
-                        patientGenderText.setText(R.string.not_specified);
-                    }
-                    if (getSupportActionBar() != null) {
-                        getSupportActionBar().setTitle(patient.getName() + " " + patient.getForenames());
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NotNull DatabaseError databaseError) {
-            }
-        });
+        patientRef.addValueEventListener(this);
 
         phoneCardView.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
@@ -172,6 +108,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
             }
         });
+
         phoneCardView.setOnLongClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Utils.copyToClipboard(getApplicationContext(), patient.getPhone());
@@ -181,6 +118,7 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
             return true;
         });
+
         emailCardView.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Bundle args = new Bundle();
@@ -194,6 +132,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                 Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
             }
         });
+
         emailCardView.setOnLongClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Utils.copyToClipboard(getApplicationContext(), patient.getEmail());
@@ -203,22 +142,12 @@ public class PatientInfoActivity extends AppCompatActivity {
             }
             return true;
         });
-
-        patientIdText.setText(patientId);
-        toolbar = findViewById(R.id.activity_patient_info_toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(patient.getName() + " " + patient.getForenames());
-        }
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        toolbar.setOverflowIcon(getDrawable(R.drawable.ic_more_vert_white_24dp));
     }
 
     @NotNull
     private ArrayList<Fragment> setTabs() {
         ArrayList<Fragment> fragments = new ArrayList<>();
-        fragments.add(BodyCompositionFragment.newInstance(patient, patientId));
+        fragments.add(BodyCompositionFragment.newInstance(patient));
         fragments.add(new PatientAppointmentsFragment());
         fragments.add(SharedFilesFragment.newInstance(currentUser, patientId));
         return fragments;
@@ -242,8 +171,8 @@ public class PatientInfoActivity extends AppCompatActivity {
             case R.id.patient_info_edit:
                 if (currentUser.isAdmin()) {
                     Intent intent = new Intent(getApplicationContext(), NewPatientActivity.class);
-                    intent.putExtra("Edit", true);
-                    intent.putExtra("Patient", patient);
+                    intent.putExtra("edit", true);
+                    intent.putExtra("patient", patient);
                     startActivity(intent);
                 } else {
                     Utils.toast(getApplicationContext(), getString(R.string.developer_action_only));
@@ -260,7 +189,7 @@ public class PatientInfoActivity extends AppCompatActivity {
                     Bundle args = new Bundle();
                     args.putString("confirm_action_dialog_message", "¿Eliminar a " + patient.getName() + "?");
                     args.putInt("type", ConfirmActionDialog.DELETE_PATIENT_CODE);
-                    args.putString("object", Utils.MD5(patient.getEmail()).substring(0, 6));
+                    args.putString("object", patientId);
                     DialogFragment confirmActionDialog = new ConfirmActionDialog();
                     confirmActionDialog.setArguments(args);
                     confirmActionDialog.show(getSupportFragmentManager(), "Confirm");
@@ -280,10 +209,86 @@ public class PatientInfoActivity extends AppCompatActivity {
 
             UploadFileDialog dialog = new UploadFileDialog();
             Bundle bundle = new Bundle();
-            bundle.putString("PatientId",patientId);
-            bundle.putString("PDF", data.getData().toString());
+            bundle.putString("patientId", patientId);
+            bundle.putString("pdf", Objects.requireNonNull(data.getData()).toString());
             dialog.setArguments(bundle);
-            dialog.show(getSupportFragmentManager(),"Upload");
+            dialog.show(getSupportFragmentManager(), "Upload");
         }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+//    OnPageChangeListener methods
+
+    @Override
+    public void onPageSelected(int position) {
+        tabLayout.selectTab(tabLayout.getTabAt(position));
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+//    OnTabSelectedListener methods
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        pager.setCurrentItem(tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
+
+//    ValueEventListener methods
+
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (dataSnapshot.getValue() == null) {
+            finish();
+        } else {
+            patient.setName(Objects.requireNonNull(dataSnapshot.getValue(User.class)).getName());
+            patient.setForenames(Objects.requireNonNull(dataSnapshot.getValue(User.class)).getForenames());
+            patient.setEmail(Objects.requireNonNull(dataSnapshot.getValue(User.class)).getEmail());
+            patient.setBirthdate(Objects.requireNonNull(dataSnapshot.getValue(User.class)).getBirthdate());
+            patient.setGender(Objects.requireNonNull(dataSnapshot.getValue(User.class)).getGender());
+            patient.setPhone(Objects.requireNonNull(dataSnapshot.getValue(User.class)).getPhone());
+            patient.setMeasures(Objects.requireNonNull(dataSnapshot.getValue(User.class)).getMeasures());
+
+            int age = Utils.calculateAge(patient.getBirthdate());
+            patientAgeText.setText(String.valueOf(age));
+            if (currentUser.isAdmin()) {
+                patientEmailText.setText(patient.getEmail());
+                patientPhoneText.setText(setPhoneFormat(patient.getPhone()));
+            } else {
+                patientEmailText.setText(R.string.developer_info_only);
+                patientPhoneText.setText(R.string.developer_info_only);
+            }
+            if (patient.getGender() == 1) {
+                patientGenderText.setText(getString(R.string.female));
+            } else if (patient.getGender() == 2) {
+                patientGenderText.setText(getString(R.string.male));
+            } else {
+                patientGenderText.setText(R.string.not_specified);
+            }
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(patient.getName() + " " + patient.getForenames());
+            }
+        }
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
     }
 }

@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.galphie.dietme.R;
+import com.galphie.dietme.Utils;
 import com.galphie.dietme.dialog.UpdateBodyCompositionDialog;
 import com.galphie.dietme.instantiable.Measures;
 import com.galphie.dietme.instantiable.User;
@@ -22,19 +23,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
 
-public class BodyCompositionFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "Patient";
-    private static final String ARG_PARAM2 = "PatientID";
+public class BodyCompositionFragment extends Fragment implements ValueEventListener {
+
+    private static final String PATIENT = "Patient";
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference usersRef = database.getReference("Usuario");
-    private User patient;
     private Measures dbMeasures;
     private String patientId;
 
-    private Button updateButton;
     private TextView heightText, weightText, bmiText, waistText, hipText,
             thighText, armsText, subscapularisText, supraText, bicipitalText, tricipitalText,
             absText, waistHipIndexText, leanMassText, fatMassText;
@@ -43,11 +42,10 @@ public class BodyCompositionFragment extends Fragment {
     public BodyCompositionFragment() {
     }
 
-    static BodyCompositionFragment newInstance(User patient, String patientId) {
+    static BodyCompositionFragment newInstance(User patient) {
         BodyCompositionFragment fragment = new BodyCompositionFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PARAM1, patient);
-        args.putString(ARG_PARAM2, patientId);
+        args.putParcelable(PATIENT, patient);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,25 +54,12 @@ public class BodyCompositionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            patient = getArguments().getParcelable(ARG_PARAM1);
-            patientId = getArguments().getString(ARG_PARAM2);
+            User patient = getArguments().getParcelable(PATIENT);
+            patientId = Objects.requireNonNull(Utils.MD5(Objects.requireNonNull(patient).getEmail())).substring(0,6).toUpperCase();
 
-            DatabaseReference patientRef = database.getReference("Usuario/" + patientId);
+            DatabaseReference measuresRef = database.getReference("Usuario/" + patientId).child("measures");
 
-            patientRef.child("measures").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() != null) {
-                        dbMeasures = dataSnapshot.getValue(Measures.class);
-                        init(dbMeasures);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+             measuresRef.addValueEventListener(this);
         }
     }
 
@@ -107,14 +92,14 @@ public class BodyCompositionFragment extends Fragment {
         leanMassText = view.findViewById(R.id.leanMassText);
         fatMassText = view.findViewById(R.id.fatMassText);
 
-        updateButton = view.findViewById(R.id.update_measures_button);
+        Button updateButton = view.findViewById(R.id.update_measures_button);
         updateButton.setOnClickListener(v -> {
             DialogFragment dialogFragment = new UpdateBodyCompositionDialog();
             Bundle args = new Bundle();
-            args.putParcelable("Patient", dbMeasures);
-            args.putString("PatientId", patientId);
+            args.putParcelable("patientMeasures", dbMeasures);
+            args.putString("patientId", patientId);
             dialogFragment.setArguments(args);
-            dialogFragment.show(getActivity().getSupportFragmentManager(), "Update");
+            dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Update");
         });
     }
 
@@ -157,5 +142,18 @@ public class BodyCompositionFragment extends Fragment {
         double bmi = (weight / Math.pow(height, 2));
         bmi = Math.floor(bmi * 100) / 100;
         return bmi;
+    }
+
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (dataSnapshot.getValue() != null) {
+            dbMeasures = dataSnapshot.getValue(Measures.class);
+            init(Objects.requireNonNull(dbMeasures));
+        }
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
     }
 }

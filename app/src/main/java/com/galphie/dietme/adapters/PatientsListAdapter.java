@@ -32,7 +32,7 @@ public class PatientsListAdapter extends RecyclerView.Adapter<PatientsListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull PatientsListAdapter.ViewHolder holder, int position) {
-        holder.name.setText(patientsList.get(position).getForenames() + ", " + patientsList.get(position).getName());
+        holder.name.setText(String.format("%s, %s", patientsList.get(position).getForenames(), patientsList.get(position).getName()));
     }
 
     @Override
@@ -40,12 +40,12 @@ public class PatientsListAdapter extends RecyclerView.Adapter<PatientsListAdapte
         return patientsList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name;
         ImageButton optionsButton;
         OnPatientClickListener onPatientClickListener;
 
-        public ViewHolder(@NonNull View itemView, OnPatientClickListener onPatientClickListener) {
+        ViewHolder(@NonNull View itemView, OnPatientClickListener onPatientClickListener) {
             super(itemView);
             name = itemView.findViewById(R.id.patient_list_item_name);
             optionsButton = itemView.findViewById(R.id.more_options_button);

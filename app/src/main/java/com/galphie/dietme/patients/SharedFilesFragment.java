@@ -27,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,13 +45,12 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
     private RecyclerView recyclerView;
     private TextView noSharedFilesText;
     private ArrayList<CustomFile> sharedFiles = new ArrayList<>();
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     public SharedFilesFragment() {
     }
 
-    public static SharedFilesFragment newInstance(User currentUser, String patientId) {
+    static SharedFilesFragment newInstance(User currentUser, String patientId) {
         SharedFilesFragment fragment = new SharedFilesFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PATIENT, currentUser);
@@ -113,7 +111,7 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
                 Environment.DIRECTORY_DOWNLOADS,
                 fileUrl);
 
-        Utils.toast(getActivity().getApplicationContext(), "Descargando...");
+        Utils.toast(getActivity().getApplicationContext(), getString(R.string.downloading));
     }
 
     @Override
@@ -140,7 +138,7 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
 
 
     private void viewPdfInViewer(String fileUrl) {
-        Intent intent = new Intent(getActivity().getApplicationContext(), PdfViewerActivity.class);
+        Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), PdfViewerActivity.class);
         intent.putExtra("ViewType", "external");
         intent.putExtra("Url", fileUrl);
         startActivity(intent);
@@ -151,7 +149,7 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
         if (!dataSnapshot.hasChildren()) {
             noSharedFilesText.setVisibility(View.VISIBLE);
             sharedFiles.clear();
-            recyclerView.getAdapter().notifyDataSetChanged();
+            Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
         } else {
             sharedFiles.clear();
             noSharedFilesText.setVisibility(View.INVISIBLE);
@@ -160,7 +158,7 @@ public class SharedFilesFragment extends Fragment implements SharedFileListAdapt
                 sharedFiles.add(customFile);
                 Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
             }
-            recyclerView.getAdapter().notifyDataSetChanged();
+            Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
         }
     }
 
