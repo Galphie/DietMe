@@ -1,8 +1,8 @@
 package com.galphie.dietme.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +30,7 @@ public class AccessRequestDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.access_request_dialog, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.access_request_dialog, null);
         Bundle mArgs = getArguments();
 
         builder.setView(view)
@@ -40,7 +40,7 @@ public class AccessRequestDialog extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> dialog.dismiss());
         emailInput = view.findViewById(R.id.emailInput);
-        emailInput.setText(mArgs.getString("mail"));
+        emailInput.setText(Objects.requireNonNull(mArgs).getString("mail"));
         phoneInput = view.findViewById(R.id.phoneInput);
         return builder.create();
     }

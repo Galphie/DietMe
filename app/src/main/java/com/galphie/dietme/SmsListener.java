@@ -7,13 +7,12 @@ import android.provider.Telephony;
 import android.telephony.SmsMessage;
 
 public class SmsListener extends BroadcastReceiver {
-    private String messageBody = "";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
             for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
-                messageBody = smsMessage.getMessageBody();
+                String messageBody = smsMessage.getMessageBody();
                 String[] parts = messageBody.split("#");
                 String username = parts[1];
                 String password = parts[3];

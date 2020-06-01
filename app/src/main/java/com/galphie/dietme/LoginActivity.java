@@ -45,9 +45,8 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     private User currentUser;
-    private CheckBox checkRemember, checkShow;
+    private CheckBox checkRemember;
     private EditText emailInput, passInput;
-    private Button linkBut, loginBut;
     private String dbPass = null;
     private ArrayList<User> usersRegistered = new ArrayList<>();
 
@@ -73,15 +72,15 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
         emailInput = findViewById(R.id.emailInput);
         passInput = findViewById(R.id.passInput);
-        linkBut = findViewById(R.id.linkBut);
-        loginBut = findViewById(R.id.loginBut);
+        Button linkBut = findViewById(R.id.linkBut);
+        Button loginBut = findViewById(R.id.loginBut);
         checkRemember = findViewById(R.id.checkRemember);
-        checkShow = findViewById(R.id.checkShow);
+        CheckBox checkShow = findViewById(R.id.checkShow);
 
         splashed = false;
         canFinish = false;
 
-        loginBut.setOnClickListener(v -> login(v));
+        loginBut.setOnClickListener(this::login);
         linkBut.setOnClickListener(v -> {
             if (checkSMSPermissions()) {
                 showAccessRequestDialog();
@@ -103,9 +102,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
             startLoginActivity(true);
         }
 
-        checkShow.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            showPassword(isChecked);
-        });
+        checkShow.setOnCheckedChangeListener((buttonView, isChecked) -> showPassword(isChecked));
         checkSMSPermissions();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);

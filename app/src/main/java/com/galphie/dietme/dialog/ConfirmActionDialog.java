@@ -71,10 +71,8 @@ public class ConfirmActionDialog extends DialogFragment {
                                 String fileName = mArgs.getString("fileName");
                                 String path = mArgs.getString("path");
                                 StorageReference fileCloudRef = storage.getReference().child(Objects.requireNonNull(path));
-                                DatabaseReference fileDatabaseRef = database.getReference().child("Archivos/users/" + patientId).child(Objects.requireNonNull(Utils.MD5(fileName)));
-                                fileCloudRef.delete().addOnSuccessListener(aVoid -> {
-                                    fileDatabaseRef.removeValue();
-                                });
+                                DatabaseReference fileDatabaseRef = database.getReference().child("Archivos/users/" + patientId).child(Objects.requireNonNull(Utils.MD5(Objects.requireNonNull(fileName))));
+                                fileCloudRef.delete().addOnSuccessListener(aVoid -> fileDatabaseRef.removeValue());
                                 break;
                             case DELETE_POST_CODE:
                                 String postPublishDate = mArgs.getString("object");

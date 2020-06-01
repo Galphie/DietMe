@@ -65,9 +65,10 @@ public class PatientInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_patient_info);
 
         if (getIntent().getExtras() != null) {
-            this.patient = getIntent().getExtras().getParcelable("Patient");
-            this.patientId = getIntent().getExtras().getString("PatientID");
-            this.currentUser = getIntent().getExtras().getParcelable("CurrentUser");
+            this.patient = getIntent().getExtras().getParcelable("patient");
+            this.currentUser = getIntent().getExtras().getParcelable("currentUser");
+
+            this.patientId = Utils.MD5(patient.getEmail()).substring(0,6).toUpperCase();
         }
 
         ArrayList<Fragment> fragments = setTabs();

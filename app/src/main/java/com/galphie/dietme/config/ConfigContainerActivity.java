@@ -8,6 +8,8 @@ import com.galphie.dietme.R;
 import com.galphie.dietme.instantiable.User;
 import com.galphie.dietme.Utils;
 
+import java.util.Objects;
+
 public class ConfigContainerActivity extends AppCompatActivity {
 
     public static final int PASSWORD_CODE = 1998;
@@ -57,7 +59,7 @@ public class ConfigContainerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getIntent().getExtras().getBoolean("accessRequested")) {
+        if (Objects.requireNonNull(getIntent().getExtras()).getBoolean("accessRequested")) {
             Utils.toast(getApplicationContext(), getString(R.string.do_not_exit));
         } else {
             super.onBackPressed();

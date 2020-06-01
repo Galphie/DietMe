@@ -1,5 +1,6 @@
 package com.galphie.dietme.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
@@ -35,7 +36,7 @@ public class PostDialog extends DialogFragment implements TextWatcher {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.post_dialog_writer, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.post_dialog_writer, null);
 
         editPost = view.findViewById(R.id.editPost);
         newPostMessage = view.findViewById(R.id.new_post_message);
@@ -47,7 +48,7 @@ public class PostDialog extends DialogFragment implements TextWatcher {
 
         builder.setView(view)
                 .setPositiveButton(getString(R.string.send), (dialog, which) -> {
-                    String publishDate = "";
+                    String publishDate;
                     if (getArguments() != null) {
                         publishDate = getArguments().getString("post_publish_date");
                     } else {

@@ -18,18 +18,19 @@ import com.galphie.dietme.config.ConfigListActivity;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Objects;
+
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private User currentUser;
     private BottomNavigationView bottomNav;
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.activity_main_toolbar);
+        Toolbar toolbar = findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Inicio");
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void onBackPressed() {
         super.onBackPressed();
 
-        getSupportActionBar().setTitle(getString(R.string.home_title));
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.home_title));
         getSupportActionBar().setLogo(R.drawable.ic_home_24dp);
         bottomNav.setSelectedItemId(R.id.navigation_home);
     }

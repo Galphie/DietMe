@@ -3,6 +3,7 @@ package com.galphie.dietme.patients;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -29,34 +30,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
-public class PatientsFragment extends Fragment implements PatientsListAdapter.OnPatientClickListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class PatientsFragment extends Fragment implements PatientsListAdapter.OnPatientClickListener,
+        ValueEventListener {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usersRef = database.getReference("Usuario");
     private ArrayList<User> patientsList = new ArrayList<>();
     private User currentUser;
     private RecyclerView recyclerView;
-    private FloatingActionButton addPatientButton;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     public PatientsFragment() {
-    }
-
-    public static PatientsFragment newInstance(String param1, String param2) {
-        PatientsFragment fragment = new PatientsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -71,7 +59,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                 Bundle homeBd = new Bundle();
                 homeBd.putParcelable("currentUser", currentUser);
                 Navigation
-                        .findNavController(getActivity(), R.id.nav_host_fragment)
+                        .findNavController(Objects.requireNonNull(getActivity()), R.id.nav_host_fragment)
                         .navigate(R.id.homeFragment, homeBd);
             }
         };
@@ -90,24 +78,8 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
 
         recyclerView = view.findViewById(R.id.patients_recycler_view);
         initRecyclerView();
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                patientsList.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
-                    patientsList.add(user);
-                }
-                Collections.sort(patientsList, (o1, o2) ->
-                        o1.getForenames().compareToIgnoreCase(o2.getForenames()));
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NotNull DatabaseError databaseError) {
-            }
-        });
-        addPatientButton = view.findViewById(R.id.add_patient_button);
+        usersRef.addValueEventListener(this);
+        FloatingActionButton addPatientButton = view.findViewById(R.id.add_patient_button);
         addPatientButton.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
                 Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), NewPatientActivity.class);
@@ -121,7 +93,7 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
         swipeRefreshLayout = view.findViewById(R.id.patients_swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             initRecyclerView();
-            recyclerView.getAdapter().notifyDataSetChanged();
+            Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
             swipeRefreshLayout.setRefreshing(false);
         });
     }
@@ -134,11 +106,9 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
 
     @Override
     public void onPatientClick(int position) {
-        String patientId = Objects.requireNonNull(Utils.MD5(patientsList.get(position).getEmail())).substring(0, 6).toUpperCase();
         Intent intent = new Intent(getContext(), PatientInfoActivity.class);
-        intent.putExtra("CurrentUser", currentUser);
-        intent.putExtra("PatientID", patientId);
-        intent.putExtra("Patient", patientsList.get(position));
+        intent.putExtra("currentUser", currentUser);
+        intent.putExtra("patient", patientsList.get(position));
         startActivity(intent);
     }
 
@@ -150,36 +120,38 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     private void showPopUp(View view, int position) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.inflate(R.menu.patient_contextual_menu);
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.edit_option:
-                    if (currentUser.isAdmin()) {
-                        Intent intent = new Intent(getActivity().getApplicationContext(), NewPatientActivity.class);
-                        intent.putExtra("Edit", true);
-                        intent.putExtra("Patient", patientsList.get(position));
-                        startActivity(intent);
-                    } else {
-                        Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
-                    }
-                    return true;
-                case R.id.remove_option:
-                    if (currentUser.isAdmin()) {
-                        Bundle args = new Bundle();
-                        args.putString("confirm_action_dialog_message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
-                        args.putInt("type", ConfirmActionDialog.DELETE_PATIENT_CODE);
-                        args.putString("object", Utils.MD5(patientsList.get(position).getEmail()).substring(0, 6));
-                        DialogFragment confirmActionDialog = new ConfirmActionDialog();
-                        confirmActionDialog.setArguments(args);
-                        confirmActionDialog.show(getActivity().getSupportFragmentManager(), "Confirm");
-                    } else {
-                        Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
-                    }
-                    return true;
-                default:
-                    return false;
-            }
-        });
+        popupMenu.setOnMenuItemClickListener(item -> onPopUpItemSelected(position, item));
         popupMenu.show();
+    }
+
+    private boolean onPopUpItemSelected(int position, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_option:
+                if (currentUser.isAdmin()) {
+                    Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), NewPatientActivity.class);
+                    intent.putExtra("edit", true);
+                    intent.putExtra("patient", patientsList.get(position));
+                    startActivity(intent);
+                } else {
+                    Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
+                }
+                return true;
+            case R.id.remove_option:
+                if (currentUser.isAdmin()) {
+                    Bundle args = new Bundle();
+                    args.putString("confirm_action_dialog_message", "¿Eliminar a " + patientsList.get(position).getName() + "?");
+                    args.putInt("type", ConfirmActionDialog.DELETE_PATIENT_CODE);
+                    args.putString("object", Objects.requireNonNull(Utils.MD5(patientsList.get(position).getEmail())).substring(0, 6));
+                    DialogFragment confirmActionDialog = new ConfirmActionDialog();
+                    confirmActionDialog.setArguments(args);
+                    confirmActionDialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Confirm");
+                } else {
+                    Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
+                }
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -191,5 +163,22 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     public void onResume() {
         super.onResume();
         initRecyclerView();
+    }
+
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        patientsList.clear();
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            User user = ds.getValue(User.class);
+            patientsList.add(user);
+        }
+        Collections.sort(patientsList, (o1, o2) ->
+                o1.getForenames().compareToIgnoreCase(o2.getForenames()));
+        Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
     }
 }

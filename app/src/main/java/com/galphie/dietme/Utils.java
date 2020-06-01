@@ -37,7 +37,7 @@ public class Utils {
     private static final String PATTERN_LOCALDATETIME = "yyyy-MM-dd HH:mm:ss";
     private static final String PATTERN_PHONE = "^(?=.*[0-9]).{9,13}$";
     private static final String PATTERN_DATE = "yyyy/MM/dd";
-    private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=|\"()?¿¡!'*._,;:]).{8,}$";
 
 

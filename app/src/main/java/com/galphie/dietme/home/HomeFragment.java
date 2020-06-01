@@ -168,7 +168,6 @@ public class HomeFragment extends Fragment implements ValueEventListener, PostLi
                     return false;
             }
         });
-
         popupMenu.show();
     }
 }
