@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.text.InputType;
@@ -16,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -31,95 +30,72 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
 
-public class LoginActivity extends AppCompatActivity implements AccessRequestDialog.AccessRequestDialogListener {
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class LoginActivity extends AppCompatActivity implements AccessRequestDialog.AccessRequestDialogListener,
+        ValueEventListener {
     public static boolean canFinish = false;
     private static final int PERMISSION_REQUEST_SEND_SMS = 123;
     private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;
-    public User currentUser;
-    CheckBox checkRemember, checkShow;
-    EditText emailInput, passInput;
-    Button linkBut, loginBut;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference usersRef = database.getReference("Usuario");
-    String dbPass = null;
-    private ArrayList<User> usersRegistered = new ArrayList();
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    private User currentUser;
+    private CheckBox checkRemember, checkShow;
+    private EditText emailInput, passInput;
+    private Button linkBut, loginBut;
+    private String dbPass = null;
+    private ArrayList<User> usersRegistered = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        DatabaseReference usersRef = database.getReference("Usuario");
+        usersRef.addValueEventListener(this);
+
         emailInput = findViewById(R.id.emailInput);
         passInput = findViewById(R.id.passInput);
-
         linkBut = findViewById(R.id.linkBut);
         loginBut = findViewById(R.id.loginBut);
-
         checkRemember = findViewById(R.id.checkRemember);
         checkShow = findViewById(R.id.checkShow);
 
         canFinish = false;
 
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
-                    usersRegistered.add(user);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        usersRef.addValueEventListener(postListener);
+        loginBut.setOnClickListener(v -> login(v));
         linkBut.setOnClickListener(v -> {
             if (checkSMSPermissions()) {
-                Bundle args = new Bundle();
-                args.putString("mail", emailInput.getText().toString());
-                DialogFragment accessRequestDialog = new AccessRequestDialog();
-                accessRequestDialog.setArguments(args);
-                accessRequestDialog.show(getSupportFragmentManager(), "Solicitud código");
+                showAccessRequestDialog();
             }
         });
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = preferences.edit();
             String mail = extras.getString("Email");
             String password = extras.getString("Password");
             emailInput.setText(mail);
             passInput.setText(password);
-            Gson gson = new Gson();
-            String json = preferences.getString("CurrentUser", "");
-            currentUser = gson.fromJson(json, User.class);
-            final Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("User", (Parcelable) currentUser);
-            intent.putExtra("ForzarCambio", true);
-            editor.putString("Checked", "false");
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("isChecked", false);
             editor.apply();
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                startActivity(intent);
-                finish();
-            }, 1000);
+            String jsonCurrentUser = preferences.getString("CurrentUser", "");
+            currentUser = new Gson().fromJson(jsonCurrentUser, User.class);
+            startLoginActivity(true);
         }
 
         checkShow.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                passInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            } else {
-                passInput.setInputType(129);
-            }
+            showPassword(isChecked);
         });
         checkSMSPermissions();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if ((preferences.getString("Checked", "")).equals("true")) {
+        if ((preferences.getBoolean("isChecked", false))) {
             emailInput.setText(preferences.getString("Email", ""));
             passInput.setText(preferences.getString("Password", ""));
             checkRemember.setChecked(true);
@@ -128,19 +104,36 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (canFinish) {
-            Handler handler = new Handler();
-            handler.postDelayed(() -> finish(), 1000);
+    private void showPassword(boolean isChecked) {
+        if (isChecked) {
+            passInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        } else {
+            passInput.setInputType(129);
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkSMSPermissions();
+    private void startLoginActivity(boolean accessRequested) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("User", currentUser);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (accessRequested) {
+            intent.putExtra("ForzarCambio", true);
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                startActivity(intent);
+                finish();
+            }, 1000);
+        } else {
+            startActivity(intent);
+        }
+    }
+
+    private void showAccessRequestDialog() {
+        Bundle args = new Bundle();
+        args.putString("mail", emailInput.getText().toString());
+        DialogFragment accessRequestDialog = new AccessRequestDialog();
+        accessRequestDialog.setArguments(args);
+        accessRequestDialog.show(getSupportFragmentManager(), "Solicitud código");
     }
 
     @SuppressLint("ResourceAsColor")
@@ -148,23 +141,20 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         String name = emailInput.getText().toString();
         if (isRegistered(name)) {
             if (Utils.SHA256(passInput.getText().toString()).equals(dbPass) || passInput.getText().toString().equals(dbPass)) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("User", currentUser);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("Email", emailInput.getText().toString());
                 editor.putString("Password", passInput.getText().toString());
                 if (checkRemember.isChecked()) {
-                    editor.putString("Checked", "true");
+                    editor.putBoolean("isChecked", true);
                     editor.apply();
                 } else {
-                    editor.putString("Checked", "false");
+                    editor.putBoolean("isChecked", false);
                     editor.putString("Email", "");
                     editor.putString("Password", "");
                     editor.apply();
                 }
-                startActivity(intent);
+                startLoginActivity(false);
                 finish();
 
             } else {
@@ -210,8 +200,8 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 Gson gson = new Gson();
-                String json = gson.toJson(usersRegistered.get(i));
-                editor.putString("CurrentUser", json);
+                String jsonCurrentUser = gson.toJson(usersRegistered.get(i));
+                editor.putString("CurrentUser", jsonCurrentUser);
                 editor.apply();
                 isRegistered = true;
             }
@@ -224,51 +214,47 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
     protected boolean checkSMSPermissions() {
         boolean granted = false;
-        if (Build.VERSION.SDK_INT >= 23) {
-            if ((ContextCompat.checkSelfPermission(this,
+        if ((ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.RECEIVE_SMS)
+                != PackageManager.PERMISSION_GRANTED)) {
+            if (ContextCompat.checkSelfPermission(this,
                     android.Manifest.permission.SEND_SMS)
-                    != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this,
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        android.Manifest.permission.SEND_SMS)) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.SEND_SMS},
+                            PERMISSION_REQUEST_SEND_SMS);
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.SEND_SMS},
+                            PERMISSION_REQUEST_SEND_SMS);
+                }
+            }
+            if (ContextCompat.checkSelfPermission(this,
                     android.Manifest.permission.RECEIVE_SMS)
-                    != PackageManager.PERMISSION_GRANTED)) {
-                if (ContextCompat.checkSelfPermission(this,
-                        android.Manifest.permission.SEND_SMS)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            android.Manifest.permission.SEND_SMS)) {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{android.Manifest.permission.SEND_SMS},
-                                PERMISSION_REQUEST_SEND_SMS);
-                    } else {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{android.Manifest.permission.SEND_SMS},
-                                PERMISSION_REQUEST_SEND_SMS);
-                    }
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        android.Manifest.permission.RECEIVE_SMS)) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.RECEIVE_SMS},
+                            PERMISSION_REQUEST_RECEIVE_SMS);
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.RECEIVE_SMS},
+                            PERMISSION_REQUEST_RECEIVE_SMS);
                 }
-                if (ContextCompat.checkSelfPermission(this,
-                        android.Manifest.permission.RECEIVE_SMS)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            android.Manifest.permission.RECEIVE_SMS)) {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{android.Manifest.permission.RECEIVE_SMS},
-                                PERMISSION_REQUEST_RECEIVE_SMS);
-                    } else {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{android.Manifest.permission.RECEIVE_SMS},
-                                PERMISSION_REQUEST_RECEIVE_SMS);
-                    }
-                }
-            } else {
-                granted = !granted;
             }
         } else {
-            granted = !granted;
+            granted = true;
         }
         return granted;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_SEND_SMS: {
             }
@@ -286,4 +272,33 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         checkRemember.setChecked(false);
     }
 
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        usersRegistered.clear();
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            User user = ds.getValue(User.class);
+            usersRegistered.add(user);
+        }
+        Collections.sort(usersRegistered, (o1, o2) -> o1.getEmail().compareToIgnoreCase(o2.getEmail()));
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+        Utils.toast(getApplicationContext(),getString(R.string.database_snapshot_failure));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (canFinish) {
+            Handler handler = new Handler();
+            handler.postDelayed(this::finish, 1000);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkSMSPermissions();
+    }
 }

@@ -117,4 +117,5 @@
     <string name="pdf_extension">.pdf</string>
     <string name="upload">Subir</string>
     <string name="request_access">Solicitar acceso</string>
+    <string name="database_snapshot_failure">Error al capturar base de datos.</string>
 </resources>

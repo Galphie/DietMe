@@ -84,7 +84,6 @@
         android:layout_marginEnd="32dp"
         android:background="@color/colorPrimaryDark"
         android:fontFamily="@font/convergence"
-        android:onClick="login"
         android:text="@string/log_in"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:textStyle="bold"
