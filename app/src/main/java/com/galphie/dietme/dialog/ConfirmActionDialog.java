@@ -62,6 +62,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                 resetAppointmentsDatabase(appointmentsRef, formatter, firstDay, emptyAppointment);
 
                                 Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.database_restarted));
+                                break;
                             case DELETE_PATIENT_CODE:
                                 DatabaseReference usersRef = database.getReference("Usuario");
                                 usersRef.child(Objects.requireNonNull(mArgs.getString("object")).toUpperCase()).removeValue();
@@ -90,8 +91,11 @@ public class ConfirmActionDialog extends DialogFragment {
         for (int i = 0; i < 1000; i++) {
             stringFirstDay = firstDay.format(formatter);
             appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);
-            if (firstDay.getHour() == 18) {
-                firstDay = firstDay.plusHours(14);
+            if (firstDay.getHour() == 14) {
+                firstDay = firstDay.plusHours(1);
+            }
+            if (firstDay.getHour() == 19) {
+                firstDay = firstDay.plusHours(13);
             }
             if (firstDay.getDayOfWeek() == DayOfWeek.SATURDAY) {
                 firstDay = firstDay.plusDays(2);
