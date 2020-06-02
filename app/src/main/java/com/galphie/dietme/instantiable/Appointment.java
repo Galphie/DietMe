@@ -5,23 +5,36 @@ import android.os.Parcelable;
 
 public class Appointment implements Parcelable {
 
-    private User patient;
+    private String name;
     private String time;
-    private boolean picked;
 
-    public Appointment(User patient, String time, boolean picked) {
-        this.patient = patient;
+    public Appointment() {
+    }
+
+    public Appointment(String time, boolean picked) {
         this.time = time;
         this.picked = picked;
     }
 
-    public Appointment(boolean picked) {
+    public Appointment(String name, String time, boolean picked) {
+        this.name = name;
+        this.time = time;
         this.picked = picked;
     }
 
+    private boolean picked;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+
     protected Appointment(Parcel in) {
-        patient = in.readParcelable(User.class.getClassLoader());
-        time = in.readString();
+        name = in.readString();
         picked = in.readByte() != 0;
     }
 
@@ -37,20 +50,12 @@ public class Appointment implements Parcelable {
         }
     };
 
-    public User getPatient() {
-        return patient;
+    public String getName() {
+        return name;
     }
 
-    public void setPatient(User patient) {
-        this.patient = patient;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isPicked() {
@@ -68,8 +73,7 @@ public class Appointment implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(patient, flags);
-        dest.writeString(time);
+        dest.writeString(name);
         dest.writeByte((byte) (picked ? 1 : 0));
     }
 }

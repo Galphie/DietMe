@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -17,11 +18,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.AppointmentListAdapter;
-import com.galphie.dietme.adapters.PatientsListAdapter;
 import com.galphie.dietme.instantiable.Appointment;
+import com.galphie.dietme.instantiable.Signing;
 import com.galphie.dietme.instantiable.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -35,7 +41,7 @@ public class AppointmentFragment extends Fragment {
     private String mParam1;
     private User currentUser;
 
-    private ArrayList<Appointment> appointments = new ArrayList<>();
+    private ArrayList<Signing> appointments = new ArrayList<>();
     private CalendarView calendarView;
     private RecyclerView recyclerView;
 
@@ -83,22 +89,71 @@ public class AppointmentFragment extends Fragment {
 
         calendarView = view.findViewById(R.id.appointments_calendar_view);
         recyclerView = view.findViewById(R.id.appointments_recycler_view);
-
-        appointments.add(new Appointment(currentUser,"09:00:00",true));
-        appointments.add(new Appointment(currentUser,"10:00:00",true));
-        appointments.add(new Appointment(currentUser,"11:00:00",true));
-        appointments.add(new Appointment(currentUser,"12:00:00",true));
+        TextView noAppointments = view.findViewById(R.id.no_appointments);
 
         initRecyclerView();
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                DatabaseReference selectedDayReference =
+                String completeDate = getCompleteDate(year, month, dayOfMonth);
+                Utils.toast(getActivity().getApplicationContext(), completeDate);
+                DatabaseReference selectedDayReference = appointmentsReference.child(completeDate);
+                selectedDayReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        appointments.clear();
+                        noAppointments.setVisibility(View.INVISIBLE);
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            Appointment apptm = ds.getValue(Appointment.class);
+                            if (apptm.isPicked()) {
+                                appointments.add(new Signing(currentUser, apptm));
+                            }
+                        }
+                        if(appointments.size() == 0) {
+                            noAppointments.setVisibility(View.VISIBLE);
+                        } else {
+                            boolean isPicked = false;
+                            for (int i = 0; i < appointments.size(); i++) {
+                                if (appointments.get(i).getAppointment().isPicked()) {
+                                    isPicked = true;
+                                }
+                            }
+                            if (isPicked) {
+                                noAppointments.setVisibility(View.INVISIBLE);
+                            } else {
+                                noAppointments.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        recyclerView.getAdapter().notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
     }
 
+    @NotNull
+    private String getCompleteDate(int year, int month, int dayOfMonth) {
+        String sYear = String.valueOf(year);
+        String sMonth = "";
+        String sDay = "";
+        if (month + 1 < 10) {
+            sMonth = "0" + String.valueOf(month + 1);
+        } else {
+            sMonth = String.valueOf(month + 1);
+        }
+        if (dayOfMonth < 10) {
+            sDay = "0" + String.valueOf(dayOfMonth);
+        } else {
+            sDay = String.valueOf(dayOfMonth);
+        }
+        return sYear + "/" + sMonth + "/" + sDay;
+    }
 
 
     private void initRecyclerView() {

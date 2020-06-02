@@ -30,4 +30,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appointments_calendar_view" />
 
+    <TextView
+        android:id="@+id/no_appointments"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/convergence"
+        android:text="@string/no_appointments_found"
+        android:textAlignment="center"
+        android:textColor="@color/design_default_color_on_secondary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appointments_calendar_view" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

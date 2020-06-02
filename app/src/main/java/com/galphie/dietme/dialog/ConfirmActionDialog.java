@@ -58,8 +58,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                 String start = "2020/05/25/09:00";
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
                                 LocalDateTime firstDay = LocalDateTime.parse(start, formatter);
-                                Appointment emptyAppointment = new Appointment(false);
-                                resetAppointmentsDatabase(appointmentsRef, formatter, firstDay, emptyAppointment);
+                                resetAppointmentsDatabase(appointmentsRef, formatter, firstDay);
 
                                 Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.database_restarted));
                                 break;
@@ -86,10 +85,11 @@ public class ConfirmActionDialog extends DialogFragment {
         return builder.create();
     }
 
-    private void resetAppointmentsDatabase(DatabaseReference appointmentsRef, DateTimeFormatter formatter, LocalDateTime firstDay, Appointment emptyAppointment) {
+    private void resetAppointmentsDatabase(DatabaseReference appointmentsRef, DateTimeFormatter formatter, LocalDateTime firstDay) {
         String stringFirstDay;
         for (int i = 0; i < 1000; i++) {
             stringFirstDay = firstDay.format(formatter);
+            Appointment emptyAppointment = new Appointment(stringFirstDay.substring(11,16), false);
             appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);
             if (firstDay.getHour() == 14) {
                 firstDay = firstDay.plusHours(1);

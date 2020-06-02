@@ -112,7 +112,7 @@
     <string name="a_minute_ago">Hace menos de un minuto</string>
     <string name="upload_new_file">Subir nuevo archivo</string>
     <string name="patient_edited">Paciente editado</string>
-    <string name="no_shared_files">Parece que no se han compartido archivos con este paciente</string>
+    <string name="no_shared_files">Todavía no se han compartido archivos con este paciente</string>
     <string name="succesfully_upload">Archivo subido con éxito.</string>
     <string name="pdf_extension">.pdf</string>
     <string name="upload">Subir</string>
@@ -120,4 +120,5 @@
     <string name="database_snapshot_failure">Error al capturar base de datos.</string>
     <string name="downloading">Descargando...</string>
     <string name="error_opening_page">\"Error al abrir página \"</string>
+    <string name="no_appointments_found">No se han encontrado citas asignadas a este día</string>
 </resources>
