@@ -1,16 +1,17 @@
 package com.galphie.dietme.instantiable;
 
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Appointment implements Parcelable {
 
-    private String patientId;
+    private User patient;
+    private String time;
     private boolean picked;
 
-    public Appointment(String patientId, boolean picked) {
-        this.patientId = patientId;
+    public Appointment(User patient, String time, boolean picked) {
+        this.patient = patient;
+        this.time = time;
         this.picked = picked;
     }
 
@@ -18,14 +19,10 @@ public class Appointment implements Parcelable {
         this.picked = picked;
     }
 
-    public Appointment() {
-    }
-
     protected Appointment(Parcel in) {
-        patientId = in.readString();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            picked = in.readBoolean();
-        }
+        patient = in.readParcelable(User.class.getClassLoader());
+        time = in.readString();
+        picked = in.readByte() != 0;
     }
 
     public static final Creator<Appointment> CREATOR = new Creator<Appointment>() {
@@ -40,12 +37,20 @@ public class Appointment implements Parcelable {
         }
     };
 
-    public String getPatientId() {
-        return patientId;
+    public User getPatient() {
+        return patient;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public void setPatient(User patient) {
+        this.patient = patient;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public boolean isPicked() {
@@ -63,9 +68,8 @@ public class Appointment implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(patientId);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            dest.writeBoolean(picked);
-        }
+        dest.writeParcelable(patient, flags);
+        dest.writeString(time);
+        dest.writeByte((byte) (picked ? 1 : 0));
     }
 }
