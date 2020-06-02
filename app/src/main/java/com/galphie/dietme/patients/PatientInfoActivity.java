@@ -97,6 +97,7 @@ public class PatientInfoActivity extends AppCompatActivity implements ViewPager.
 
         phoneCardView.setOnClickListener(v -> {
             if (currentUser.isAdmin()) {
+                Utils.copyToClipboard(getApplicationContext(), patient.getPhone());
                 Bundle args = new Bundle();
                 args.putString("confirm_action_dialog_message", "¿Llamar a " + setPhoneFormat(patient.getPhone()) + "?");
                 args.putInt("type", ConfirmActionDialog.CALL_CODE);
