@@ -26,6 +26,8 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_list);
 
+        currentUser = getIntent().getParcelableExtra("currentUser");
+
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -34,13 +36,14 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
         ConfigOptionsAdapter adapter = new ConfigOptionsAdapter(options, this);
         recyclerView.setAdapter(adapter);
 
-        currentUser = getIntent().getParcelableExtra("currentUser");
     }
 
     private void init() {
         options.add(new Option(getString(R.string.change_password), ConfigContainerActivity.PASSWORD_CODE));
         options.add(new Option(getString(R.string.manage_notifications), ConfigContainerActivity.NOTIFICATION_CODE));
-        options.add(new Option(getString(R.string.manage_appointments), ConfigContainerActivity.APPOINTMENTS_CODE));
+        if (currentUser.isAdmin()) {
+            options.add(new Option(getString(R.string.manage_appointments), ConfigContainerActivity.APPOINTMENTS_CODE));
+        }
         Collections.sort(options, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
     }
 

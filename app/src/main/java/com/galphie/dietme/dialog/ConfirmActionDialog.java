@@ -31,6 +31,7 @@ public class ConfirmActionDialog extends DialogFragment {
     public static final int DELETE_PATIENT_CODE = 6661;
     public static final int DELETE_FILE_CODE = 6662;
     public static final int DELETE_POST_CODE = 6663;
+    public static final int DELETE_APPOINTMENT_CODE = 6664;
     public static final int RESTART_CODE = 0;
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -60,6 +61,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
                                 LocalDateTime firstDay = LocalDateTime.parse(start, formatter);
                                 resetAppointmentsDatabase(appointmentsRef, formatter, firstDay);
+                                appointmentsRef.child("users").removeValue();
 
                                 Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.database_restarted));
                                 break;
@@ -81,12 +83,38 @@ public class ConfirmActionDialog extends DialogFragment {
                                 break;
                             case NEW_APPOINTMENT_CODE:
                                 String dayRef = mArgs.getString("dayRef");
-                                Appointment appointment = mArgs.getParcelable("object");
-                                DatabaseReference newAppointmentRef = database.getReference().child("Citas/" + dayRef).child(appointment.getTime());
-                                DatabaseReference userAppointmentsRef = database.getReference().child("Citas/users/" + appointment.getPatientId()).child(dayRef.replace("/","-"));
+                                Appointment newAppointment = mArgs.getParcelable("object");
+                                newAppointment.setDate(dayRef.replace("/", "-"));
+                                DatabaseReference newAppointmentRef = database.getReference().child("Citas/" + dayRef).child(newAppointment.getTime());
+                                DatabaseReference userAppointmentsRef = database.getReference().child("Citas/users/" + newAppointment.getPatientId()).child(dayRef.replace("/", "-"));
 
-                                newAppointmentRef.setValue(appointment);
-                                userAppointmentsRef.setValue(appointment);
+                                newAppointmentRef.setValue(newAppointment);
+                                userAppointmentsRef.setValue(newAppointment);
+                                if (mArgs.getBoolean("edit")) {
+                                    Appointment editedAppointment = mArgs.getParcelable("appointmentToEdit");
+                                    DatabaseReference userAppointmentToReplaceRef = database.getReference()
+                                            .child("Citas/users")
+                                            .child(editedAppointment.getPatientId() + "/" + editedAppointment.getDate());
+                                    DatabaseReference appointmentToReplaceRef = database.getReference()
+                                            .child("Citas").child(editedAppointment.getDate().replace("-", "/"))
+                                            .child(editedAppointment.getTime());
+                                    if (!newAppointment.getDate().equals(editedAppointment.getDate())) {
+                                        userAppointmentToReplaceRef.removeValue();
+                                    }
+                                    appointmentToReplaceRef.setValue(new Appointment(editedAppointment.getTime(), false));
+                                }
+                                break;
+                            case DELETE_APPOINTMENT_CODE:
+                                Appointment deleteAppointment = mArgs.getParcelable("object");
+                                String patient = mArgs.getString("patientId");
+                                DatabaseReference userAppointmentToDeleteRef = database.getReference()
+                                        .child("Citas/users")
+                                        .child(patient + "/" + deleteAppointment.getDate());
+                                DatabaseReference appointmentToDeleteRef = database.getReference()
+                                        .child("Citas").child(deleteAppointment.getDate().replace("-", "/"))
+                                        .child(deleteAppointment.getTime());
+                                userAppointmentToDeleteRef.removeValue();
+                                appointmentToDeleteRef.setValue(new Appointment(deleteAppointment.getTime(), false));
                                 break;
                         }
                         dialog.dismiss();
@@ -97,7 +125,7 @@ public class ConfirmActionDialog extends DialogFragment {
 
     private void resetAppointmentsDatabase(DatabaseReference appointmentsRef, DateTimeFormatter formatter, LocalDateTime firstDay) {
         String stringFirstDay;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 5000; i++) {
             stringFirstDay = firstDay.format(formatter);
             Appointment emptyAppointment = new Appointment(stringFirstDay.substring(11, 16), false);
             appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);

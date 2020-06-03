@@ -128,12 +128,17 @@ public class NewPatientAppointmentDialog extends DialogFragment implements Appoi
         newAppointment.setPicked(true);
         newAppointment.setPatientId(Utils.MD5(patient.getEmail()).substring(0, 6).toUpperCase());
 
+
         DialogFragment dialogFragment = new ConfirmActionDialog();
         Bundle bundle = new Bundle();
         bundle.putString("confirm_action_dialog_message", "¿Pedir cita a las " + newAppointment.getTime() + "?");
         bundle.putInt("type", ConfirmActionDialog.NEW_APPOINTMENT_CODE);
         bundle.putString("dayRef", dayString);
         bundle.putParcelable("object", newAppointment);
+        if (getArguments().getBoolean("edit")) {
+            bundle.putBoolean("edit", true);
+            bundle.putParcelable("appointmentToEdit", getArguments().getParcelable("appointmentToEdit"));
+        }
         dialogFragment.setArguments(bundle);
         dialogFragment.show(getActivity().getSupportFragmentManager(), "Confirm");
 
