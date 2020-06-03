@@ -33,7 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -85,10 +84,10 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
         usersReference.addValueEventListener(this);
 
         CalendarView calendarView = view.findViewById(R.id.appointments_calendar_view);
-        recyclerView = view.findViewById(R.id.appointments_recycler_view);
-        CardView currentDateCard = view.findViewById(R.id.current_date_card);
-        TextView currentDateText = view.findViewById(R.id.currentDateText);
-        TextView noAppointments = view.findViewById(R.id.no_appointments);
+        recyclerView = view.findViewById(R.id.new_appointment_recycler_view);
+        CardView currentDateCard = view.findViewById(R.id.new_appointment_current_date_card);
+        TextView currentDateText = view.findViewById(R.id.new_appointment_current_date_text);
+        TextView noAppointments = view.findViewById(R.id.no_free_appointments);
 
         initRecyclerView();
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -142,7 +141,7 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
         });
     }
 
-    private String getTextDate(int month, int dayOfMonth) {
+    public static String getTextDate(int month, int dayOfMonth) {
         String textDate = String.valueOf(dayOfMonth);
         switch (month) {
             case 0:
@@ -187,7 +186,7 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
     }
 
     @NotNull
-    private String getCompleteDate(int year, int month, int dayOfMonth) {
+    public static String getCompleteDate(int year, int month, int dayOfMonth) {
         String sYear = String.valueOf(year);
         String sMonth = "";
         String sDay = "";

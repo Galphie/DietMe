@@ -148,7 +148,7 @@ public class PatientInfoActivity extends AppCompatActivity implements ViewPager.
     private ArrayList<Fragment> setTabs() {
         ArrayList<Fragment> fragments = new ArrayList<>();
         fragments.add(BodyCompositionFragment.newInstance(patient));
-        fragments.add(new PatientAppointmentsFragment());
+        fragments.add(PatientAppointmentsFragment.newInstance(patientId, patient));
         fragments.add(SharedFilesFragment.newInstance(currentUser, patientId));
         return fragments;
     }

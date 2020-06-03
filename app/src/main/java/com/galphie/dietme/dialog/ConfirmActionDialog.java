@@ -27,6 +27,7 @@ public class ConfirmActionDialog extends DialogFragment {
 
     public static final int CALL_CODE = 112;
     public static final int EMAIL_CODE = 1611;
+    public static final int NEW_APPOINTMENT_CODE = 4283;
     public static final int DELETE_PATIENT_CODE = 6661;
     public static final int DELETE_FILE_CODE = 6662;
     public static final int DELETE_POST_CODE = 6663;
@@ -78,6 +79,15 @@ public class ConfirmActionDialog extends DialogFragment {
                                 String postPublishDate = mArgs.getString("object");
                                 database.getReference().child("Publicaciones").child(Objects.requireNonNull(postPublishDate)).removeValue();
                                 break;
+                            case NEW_APPOINTMENT_CODE:
+                                String dayRef = mArgs.getString("dayRef");
+                                Appointment appointment = mArgs.getParcelable("object");
+                                DatabaseReference newAppointmentRef = database.getReference().child("Citas/" + dayRef).child(appointment.getTime());
+                                DatabaseReference userAppointmentsRef = database.getReference().child("Citas/users/" + appointment.getPatientId()).child(dayRef.replace("/","-"));
+
+                                newAppointmentRef.setValue(appointment);
+                                userAppointmentsRef.setValue(appointment);
+                                break;
                         }
                         dialog.dismiss();
                     }).setNegativeButton(R.string.cancel, (dialog, id) -> dialog.dismiss());
@@ -89,7 +99,7 @@ public class ConfirmActionDialog extends DialogFragment {
         String stringFirstDay;
         for (int i = 0; i < 1000; i++) {
             stringFirstDay = firstDay.format(formatter);
-            Appointment emptyAppointment = new Appointment(stringFirstDay.substring(11,16), false);
+            Appointment emptyAppointment = new Appointment(stringFirstDay.substring(11, 16), false);
             appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);
             if (firstDay.getHour() == 13) {
                 firstDay = firstDay.plusHours(2);

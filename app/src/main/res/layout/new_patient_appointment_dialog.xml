@@ -2,17 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorDefaultDarkBackground"
-    tools:context=".appointment.AppointmentFragment">
+    android:layout_height="wrap_content"
+    android:background="@color/colorDefaultDarkBackground">
 
     <CalendarView
-        android:id="@+id/appointments_calendar_view"
+        android:id="@+id/new_appointment_calendar_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:background="@color/colorDefaultBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,30 +21,31 @@
         android:id="@+id/new_appointment_current_date_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:visibility="invisible"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/new_appointment_recycler_view"
-        app:layout_constraintTop_toBottomOf="@+id/appointments_calendar_view"
-        tools:layout_editor_absoluteX="24dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/new_appointment_calendar_view"
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/new_appointment_current_date_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:layout_marginBottom="2dp"
                 android:fontFamily="@font/convergence"
                 android:text="TextView"
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -57,27 +55,29 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/new_appointment_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="320dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/new_appointment_current_date_card" />
+        app:layout_constraintTop_toBottomOf="@id/new_appointment_current_date_card" />
 
     <TextView
         android:id="@+id/no_free_appointments"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="116dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/convergence"
-        android:text="@string/no_appointments_found"
+        android:text="@string/no_free_appointments_found"
         android:textAlignment="center"
         android:textColor="@color/design_default_color_on_secondary"
         android:textSize="18sp"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/new_appointment_recycler_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appointments_calendar_view" />
+        app:layout_constraintTop_toBottomOf="@+id/new_appointment_current_date_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

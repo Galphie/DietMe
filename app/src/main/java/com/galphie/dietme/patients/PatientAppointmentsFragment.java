@@ -1,49 +1,54 @@
 package com.galphie.dietme.patients;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
+import com.galphie.dietme.adapters.AppointmentListAdapter;
+import com.galphie.dietme.dialog.NewPatientAppointmentDialog;
+import com.galphie.dietme.instantiable.Appointment;
+import com.galphie.dietme.instantiable.Signing;
+import com.galphie.dietme.instantiable.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PatientAppointmentsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class PatientAppointmentsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class PatientAppointmentsFragment extends Fragment implements AppointmentListAdapter.OnAppointmentClickListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String PATIENT_ID = "patientID";
+    private static final String PATIENT = "patient";
+
+    private String patientId;
+    private User patient;
+    private ArrayList<Signing> appointments = new ArrayList<>();
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    private RecyclerView recyclerView;
+    private TextView noAppointmentsText;
 
     public PatientAppointmentsFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PatientAppointmentsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PatientAppointmentsFragment newInstance(String param1, String param2) {
+    public static PatientAppointmentsFragment newInstance(String patientId, User patient) {
         PatientAppointmentsFragment fragment = new PatientAppointmentsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(PATIENT_ID, patientId);
+        args.putParcelable(PATIENT, patient);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,15 +57,70 @@ public class PatientAppointmentsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            patientId = getArguments().getString(PATIENT_ID);
+            patient = getArguments().getParcelable(PATIENT);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_patient_appointments, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        DatabaseReference patientAppointmentsReference = database.getReference().child("Citas/users").child(patientId);
+
+        recyclerView = view.findViewById(R.id.patient_appointments_recycler_view);
+        noAppointmentsText = view.findViewById(R.id.no_patient_appointments);
+        FloatingActionButton addAppointment = view.findViewById(R.id.add_patient_appointment);
+
+        addAppointment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment dialogFragment = new NewPatientAppointmentDialog();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("patient", patient);
+                dialogFragment.setArguments(bundle);
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "New appointment");
+            }
+        });
+
+        initRecyclerView();
+        patientAppointmentsReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                appointments.clear();
+                if (dataSnapshot.hasChildren()) {
+                    noAppointmentsText.setVisibility(View.GONE);
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Appointment appointment = ds.getValue(Appointment.class);
+
+                    }
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                } else {
+                    noAppointmentsText.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void initRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        AppointmentListAdapter adapter = new AppointmentListAdapter(appointments, this);
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onAppointmentClick(int position) {
+
     }
 }
