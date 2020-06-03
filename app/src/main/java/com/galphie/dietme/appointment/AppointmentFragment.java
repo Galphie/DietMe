@@ -33,42 +33,29 @@ import com.google.firebase.database.ValueEventListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Objects;
 
 public class AppointmentFragment extends Fragment implements ValueEventListener, AppointmentListAdapter.OnAppointmentClickListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "currentUser";
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference appointmentsReference = database.getReference().child("Citas");
     private DatabaseReference usersReference = database.getReference().child("Usuario");
 
-    private String mParam1;
     private User currentUser;
 
     private ArrayList<User> patients = new ArrayList<>();
     private ArrayList<Signing> appointments = new ArrayList<>();
-    private CalendarView calendarView;
     private RecyclerView recyclerView;
 
     public AppointmentFragment() {
-    }
-
-    public static AppointmentFragment newInstance(String param1, User currentUser) {
-        AppointmentFragment fragment = new AppointmentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putParcelable(ARG_PARAM2, currentUser);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
             currentUser = getArguments().getParcelable("currentUser");
         }
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -97,7 +84,7 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
 
         usersReference.addValueEventListener(this);
 
-        calendarView = view.findViewById(R.id.appointments_calendar_view);
+        CalendarView calendarView = view.findViewById(R.id.appointments_calendar_view);
         recyclerView = view.findViewById(R.id.appointments_recycler_view);
         CardView currentDateCard = view.findViewById(R.id.current_date_card);
         TextView currentDateText = view.findViewById(R.id.currentDateText);
@@ -108,7 +95,7 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 currentDateCard.setVisibility(View.VISIBLE);
-                currentDateText.setText(String.valueOf(getTextDate(year, month, dayOfMonth)));
+                currentDateText.setText(String.valueOf(getTextDate(month, dayOfMonth)));
                 String completeDate = getCompleteDate(year, month, dayOfMonth);
                 DatabaseReference selectedDayReference = appointmentsReference.child(completeDate);
                 selectedDayReference.addValueEventListener(new ValueEventListener() {
@@ -118,11 +105,11 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
                         noAppointments.setVisibility(View.INVISIBLE);
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             Appointment apptm = new Appointment(ds.getValue(Appointment.class).getPatientId(),
-                                    ds.getValue(Appointment.class).getTime(),
-                                    ds.getValue(Appointment.class).isPicked());
+                                    Objects.requireNonNull(ds.getValue(Appointment.class)).getTime(),
+                                    Objects.requireNonNull(ds.getValue(Appointment.class)).isPicked());
                             if (Objects.requireNonNull(apptm).isPicked()) {
                                 for (int i = 0; i < patients.size(); i++) {
-                                    if (Utils.MD5(patients.get(i).getEmail()).substring(0, 6).toUpperCase().equals(apptm.getPatientId())) {
+                                    if (Objects.requireNonNull(Utils.MD5(patients.get(i).getEmail())).substring(0, 6).toUpperCase().equals(apptm.getPatientId())) {
                                         appointments.add(new Signing(patients.get(i), apptm));
                                     }
                                 }
@@ -155,7 +142,7 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
         });
     }
 
-    private String getTextDate(int year, int month, int dayOfMonth) {
+    private String getTextDate(int month, int dayOfMonth) {
         String textDate = String.valueOf(dayOfMonth);
         switch (month) {
             case 0:
@@ -210,7 +197,7 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
             sMonth = String.valueOf(month + 1);
         }
         if (dayOfMonth < 10) {
-            sDay = "0" + String.valueOf(dayOfMonth);
+            sDay = "0" + dayOfMonth;
         } else {
             sDay = String.valueOf(dayOfMonth);
         }
