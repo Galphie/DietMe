@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if (bd != null) {
             if (bd.getBoolean("accessRequested")) {
                 Intent intent = new Intent(this, ConfigContainerActivity.class);
-                intent.putExtra("type", 1);
+                intent.putExtra("type", ConfigContainerActivity.PASSWORD_CODE);
                 intent.putExtra("currentUser", currentUser);
                 intent.putExtra("accessRequested", true);
                 startActivity(intent);

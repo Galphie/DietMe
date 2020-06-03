@@ -34,13 +34,14 @@ public class PasswordFragment extends Fragment implements TextWatcher {
     private DatabaseReference usersRef = database.getReference("Usuario");
 
     private User currentUser;
+    private Boolean accessRequested;
     private TextView oldPassText, newPassText, repeatPassText, textIsStrong;
     private EditText oldPassInput, newPassInput, repeatPassInput;
 
     public PasswordFragment() {
     }
 
-    public static PasswordFragment newInstance(boolean accessRequested, User currentUser) {
+    static PasswordFragment newInstance(boolean accessRequested, User currentUser) {
         PasswordFragment fragment = new PasswordFragment();
         Bundle args = new Bundle();
         args.putBoolean(ACCESS_REQUESTED, accessRequested);
@@ -59,6 +60,7 @@ public class PasswordFragment extends Fragment implements TextWatcher {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             currentUser = getArguments().getParcelable(CURRENT_USER);
+            accessRequested = getArguments().getBoolean(ACCESS_REQUESTED);
         }
 
     }
@@ -82,10 +84,10 @@ public class PasswordFragment extends Fragment implements TextWatcher {
         repeatPassText = view.findViewById(R.id.repeatPassText);
 
         assert getArguments() != null;
-        if (getArguments().getBoolean(ACCESS_REQUESTED)) {
+        if (accessRequested) {
             oldPassInput.setText(currentUser.getPassword());
-            oldPassText.setVisibility(View.INVISIBLE);
-            oldPassInput.setVisibility(View.INVISIBLE);
+            oldPassText.setVisibility(View.GONE);
+            oldPassInput.setVisibility(View.GONE);
         }
 
         CheckBox checkShowChange = view.findViewById(R.id.checkShowChange);

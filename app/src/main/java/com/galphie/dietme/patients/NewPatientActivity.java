@@ -31,7 +31,7 @@ public class NewPatientActivity extends AppCompatActivity {
     private String password = null;
 
     private CheckBox checkIsAdmin;
-    private RadioButton manButton, womanButton;
+    private RadioButton manButton, womanButton, anotherButton;
     private DatePickerDialog datePickerDialog;
     private EditText newBirthdateInput, newNameInput, newForenamesInput,
             newEmailInput, newPhoneInput;
@@ -51,6 +51,7 @@ public class NewPatientActivity extends AppCompatActivity {
         checkIsAdmin = findViewById(R.id.checkIsAdmin);
         manButton = findViewById(R.id.manButton);
         womanButton = findViewById(R.id.womanButton);
+        anotherButton = findViewById(R.id.anotherButton);
         Button createPatientButton = findViewById(R.id.create_patient_button);
 
         Bundle bundle = getIntent().getExtras();
@@ -169,7 +170,7 @@ public class NewPatientActivity extends AppCompatActivity {
         password = patient.getPassword();
         newForenamesInput.setText(patient.getForenames());
         newEmailInput.setText(patient.getEmail());
-        newEmailInput.setVisibility(View.INVISIBLE);
+        newEmailInput.setVisibility(View.GONE);
         measures = patient.getMeasures();
         newBirthdateInput.setText(patient.getBirthdate());
         if (patient.isAdmin()) {
@@ -180,8 +181,7 @@ public class NewPatientActivity extends AppCompatActivity {
         } else if (patient.getGender() == 1) {
             womanButton.setChecked(true);
         } else {
-            manButton.setChecked(false);
-            womanButton.setChecked(false);
+            anotherButton.setChecked(true);
         }
     }
 }

@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 public class Appointment implements Parcelable {
 
-    private String name;
-    private String time;
+    private String patientId, time;
+    private boolean picked;
 
     public Appointment() {
     }
@@ -17,12 +17,11 @@ public class Appointment implements Parcelable {
     }
 
     public Appointment(String name, String time, boolean picked) {
-        this.name = name;
+        this.patientId = name;
         this.time = time;
         this.picked = picked;
     }
 
-    private boolean picked;
 
     public String getTime() {
         return time;
@@ -34,7 +33,7 @@ public class Appointment implements Parcelable {
 
 
     protected Appointment(Parcel in) {
-        name = in.readString();
+        patientId = in.readString();
         picked = in.readByte() != 0;
     }
 
@@ -50,12 +49,12 @@ public class Appointment implements Parcelable {
         }
     };
 
-    public String getName() {
-        return name;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public boolean isPicked() {
@@ -73,7 +72,7 @@ public class Appointment implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
+        dest.writeString(patientId);
         dest.writeByte((byte) (picked ? 1 : 0));
     }
 }

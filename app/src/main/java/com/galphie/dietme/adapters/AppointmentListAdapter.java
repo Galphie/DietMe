@@ -16,16 +16,18 @@ import java.util.ArrayList;
 public class AppointmentListAdapter extends RecyclerView.Adapter<AppointmentListAdapter.ViewHolder> {
 
     private ArrayList<Signing> signings;
+    private OnAppointmentClickListener mListener;
 
-    public AppointmentListAdapter(ArrayList<Signing> appointments) {
+    public AppointmentListAdapter(ArrayList<Signing> appointments, OnAppointmentClickListener mListener) {
         this.signings = appointments;
+        this.mListener = mListener;
     }
 
     @NonNull
     @Override
     public AppointmentListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.appointment_list_item, parent, false);
-        return new AppointmentListAdapter.ViewHolder(view);
+        return new AppointmentListAdapter.ViewHolder(view, mListener);
     }
 
     @Override
@@ -44,12 +46,20 @@ public class AppointmentListAdapter extends RecyclerView.Adapter<AppointmentList
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView time, name;
+        private OnAppointmentClickListener mListener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, OnAppointmentClickListener mListener) {
             super(itemView);
 
             time = itemView.findViewById(R.id.appointment_item_time);
             name = itemView.findViewById(R.id.appointment_item_patient_name);
+            this.mListener = mListener;
+
+            itemView.setOnClickListener(v -> mListener.onAppointmentClick(getAdapterPosition()));
         }
+    }
+
+    public interface OnAppointmentClickListener {
+        void onAppointmentClick (int position);
     }
 }

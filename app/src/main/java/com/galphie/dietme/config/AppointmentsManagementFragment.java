@@ -25,7 +25,7 @@ public class AppointmentsManagementFragment extends Fragment {
     public AppointmentsManagementFragment() {
     }
 
-    public static AppointmentsManagementFragment newInstance(User currentUser) {
+    static AppointmentsManagementFragment newInstance(User currentUser) {
         AppointmentsManagementFragment fragment = new AppointmentsManagementFragment();
         Bundle args = new Bundle();
         args.putParcelable(CURRENT_USER, currentUser);
