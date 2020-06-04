@@ -125,4 +125,5 @@
     <string name="no_patient_appointments_found">No se han encontrado citas asignadas a este paciente</string>
     <string name="new_appointment">Nueva cita</string>
     <string name="no_free_appointments_found">No hay citas libres para este día</string>
+    <string name="finalized_day">Día finalizado</string>
 </resources>

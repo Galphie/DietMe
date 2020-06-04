@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.PatientAppointmentListAdapter;
+import com.galphie.dietme.appointment.AppointmentFragment;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.dialog.NewPatientAppointmentDialog;
 import com.galphie.dietme.instantiable.Appointment;
@@ -152,7 +153,7 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
                 DialogFragment dialogFragment = new ConfirmActionDialog();
                 Bundle confirmActionBundle = new Bundle();
                 confirmActionBundle.putString("confirm_action_dialog_message", "¿Eliminar cita del día " +
-                        appointments.get(position).getDate() + ", a las " +appointments.get(position).getTime() + "?");
+                        PatientAppointmentListAdapter.setDisplayDate(appointments.get(position).getDate()) + ", a las " +appointments.get(position).getTime() + "?");
                 confirmActionBundle.putInt("type",ConfirmActionDialog.DELETE_APPOINTMENT_CODE);
                 confirmActionBundle.putParcelable("object", appointments.get(position));
                 confirmActionBundle.putString("patientId", patientId);

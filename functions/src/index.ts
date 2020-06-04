@@ -30,7 +30,7 @@ export const onUserAppointmentDeleted = functions.database
             picked: false,
             time: `${time}`,
             patientId: null,
-            date: null
+            date: `${year}-${month}-${day}`
         });
 
         return snapshot.ref.root.child(`/Citas/${year}/${month}/${day}/${time}`).set(emptyAppointment)

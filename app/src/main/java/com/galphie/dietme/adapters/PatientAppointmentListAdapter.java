@@ -66,7 +66,7 @@ public class PatientAppointmentListAdapter extends RecyclerView.Adapter<PatientA
         void onPatientAppointmentLongClick(int position);
     }
 
-    private String setDisplayDate(String date) {
+    public static String setDisplayDate(String date) {
         String[] parts = date.split("-");
         String displayDate = parts[2] + " de ";
         switch (Integer.parseInt(parts[1])) {

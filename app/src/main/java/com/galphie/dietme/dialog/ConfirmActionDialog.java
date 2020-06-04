@@ -117,7 +117,7 @@ public class ConfirmActionDialog extends DialogFragment {
         String stringFirstDay;
         for (int i = 0; i < 5000; i++) {
             stringFirstDay = firstDay.format(formatter);
-            Appointment emptyAppointment = new Appointment(stringFirstDay.substring(11, 16), false);
+            Appointment emptyAppointment = new Appointment(null,stringFirstDay.substring(11, 16),stringFirstDay.substring(0,10).replace("/","-"), false);
             appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);
             if (firstDay.getHour() == 13) {
                 firstDay = firstDay.plusHours(2);

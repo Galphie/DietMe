@@ -60,20 +60,6 @@ public class Utils {
         return matcher.matches();
     }
 
-    public static String MD5(String md5) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(md5.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-        }
-        return null;
-    }
-
     public static Date stringToCustomDate(String date, String customPattern) {
         DateFormat format = new SimpleDateFormat(customPattern);
         Date newDate = null;
@@ -95,6 +81,11 @@ public class Utils {
             e.printStackTrace();
         }
         return newDate;
+    }
+
+    public static LocalDate stringToLocalDate(String date) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(date, dtf);
     }
 
     public static int calculateAge(String birthDate) {
@@ -136,12 +127,6 @@ public class Utils {
         return time;
     }
 
-    public static String localDateTimeToSaveString(LocalDateTime date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss");
-        String newDate = date.format(formatter);
-        return newDate;
-    }
-
     public static String localDateTimeToDisplayString(LocalDateTime date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_LOCALDATETIME);
         String newDate = date.format(formatter);
@@ -154,16 +139,18 @@ public class Utils {
         return newDate;
     }
 
-    public static String dateToCustomString(Date date, String customPattern) {
-        DateFormat df = new SimpleDateFormat(customPattern);
-        String stringDate = df.format(date);
-        return stringDate;
-    }
-
-    public static String dateToString(Date date) {
-        DateFormat df = new SimpleDateFormat(PATTERN_DATE);
-        String stringDate = df.format(date);
-        return stringDate;
+    public static String MD5(String md5) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(md5.getBytes());
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+        }
+        return null;
     }
 
     public static String SHA256(String text) {

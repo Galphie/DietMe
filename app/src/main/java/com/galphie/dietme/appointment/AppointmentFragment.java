@@ -32,6 +32,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
@@ -90,54 +92,68 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
         TextView noAppointments = view.findViewById(R.id.no_free_appointments);
 
         initRecyclerView();
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                currentDateCard.setVisibility(View.VISIBLE);
-                currentDateText.setText(String.valueOf(getTextDate(month, dayOfMonth)));
-                String completeDate = getCompleteDate(year, month, dayOfMonth);
-                DatabaseReference selectedDayReference = appointmentsReference.child(completeDate);
-                selectedDayReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        appointments.clear();
-                        noAppointments.setVisibility(View.INVISIBLE);
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            Appointment apptm = new Appointment(ds.getValue(Appointment.class).getPatientId(),
-                                    Objects.requireNonNull(ds.getValue(Appointment.class)).getTime(),
-                                    Objects.requireNonNull(ds.getValue(Appointment.class)).isPicked());
-                            if (Objects.requireNonNull(apptm).isPicked()) {
-                                for (int i = 0; i < patients.size(); i++) {
-                                    if (Objects.requireNonNull(Utils.MD5(patients.get(i).getEmail())).substring(0, 6).toUpperCase().equals(apptm.getPatientId())) {
+        calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
+            currentDateCard.setVisibility(View.VISIBLE);
+            currentDateText.setText(String.valueOf(getTextDate(month, dayOfMonth)));
+            String completeDate = getCompleteDate(year, month, dayOfMonth);
+            DatabaseReference selectedDayReference = appointmentsReference.child(completeDate);
+            selectedDayReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    appointments.clear();
+                    noAppointments.setVisibility(View.INVISIBLE);
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Appointment apptm = new Appointment(ds.getValue(Appointment.class).getPatientId(),
+                                Objects.requireNonNull(ds.getValue(Appointment.class)).getTime(),
+                                Objects.requireNonNull(ds.getValue(Appointment.class)).getDate(),
+                                Objects.requireNonNull(ds.getValue(Appointment.class)).isPicked());
+                        if (Objects.requireNonNull(apptm).isPicked()) {
+                            for (int i = 0; i < patients.size(); i++) {
+                                if (Objects.requireNonNull(Utils.MD5(patients.get(i).getEmail())).substring(0, 6).toUpperCase().equals(apptm.getPatientId())) {
+                                    String compareDate = apptm.getDate() + " " + apptm.getTime() + ":00";
+                                    LocalDateTime compareLocalDateTime = Utils.stringToLocalDateTime(compareDate);
+                                    if (!compareLocalDateTime.isBefore(LocalDateTime.now())) {
                                         appointments.add(new Signing(patients.get(i), apptm));
                                     }
                                 }
                             }
                         }
-                        if (appointments.size() == 0) {
-                            noAppointments.setVisibility(View.VISIBLE);
+                    }
+                    if (appointments.size() == 0) {
+                        noAppointments.setVisibility(View.VISIBLE);
+                        LocalDate date = Utils.stringToLocalDate(completeDate.replace("/", "-"));
+                        if (date.isBefore(LocalDate.now())) {
+                            noAppointments.setText(getString(R.string.finalized_day));
                         } else {
-                            boolean isPicked = false;
-                            for (int i = 0; i < appointments.size(); i++) {
-                                if (appointments.get(i).getAppointment().isPicked()) {
-                                    isPicked = true;
-                                }
-                            }
-                            if (isPicked) {
-                                noAppointments.setVisibility(View.INVISIBLE);
-                            } else {
-                                noAppointments.setVisibility(View.VISIBLE);
+                            noAppointments.setText(getString(R.string.no_appointments_found));
+                        }
+                    } else {
+                        boolean isPicked = false;
+                        for (int i = 0; i < appointments.size(); i++) {
+                            if (appointments.get(i).getAppointment().isPicked()) {
+                                isPicked = true;
                             }
                         }
-                        Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+                        if (isPicked) {
+                            noAppointments.setVisibility(View.INVISIBLE);
+                        } else {
+                            noAppointments.setVisibility(View.VISIBLE);
+                            LocalDate date = Utils.stringToLocalDate(completeDate.replace("/", "-"));
+                            if (date.isBefore(LocalDate.now())) {
+                                noAppointments.setText(getString(R.string.finalized_day));
+                            } else {
+                                noAppointments.setText(getString(R.string.no_appointments_found));
+                            }
+                        }
                     }
+                    Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
-            }
+                }
+            });
         });
     }
 
@@ -188,8 +204,8 @@ public class AppointmentFragment extends Fragment implements ValueEventListener,
     @NotNull
     public static String getCompleteDate(int year, int month, int dayOfMonth) {
         String sYear = String.valueOf(year);
-        String sMonth = "";
-        String sDay = "";
+        String sMonth;
+        String sDay;
         if (month + 1 < 10) {
             sMonth = "0" + (month + 1);
         } else {
