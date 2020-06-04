@@ -82,6 +82,13 @@ public class ConfirmActionDialog extends DialogFragment {
                                 database.getReference().child("Publicaciones").child(Objects.requireNonNull(postPublishDate)).removeValue();
                                 break;
                             case NEW_APPOINTMENT_CODE:
+                                if (mArgs.getBoolean("edit")) {
+                                    Appointment editedAppointment = mArgs.getParcelable("appointmentToEdit");
+                                    DatabaseReference userAppointmentToReplaceRef = database.getReference()
+                                            .child("Citas/users")
+                                            .child(editedAppointment.getPatientId() + "/" + editedAppointment.getDate());
+                                    userAppointmentToReplaceRef.removeValue();
+                                }
                                 String dayRef = mArgs.getString("dayRef");
                                 Appointment newAppointment = mArgs.getParcelable("object");
                                 newAppointment.setDate(dayRef.replace("/", "-"));
@@ -90,19 +97,6 @@ public class ConfirmActionDialog extends DialogFragment {
 
                                 newAppointmentRef.setValue(newAppointment);
                                 userAppointmentsRef.setValue(newAppointment);
-                                if (mArgs.getBoolean("edit")) {
-                                    Appointment editedAppointment = mArgs.getParcelable("appointmentToEdit");
-                                    DatabaseReference userAppointmentToReplaceRef = database.getReference()
-                                            .child("Citas/users")
-                                            .child(editedAppointment.getPatientId() + "/" + editedAppointment.getDate());
-                                    DatabaseReference appointmentToReplaceRef = database.getReference()
-                                            .child("Citas").child(editedAppointment.getDate().replace("-", "/"))
-                                            .child(editedAppointment.getTime());
-                                    if (!newAppointment.getDate().equals(editedAppointment.getDate())) {
-                                        userAppointmentToReplaceRef.removeValue();
-                                    }
-                                    appointmentToReplaceRef.setValue(new Appointment(editedAppointment.getTime(), false));
-                                }
                                 break;
                             case DELETE_APPOINTMENT_CODE:
                                 Appointment deleteAppointment = mArgs.getParcelable("object");
@@ -110,11 +104,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                 DatabaseReference userAppointmentToDeleteRef = database.getReference()
                                         .child("Citas/users")
                                         .child(patient + "/" + deleteAppointment.getDate());
-                                DatabaseReference appointmentToDeleteRef = database.getReference()
-                                        .child("Citas").child(deleteAppointment.getDate().replace("-", "/"))
-                                        .child(deleteAppointment.getTime());
                                 userAppointmentToDeleteRef.removeValue();
-                                appointmentToDeleteRef.setValue(new Appointment(deleteAppointment.getTime(), false));
                                 break;
                         }
                         dialog.dismiss();
