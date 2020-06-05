@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,28 +14,42 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
+import com.galphie.dietme.adapters.AppointmentListAdapter;
+import com.galphie.dietme.adapters.DietistAppointmentListAdapter;
 import com.galphie.dietme.instantiable.Appointment;
 import com.galphie.dietme.instantiable.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 
-public class AvailabilityManagementFragment extends Fragment {
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
+public class AvailabilityManagementFragment extends Fragment implements ValueEventListener {
     private static final String CURRENT_USER = "currentUser";
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     private String dietistId = Utils.MD5("dietista").substring(0, 6).toUpperCase();
     private User currentUser;
+
+    private RecyclerView recyclerView;
     private EditText startDateEdit, endDateEdit;
+    private ArrayList<Appointment> dietistApppointments = new ArrayList<>();
     private Button applyButton;
 
     public AvailabilityManagementFragment() {
@@ -54,6 +69,8 @@ public class AvailabilityManagementFragment extends Fragment {
         if (getArguments() != null) {
             currentUser = getArguments().getParcelable(CURRENT_USER);
         }
+        DatabaseReference dietistRef = database.getReference().child("Citas/users/" + dietistId);
+        dietistRef.addValueEventListener(this);
     }
 
     @Override
@@ -100,6 +117,15 @@ public class AvailabilityManagementFragment extends Fragment {
                 }
             }
         });
+
+        recyclerView = view.findViewById(R.id.dietist_recycler_view);
+        initRecyclerView();
+    }
+
+    private void initRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        DietistAppointmentListAdapter adapter = new DietistAppointmentListAdapter(dietistApppointments);
+        recyclerView.setAdapter(adapter);
     }
 
     private void setAppointmentsPicked(LocalDateTime firstDay, LocalDateTime lastDay,
@@ -116,7 +142,7 @@ public class AvailabilityManagementFragment extends Fragment {
                     stringFirstDay.substring(0, 10).replace("/", "-"),
                     true);
             appointmentsRef.child(stringFirstDay).setValue(dietistAppointment);
-            DatabaseReference dietistRef = appointmentsRef.child("users/"+dietistId).child(stringFirstDay.substring(0, 10).replace("/", "-")).child(stringFirstDay.substring(11, 16));
+            DatabaseReference dietistRef = appointmentsRef.child("users/" + dietistId).child(stringFirstDay.substring(0, 10).replace("/", "-") + "-" + stringFirstDay.substring(11, 16));
             dietistRef.setValue(dietistAppointment);
             if (firstDay.getHour() == 13) {
                 firstDay = firstDay.plusHours(2);
@@ -164,5 +190,23 @@ public class AvailabilityManagementFragment extends Fragment {
 
         new DatePickerDialog(getActivity(), dateSetListener, calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        dietistApppointments.clear();
+        if (dataSnapshot.hasChildren()) {
+            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                Appointment appt = ds.getValue(Appointment.class);
+                dietistApppointments.add(appt);
+            }
+            Collections.sort(dietistApppointments, (o1, o2) -> o1.getDate().compareToIgnoreCase(o2.getDate()));
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
     }
 }
