@@ -7,17 +7,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashScreen extends AppCompatActivity {
 
+    public static final int SPLASH_TIME_OUT = 780;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
 
-        Handler handler = new Handler();
-        Runnable runnable = () -> {
+        new Handler().postDelayed(() -> {
             LoginActivity.splashed = true;
             finish();
-        };
-        handler.postDelayed(runnable, 2500);
+        }, 1500);
     }
 
     @Override

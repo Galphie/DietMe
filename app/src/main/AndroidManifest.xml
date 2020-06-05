@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SplashScreen"></activity>
+        <activity android:name=".appointment.NewAppointmentActivity"></activity>
+        <activity android:name=".SplashScreen" />
         <activity android:name=".PdfViewerActivity" />
         <activity android:name=".patients.NewPatientActivity" />
         <activity android:name=".patients.PatientInfoActivity" />

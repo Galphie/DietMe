@@ -13,7 +13,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
@@ -41,7 +40,6 @@ public class HomeFragment extends Fragment implements ValueEventListener, PostLi
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     private RecyclerView recyclerView;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Post> postArrayList = new ArrayList<>();
 
     public HomeFragment() {
@@ -75,7 +73,6 @@ public class HomeFragment extends Fragment implements ValueEventListener, PostLi
         super.onViewCreated(view, savedInstanceState);
 
         FloatingActionButton addPostButton = view.findViewById(R.id.add_post_button);
-        swipeRefreshLayout = view.findViewById(R.id.post_swipe_refresh);
         recyclerView = view.findViewById(R.id.postRecyclerView);
 
         initRecyclerView();
@@ -88,11 +85,6 @@ public class HomeFragment extends Fragment implements ValueEventListener, PostLi
             dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Post");
         });
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            initRecyclerView();
-            Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
-            swipeRefreshLayout.setRefreshing(false);
-        });
         if (currentUser.isAdmin()) {
             addPostButton.setVisibility(View.VISIBLE);
         }

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/colorDefaultDarkBackground">
+    android:layout_height="match_parent"
+    tools:context=".appointment.NewAppointmentActivity">
 
     <CalendarView
         android:id="@+id/new_appointment_calendar_view"
@@ -55,13 +55,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/new_appointment_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
-        android:visibility="gone"
+        android:layout_height="0dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/new_appointment_current_date_card" />
+        app:layout_constraintTop_toBottomOf="@+id/new_appointment_current_date_card" />
 
     <TextView
         android:id="@+id/no_free_appointments"
@@ -74,10 +74,9 @@
         android:textAlignment="center"
         android:textColor="@color/design_default_color_on_secondary"
         android:textSize="18sp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/new_appointment_recycler_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/new_appointment_current_date_card" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

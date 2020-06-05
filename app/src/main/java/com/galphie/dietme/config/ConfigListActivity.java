@@ -44,6 +44,7 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
         if (currentUser.isAdmin()) {
             options.add(new Option(getString(R.string.manage_appointments), ConfigContainerActivity.APPOINTMENTS_CODE));
         }
+        options.add(new Option(getString(R.string.availability_management),ConfigContainerActivity.AVAILABILITY_CODE));
         Collections.sort(options, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
     }
 
@@ -58,6 +59,9 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
                 break;
             case ConfigContainerActivity.APPOINTMENTS_CODE:
                 startConfigContainerActivity(ConfigContainerActivity.APPOINTMENTS_CODE);
+                break;
+            case ConfigContainerActivity.AVAILABILITY_CODE:
+                startConfigContainerActivity(ConfigContainerActivity.AVAILABILITY_CODE);
                 break;
         }
     }

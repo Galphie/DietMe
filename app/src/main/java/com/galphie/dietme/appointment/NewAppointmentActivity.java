@@ -1,16 +1,12 @@
-package com.galphie.dietme.dialog;
+package com.galphie.dietme.appointment;
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.AppointmentListAdapter;
-import com.galphie.dietme.appointment.AppointmentFragment;
+import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.Appointment;
 import com.galphie.dietme.instantiable.Signing;
 import com.galphie.dietme.instantiable.User;
@@ -34,11 +30,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class NewPatientAppointmentDialog extends DialogFragment implements AppointmentListAdapter.OnAppointmentClickListener {
+public class NewAppointmentActivity extends AppCompatActivity implements AppointmentListAdapter.OnAppointmentClickListener {
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference appointmentsReference = database.getReference().child("Citas");
     private String dayString;
 
+    private Bundle mArgs;
     private ArrayList<Signing> appointments = new ArrayList<>();
     private User patient;
 
@@ -46,21 +44,18 @@ public class NewPatientAppointmentDialog extends DialogFragment implements Appoi
     private TextView noFreeAppointmentsText, currentDateText;
     private CardView currentDateCard;
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.new_patient_appointment_dialog, null);
-
-        Bundle mArgs = getArguments();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_appointment);
+        mArgs = getIntent().getExtras();
         patient = Objects.requireNonNull(mArgs).getParcelable("patient");
 
-        recyclerView = view.findViewById(R.id.new_appointment_recycler_view);
-        CalendarView calendarView = view.findViewById(R.id.new_appointment_calendar_view);
-        noFreeAppointmentsText = view.findViewById(R.id.no_free_appointments);
-        currentDateText = view.findViewById(R.id.new_appointment_current_date_text);
-        currentDateCard = view.findViewById(R.id.new_appointment_current_date_card);
+        recyclerView = findViewById(R.id.new_appointment_recycler_view);
+        CalendarView calendarView = findViewById(R.id.new_appointment_calendar_view);
+        noFreeAppointmentsText = findViewById(R.id.no_free_appointments);
+        currentDateText = findViewById(R.id.new_appointment_current_date_text);
+        currentDateCard = findViewById(R.id.new_appointment_current_date_card);
 
         initRecyclerView();
         calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
@@ -126,15 +121,10 @@ public class NewPatientAppointmentDialog extends DialogFragment implements Appoi
                 }
             });
         });
-
-        builder.setView(view)
-                .setNegativeButton(getText(R.string.cancel), (dialog, which) -> dismiss());
-
-        return builder.create();
     }
 
     private void initRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         AppointmentListAdapter adapter = new AppointmentListAdapter(appointments, this);
         recyclerView.setAdapter(adapter);
     }
@@ -152,13 +142,11 @@ public class NewPatientAppointmentDialog extends DialogFragment implements Appoi
         bundle.putInt("type", ConfirmActionDialog.NEW_APPOINTMENT_CODE);
         bundle.putString("dayRef", dayString);
         bundle.putParcelable("object", newAppointment);
-        if (Objects.requireNonNull(getArguments()).getBoolean("edit")) {
+        if (Objects.requireNonNull(mArgs).getBoolean("edit")) {
             bundle.putBoolean("edit", true);
-            bundle.putParcelable("appointmentToEdit", getArguments().getParcelable("appointmentToEdit"));
+            bundle.putParcelable("appointmentToEdit", mArgs.getParcelable("appointmentToEdit"));
         }
         dialogFragment.setArguments(bundle);
-        dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Confirm");
-
-        dismiss();
+        dialogFragment.show(getSupportFragmentManager(), "Confirm");
     }
 }

@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +14,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
+import com.galphie.dietme.config.AppointmentsManagementFragment;
 import com.galphie.dietme.instantiable.Appointment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -56,14 +59,20 @@ public class ConfirmActionDialog extends DialogFragment {
                                 startActivity(email);
                                 break;
                             case RESTART_CODE:
+                                AppointmentsManagementFragment.progressBar.setVisibility(View.VISIBLE);
                                 DatabaseReference appointmentsRef = database.getReference("Citas");
                                 String start = "2020/05/25/09:00";
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
                                 LocalDateTime firstDay = LocalDateTime.parse(start, formatter);
-                                resetAppointmentsDatabase(appointmentsRef, formatter, firstDay);
+                                getParentFragmentManager().popBackStack();
                                 appointmentsRef.child("users").removeValue();
-
-                                Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.database_restarted));
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        appointmentsRef.removeValue().addOnSuccessListener(aVoid1 -> resetAppointmentsDatabase(appointmentsRef, formatter, firstDay));
+                                    }
+                                }, 3000);
+                                Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.restarting_database));
                                 break;
                             case DELETE_PATIENT_CODE:
                                 DatabaseReference usersRef = database.getReference("Usuario");
@@ -97,14 +106,22 @@ public class ConfirmActionDialog extends DialogFragment {
 
                                 newAppointmentRef.setValue(newAppointment);
                                 userAppointmentsRef.setValue(newAppointment);
+
+                                getActivity().finish();
                                 break;
                             case DELETE_APPOINTMENT_CODE:
                                 Appointment deleteAppointment = mArgs.getParcelable("object");
+                                Appointment emptyAppointment = new Appointment(null, deleteAppointment.getTime(), deleteAppointment.getDate(), false);
                                 String patient = mArgs.getString("patientId");
                                 DatabaseReference userAppointmentToDeleteRef = database.getReference()
                                         .child("Citas/users")
                                         .child(patient + "/" + deleteAppointment.getDate());
+                                DatabaseReference appointmentToReplaceRef = database.getReference()
+                                        .child("Citas")
+                                        .child(deleteAppointment.getDate().replace("-","/"))
+                                        .child(deleteAppointment.getTime());
                                 userAppointmentToDeleteRef.removeValue();
+                                appointmentToReplaceRef.setValue(emptyAppointment);
                                 break;
                         }
                         dialog.dismiss();
@@ -117,7 +134,7 @@ public class ConfirmActionDialog extends DialogFragment {
         String stringFirstDay;
         for (int i = 0; i < 5000; i++) {
             stringFirstDay = firstDay.format(formatter);
-            Appointment emptyAppointment = new Appointment(null,stringFirstDay.substring(11, 16),stringFirstDay.substring(0,10).replace("/","-"), false);
+            Appointment emptyAppointment = new Appointment(null, stringFirstDay.substring(11, 16), stringFirstDay.substring(0, 10).replace("/", "-"), false);
             appointmentsRef.child(stringFirstDay).setValue(emptyAppointment);
             if (firstDay.getHour() == 13) {
                 firstDay = firstDay.plusHours(2);
@@ -130,6 +147,12 @@ public class ConfirmActionDialog extends DialogFragment {
             }
             firstDay = firstDay.plusHours(1);
         }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AppointmentsManagementFragment.progressBar.setVisibility(View.INVISIBLE);
+            }
+        }, 4000);
     }
 
 }

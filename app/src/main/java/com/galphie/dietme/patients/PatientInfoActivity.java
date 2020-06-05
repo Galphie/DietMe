@@ -291,4 +291,9 @@ public class PatientInfoActivity extends AppCompatActivity implements ViewPager.
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 }

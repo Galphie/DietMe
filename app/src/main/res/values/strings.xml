@@ -126,4 +126,10 @@
     <string name="new_appointment">Nueva cita</string>
     <string name="no_free_appointments_found">No hay citas libres para este día</string>
     <string name="finalized_day">Día finalizado</string>
+    <string name="availability_management">Gestionar disponibilidad</string>
+    <string name="introduce_start_date">Introduce la fecha/hora de inicio</string>
+    <string name="introduce_end_date">Introduce la fecha/hora de fin</string>
+    <string name="apply">Aplicar</string>
+    <string name="invalid_dates">Por favor, introduce fechas válidas</string>
+    <string name="restarting_database">Reiniciando base de datos...</string>
 </resources>
