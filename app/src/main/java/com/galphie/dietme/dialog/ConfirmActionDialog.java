@@ -113,14 +113,22 @@ public class ConfirmActionDialog extends DialogFragment {
                                 Appointment deleteAppointment = mArgs.getParcelable("object");
                                 Appointment emptyAppointment = new Appointment(null, deleteAppointment.getTime(), deleteAppointment.getDate(), false);
                                 String patient = mArgs.getString("patientId");
-                                DatabaseReference userAppointmentToDeleteRef = database.getReference()
-                                        .child("Citas/users")
-                                        .child(patient + "/" + deleteAppointment.getDate());
+                                DatabaseReference userAppointmentToDeleteRef;
+                                if (patient.equals("72B6C3")) {
+                                    userAppointmentToDeleteRef = database.getReference()
+                                            .child("Citas/users")
+                                            .child(patient + "/" + deleteAppointment.getDate() + "-" + deleteAppointment.getTime());
+                                    userAppointmentToDeleteRef.removeValue();
+                                } else {
+                                    userAppointmentToDeleteRef = database.getReference()
+                                            .child("Citas/users")
+                                            .child(patient + "/" + deleteAppointment.getDate());
+                                    userAppointmentToDeleteRef.removeValue();
+                                }
                                 DatabaseReference appointmentToReplaceRef = database.getReference()
                                         .child("Citas")
-                                        .child(deleteAppointment.getDate().replace("-","/"))
+                                        .child(deleteAppointment.getDate().replace("-", "/"))
                                         .child(deleteAppointment.getTime());
-                                userAppointmentToDeleteRef.removeValue();
                                 appointmentToReplaceRef.setValue(emptyAppointment);
                                 break;
                         }

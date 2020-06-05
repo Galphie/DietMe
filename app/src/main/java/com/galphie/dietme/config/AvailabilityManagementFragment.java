@@ -13,14 +13,16 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
-import com.galphie.dietme.adapters.AppointmentListAdapter;
 import com.galphie.dietme.adapters.DietistAppointmentListAdapter;
+import com.galphie.dietme.adapters.PatientAppointmentListAdapter;
+import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.Appointment;
 import com.galphie.dietme.instantiable.User;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +42,7 @@ import java.util.Collections;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class AvailabilityManagementFragment extends Fragment implements ValueEventListener {
+public class AvailabilityManagementFragment extends Fragment implements ValueEventListener, DietistAppointmentListAdapter.OnDietistAppointmentClickListener {
     private static final String CURRENT_USER = "currentUser";
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -93,28 +95,24 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
         startDateEdit.setOnClickListener(v -> showDateTimeDialog(startDateEdit));
         endDateEdit.setOnClickListener(v -> showDateTimeDialog(endDateEdit));
 
-        applyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentUser.isAdmin()) {
-                    if (checkDates(startDateEdit.getText().toString(), endDateEdit.getText().toString())) {
-                        DatabaseReference appointmentsRef = database.getReference()
-                                .child("Citas");
+        applyButton.setOnClickListener(v -> {
+            if (currentUser.isAdmin()) {
+                if (checkDates(startDateEdit.getText().toString(), endDateEdit.getText().toString())) {
+                    DatabaseReference appointmentsRef = database.getReference()
+                            .child("Citas");
 
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
-                        LocalDateTime firstDay = LocalDateTime.parse(startDateEdit.getText().toString(), formatter);
-                        LocalDateTime lastDay = LocalDateTime.parse(endDateEdit.getText().toString(), formatter);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
+                    LocalDateTime firstDay = LocalDateTime.parse(startDateEdit.getText().toString(), formatter);
+                    LocalDateTime lastDay = LocalDateTime.parse(endDateEdit.getText().toString(), formatter);
 
-                        firstDay = firstDay.minusMinutes(firstDay.getMinute());
-                        lastDay = lastDay.minusMinutes(lastDay.getMinute());
-                        long duration = Duration.between(firstDay, lastDay).toHours();
-                        setAppointmentsPicked(firstDay, lastDay, formatter, appointmentsRef);
-                    } else {
-                        Utils.toast(getActivity().getApplicationContext(), getString(R.string.invalid_dates));
-                    }
+                    firstDay = firstDay.minusMinutes(firstDay.getMinute());
+                    lastDay = lastDay.minusMinutes(lastDay.getMinute());
+                    setAppointmentsPicked(firstDay, lastDay, formatter, appointmentsRef);
                 } else {
-                    Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
+                    Utils.toast(getActivity().getApplicationContext(), getString(R.string.invalid_dates));
                 }
+            } else {
+                Utils.toast(getActivity().getApplicationContext(), getString(R.string.developer_action_only));
             }
         });
 
@@ -124,7 +122,7 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        DietistAppointmentListAdapter adapter = new DietistAppointmentListAdapter(dietistApppointments);
+        DietistAppointmentListAdapter adapter = new DietistAppointmentListAdapter(dietistApppointments, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -176,7 +174,14 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
             TimePickerDialog.OnTimeSetListener timeSetListener = (view1, hourOfDay, minute) -> {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                if (hourOfDay < 9) {
+                    calendar.set(Calendar.HOUR_OF_DAY, 9);
+                } else if (hourOfDay > 20) {
+                    calendar.set(Calendar.HOUR_OF_DAY, 20);
+                } else {
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                }
+
                 calendar.set(Calendar.MINUTE, minute);
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm");
@@ -199,6 +204,9 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 Appointment appt = ds.getValue(Appointment.class);
                 dietistApppointments.add(appt);
+                if (appt.getTime().equals("09:00")) {
+                    dietistApppointments.add(appt);
+                }
             }
             Collections.sort(dietistApppointments, (o1, o2) -> o1.getDate().compareToIgnoreCase(o2.getDate()));
             recyclerView.getAdapter().notifyDataSetChanged();
@@ -208,5 +216,25 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
     @Override
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
+    }
+
+    @Override
+    public void onDietistAppointmentClick(int position) {
+        if ((position > 0 && !dietistApppointments.get(position).getDate().equals(dietistApppointments.get(position - 1).getDate()))
+                || position == 0) {
+            Log.d(TAG, "onDietistAppointmentClick: ");
+        } else {
+            DialogFragment dialogFragment = new ConfirmActionDialog();
+            Bundle bundle = new Bundle();
+            bundle.putString("confirm_action_dialog_message", "¿Desear liberar la cita del "
+                    + PatientAppointmentListAdapter.setDisplayDate(dietistApppointments.get(position).getDate())
+                    + " a las " + dietistApppointments.get(position).getTime() + "?");
+            bundle.putInt("type", ConfirmActionDialog.DELETE_APPOINTMENT_CODE);
+            bundle.putParcelable("object", dietistApppointments.get(position));
+            bundle.putString("patientId", dietistId);
+            dialogFragment.setArguments(bundle);
+            dialogFragment.show(getActivity().getSupportFragmentManager(),"Confirm");
+
+        }
     }
 }
