@@ -62,8 +62,6 @@ public class PatientAppointmentListAdapter extends RecyclerView.Adapter<PatientA
 
     public interface OnPatientAppointmentClickListener {
         void onPatientAppointmentClick(View view, int position);
-
-        void onPatientAppointmentLongClick(int position);
     }
 
     public static String setDisplayDate(String date) {

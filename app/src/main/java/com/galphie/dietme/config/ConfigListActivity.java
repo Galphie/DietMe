@@ -40,11 +40,10 @@ public class ConfigListActivity extends AppCompatActivity implements ConfigOptio
 
     private void init() {
         options.add(new Option(getString(R.string.change_password), ConfigContainerActivity.PASSWORD_CODE));
-        options.add(new Option(getString(R.string.manage_notifications), ConfigContainerActivity.NOTIFICATION_CODE));
         if (currentUser.isAdmin()) {
             options.add(new Option(getString(R.string.manage_appointments), ConfigContainerActivity.APPOINTMENTS_CODE));
+            options.add(new Option(getString(R.string.availability_management), ConfigContainerActivity.AVAILABILITY_CODE));
         }
-        options.add(new Option(getString(R.string.availability_management),ConfigContainerActivity.AVAILABILITY_CODE));
         Collections.sort(options, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
     }
 

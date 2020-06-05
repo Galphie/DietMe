@@ -132,4 +132,5 @@
     <string name="apply">Aplicar</string>
     <string name="invalid_dates">Por favor, introduce fechas válidas</string>
     <string name="restarting_database">Reiniciando base de datos...</string>
+    <string name="no_patient_main_appointments_found">No tienes ninguna cita asignada.\n¿Necesitas pedir una?</string>
 </resources>

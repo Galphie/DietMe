@@ -96,27 +96,40 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
                 return true;
             case R.id.navigation_appointment:
-                Bundle apptBd = new Bundle();
-                apptBd.putParcelable("currentUser", currentUser);
-                Navigation
-                        .findNavController(this, R.id.nav_host_fragment)
-                        .navigate(R.id.appointmentFragment, apptBd);
+                if (currentUser.isAdmin()) {
+                    Bundle apptBd = new Bundle();
+                    apptBd.putParcelable("currentUser", currentUser);
+                    Navigation
+                            .findNavController(this, R.id.nav_host_fragment)
+                            .navigate(R.id.appointmentFragment, apptBd);
+
+                } else {
+                    Bundle apptBd = new Bundle();
+                    apptBd.putParcelable("currentUser", currentUser);
+                    apptBd.putParcelable("patient", currentUser);
+                    apptBd.putString("patientId", Utils.MD5(currentUser.getEmail()).substring(0,6).toUpperCase());
+                    Navigation
+                            .findNavController(this, R.id.nav_host_fragment)
+                            .navigate(R.id.patientMainAppointment, apptBd);
+                }
                 if (getSupportActionBar() != null) {
                     getSupportActionBar().setTitle(getString(R.string.appointment_title));
                     getSupportActionBar().setLogo(R.drawable.ic_calendar_24dp);
                 }
                 return true;
             case R.id.navigation_patients:
-                Bundle patBd = new Bundle();
-                patBd.putParcelable("currentUser", currentUser);
-                Navigation
-                        .findNavController(this, R.id.nav_host_fragment)
-                        .navigate(R.id.patientsFragment, patBd);
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(getString(R.string.patients_title));
-                    getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
+                if (currentUser.isAdmin()) {
+                    Bundle patBd = new Bundle();
+                    patBd.putParcelable("currentUser", currentUser);
+                    Navigation
+                            .findNavController(this, R.id.nav_host_fragment)
+                            .navigate(R.id.patientsFragment, patBd);
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setTitle(getString(R.string.patients_title));
+                        getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
+                    }
+                    return true;
                 }
-                return true;
         }
         return false;
     }
