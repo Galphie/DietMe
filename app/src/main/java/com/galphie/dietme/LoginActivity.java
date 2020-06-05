@@ -3,7 +3,6 @@ package com.galphie.dietme;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -16,8 +15,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.dialog.AccessRequestDialog;
@@ -30,17 +27,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity implements AccessRequestDialog.AccessRequestDialogListener, ValueEventListener {
+
     public static boolean splashed = false;
     public static boolean canFinish = false;
-    private static final int PERMISSION_REQUEST_SEND_SMS = 123;
-    private static final int PERMISSION_REQUEST_RECEIVE_SMS = 321;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -55,18 +49,18 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
         super.onCreate(savedInstanceState);
 
+        DatabaseReference usersRef = database.getReference("Usuario");
+        usersRef.addValueEventListener(this);
+
         if (!splashed) {
             Intent intent = new Intent(this, SplashScreen.class);
             startActivity(intent);
             try {
-                Thread.sleep(800);
+                Thread.sleep(SplashScreen.SPLASH_TIME_OUT);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
-        DatabaseReference usersRef = database.getReference("Usuario");
-        usersRef.addValueEventListener(this);
 
         setContentView(R.layout.activity_login);
 
@@ -82,7 +76,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
         loginBut.setOnClickListener(this::login);
         linkBut.setOnClickListener(v -> {
-            if (checkSMSPermissions()) {
+            if (SmsListener.checkSMSPermissions(this, LoginActivity.this)) {
                 showAccessRequestDialog();
             }
         });
@@ -103,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         }
 
         checkShow.setOnCheckedChangeListener((buttonView, isChecked) -> showPassword(isChecked));
-        checkSMSPermissions();
+        SmsListener.checkSMSPermissions(this, LoginActivity.this);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if ((preferences.getBoolean("isChecked", false))) {
@@ -143,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
         args.putString("mail", emailInput.getText().toString());
         DialogFragment accessRequestDialog = new AccessRequestDialog();
         accessRequestDialog.setArguments(args);
-        accessRequestDialog.show(getSupportFragmentManager(), "Solicitud código");
+        accessRequestDialog.show(getSupportFragmentManager(), "Acceso solicitado.");
     }
 
     @SuppressLint("ResourceAsColor")
@@ -223,57 +217,6 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
 
     }
 
-    protected boolean checkSMSPermissions() {
-        boolean granted = false;
-        if ((ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.RECEIVE_SMS)
-                != PackageManager.PERMISSION_GRANTED)) {
-            if (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.SEND_SMS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        android.Manifest.permission.SEND_SMS)) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.SEND_SMS},
-                            PERMISSION_REQUEST_SEND_SMS);
-                } else {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.SEND_SMS},
-                            PERMISSION_REQUEST_SEND_SMS);
-                }
-            }
-            if (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.RECEIVE_SMS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        android.Manifest.permission.RECEIVE_SMS)) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.RECEIVE_SMS},
-                            PERMISSION_REQUEST_RECEIVE_SMS);
-                } else {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.RECEIVE_SMS},
-                            PERMISSION_REQUEST_RECEIVE_SMS);
-                }
-            }
-        } else {
-            granted = true;
-        }
-        return granted;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_SEND_SMS: {
-            }
-            case PERMISSION_REQUEST_RECEIVE_SMS: {
-            }
-        }
-    }
-
     public void sendSms(User user, String phone) {
         String message = user.getName() + ", tus credenciales:\n" +
                 "#" + user.getEmail() + "#\n" +
@@ -310,6 +253,6 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
     @Override
     protected void onResume() {
         super.onResume();
-        checkSMSPermissions();
+        SmsListener.checkSMSPermissions(this, LoginActivity.this);
     }
 }

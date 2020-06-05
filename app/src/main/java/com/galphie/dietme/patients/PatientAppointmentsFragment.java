@@ -1,5 +1,6 @@
 package com.galphie.dietme.patients;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -18,9 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.PatientAppointmentListAdapter;
-import com.galphie.dietme.appointment.AppointmentFragment;
+import com.galphie.dietme.appointment.NewAppointmentActivity;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
-import com.galphie.dietme.dialog.NewPatientAppointmentDialog;
 import com.galphie.dietme.instantiable.Appointment;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -85,11 +85,9 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
         FloatingActionButton addAppointment = view.findViewById(R.id.add_patient_appointment);
 
         addAppointment.setOnClickListener(v -> {
-            DialogFragment dialogFragment = new NewPatientAppointmentDialog();
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("patient", patient);
-            dialogFragment.setArguments(bundle);
-            dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "New appointment");
+            Intent intent = new Intent(getActivity(), NewAppointmentActivity.class);
+            intent.putExtra("patient", patient);
+            startActivity(intent);
         });
 
         initRecyclerView();
@@ -141,13 +139,12 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
     private boolean onPopUpItemSelected(int position, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit_option:
-                DialogFragment patientAppointmentDialog = new NewPatientAppointmentDialog();
-                Bundle patientAppointmentBundle = new Bundle();
-                patientAppointmentBundle.putParcelable("patient", patient);
-                patientAppointmentBundle.putParcelable("appointmentToEdit",appointments.get(position));
-                patientAppointmentBundle.putBoolean("edit",true);
-                patientAppointmentDialog.setArguments(patientAppointmentBundle);
-                patientAppointmentDialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "New appointment");
+                Utils.toast(getActivity(),"hola");
+                Intent intent = new Intent(getActivity(), NewAppointmentActivity.class);
+                intent.putExtra("edit",true);
+                intent.putExtra("patient",patient);
+                intent.putExtra("appointmentToEdit", appointments.get(position));
+                startActivity(intent);
                 break;
             case R.id.remove_option:
                 DialogFragment dialogFragment = new ConfirmActionDialog();

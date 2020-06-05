@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
@@ -42,7 +41,6 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
     private ArrayList<User> patientsList = new ArrayList<>();
     private User currentUser;
     private RecyclerView recyclerView;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     public PatientsFragment() {
     }
@@ -89,12 +87,6 @@ public class PatientsFragment extends Fragment implements PatientsListAdapter.On
                 Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.developer_action_only));
             }
 
-        });
-        swipeRefreshLayout = view.findViewById(R.id.patients_swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            initRecyclerView();
-            Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
-            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
