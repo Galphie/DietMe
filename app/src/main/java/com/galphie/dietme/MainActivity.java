@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     Bundle apptBd = new Bundle();
                     apptBd.putParcelable("currentUser", currentUser);
                     apptBd.putParcelable("patient", currentUser);
-                    apptBd.putString("patientId", Utils.MD5(currentUser.getEmail()).substring(0,6).toUpperCase());
+                    apptBd.putString("patientId", Utils.MD5(currentUser.getEmail()).substring(0, 6).toUpperCase());
                     Navigation
                             .findNavController(this, R.id.nav_host_fragment)
                             .navigate(R.id.patientMainAppointment, apptBd);
@@ -128,8 +128,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         getSupportActionBar().setTitle(getString(R.string.patients_title));
                         getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
                     }
-                    return true;
+                } else {
+                    Bundle apptBd = new Bundle();
+                    apptBd.putParcelable("currentUser", currentUser);
+                    apptBd.putParcelable("patient", currentUser);
+                    apptBd.putString("patientId", Utils.MD5(currentUser.getEmail()).substring(0, 6).toUpperCase());
+                    Navigation
+                            .findNavController(this, R.id.nav_host_fragment)
+                            .navigate(R.id.patientProfileFragment, apptBd);
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setTitle(getString(R.string.profile_title));
+                        getSupportActionBar().setLogo(R.drawable.ic_person_24dp);
+                    }
                 }
+                return true;
         }
         return false;
     }

@@ -46,7 +46,6 @@ public class PatientAppointmentListAdapter extends RecyclerView.Adapter<PatientA
     static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView date, time;
         private ImageButton optionsButton;
-        private OnPatientAppointmentClickListener mListener;
 
         ViewHolder(@NonNull View itemView, OnPatientAppointmentClickListener mListener) {
             super(itemView);
@@ -54,7 +53,6 @@ public class PatientAppointmentListAdapter extends RecyclerView.Adapter<PatientA
             date = itemView.findViewById(R.id.patient_appointment_date);
             time = itemView.findViewById(R.id.patient_appointment_time);
             optionsButton = itemView.findViewById(R.id.patient_appointment_options_button);
-            this.mListener = mListener;
 
             optionsButton.setOnClickListener(v -> mListener.onPatientAppointmentClick(optionsButton, getAdapterPosition()));
         }

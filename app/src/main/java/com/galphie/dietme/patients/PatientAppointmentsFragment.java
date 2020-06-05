@@ -125,10 +125,6 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
         showPopUp(view, position);
     }
 
-    @Override
-    public void onPatientAppointmentLongClick(int position) {
-    }
-
     private void showPopUp(View view, int position) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.inflate(R.menu.patient_contextual_menu);

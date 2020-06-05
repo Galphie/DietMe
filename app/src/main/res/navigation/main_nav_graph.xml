@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_homeFragment_to_patientMainAppointment"
             app:destination="@id/patientMainAppointment" />
+        <action
+            android:id="@+id/action_homeFragment_to_patientProfileFragment"
+            app:destination="@id/patientProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/appointmentFragment"
@@ -73,4 +76,9 @@
         android:name="com.galphie.dietme.patient_only.PatientMainAppointment"
         android:label="fragment_patient_main_appointment"
         tools:layout="@layout/fragment_patient_main_appointment" />
+    <fragment
+        android:id="@+id/patientProfileFragment"
+        android:name="com.galphie.dietme.PatientProfileFragment"
+        android:label="fragment_patient_profile"
+        tools:layout="@layout/fragment_patient_profile" />
 </navigation>
