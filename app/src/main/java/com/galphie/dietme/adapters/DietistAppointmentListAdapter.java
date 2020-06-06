@@ -32,16 +32,8 @@ public class DietistAppointmentListAdapter extends RecyclerView.Adapter<DietistA
 
     @Override
     public void onBindViewHolder(@NonNull DietistAppointmentListAdapter.ViewHolder holder, int position) {
-        if (position == 0) {
-            holder.date.setText(PatientAppointmentListAdapter.setDisplayDate(appointments.get(position).getDate()));
-            holder.time.setText("");
-        } else if (position > 0 && !appointments.get(position).getDate().equals(appointments.get(position - 1).getDate())) {
-            holder.date.setText(PatientAppointmentListAdapter.setDisplayDate(appointments.get(position).getDate()));
-            holder.time.setText("");
-        } else {
-            holder.date.setText("");
-            holder.time.setText(appointments.get(position).getTime());
-        }
+        holder.date.setText(PatientAppointmentListAdapter.setDisplayDate(appointments.get(position).getDate()));
+        holder.time.setText(appointments.get(position).getTime());
 
     }
 

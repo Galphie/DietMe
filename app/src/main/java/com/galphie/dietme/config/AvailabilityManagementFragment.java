@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +38,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class AvailabilityManagementFragment extends Fragment implements ValueEventListener, DietistAppointmentListAdapter.OnDietistAppointmentClickListener {
     private static final String CURRENT_USER = "currentUser";
@@ -204,9 +201,6 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 Appointment appt = ds.getValue(Appointment.class);
                 dietistApppointments.add(appt);
-                if (appt.getTime().equals("09:00")) {
-                    dietistApppointments.add(appt);
-                }
             }
             Collections.sort(dietistApppointments, (o1, o2) -> o1.getDate().compareToIgnoreCase(o2.getDate()));
             recyclerView.getAdapter().notifyDataSetChanged();
@@ -220,21 +214,16 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
 
     @Override
     public void onDietistAppointmentClick(int position) {
-        if ((position > 0 && !dietistApppointments.get(position).getDate().equals(dietistApppointments.get(position - 1).getDate()))
-                || position == 0) {
-            Log.d(TAG, "onDietistAppointmentClick: ");
-        } else {
-            DialogFragment dialogFragment = new ConfirmActionDialog();
-            Bundle bundle = new Bundle();
-            bundle.putString("confirm_action_dialog_message", "¿Desear liberar la cita del "
-                    + PatientAppointmentListAdapter.setDisplayDate(dietistApppointments.get(position).getDate())
-                    + " a las " + dietistApppointments.get(position).getTime() + "?");
-            bundle.putInt("type", ConfirmActionDialog.DELETE_APPOINTMENT_CODE);
-            bundle.putParcelable("object", dietistApppointments.get(position));
-            bundle.putString("patientId", dietistId);
-            dialogFragment.setArguments(bundle);
-            dialogFragment.show(getActivity().getSupportFragmentManager(),"Confirm");
-
-        }
+        DialogFragment dialogFragment = new ConfirmActionDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("confirm_action_dialog_message", "¿Desear liberar la cita del "
+                + PatientAppointmentListAdapter.setDisplayDate(dietistApppointments.get(position).getDate())
+                + " a las " + dietistApppointments.get(position).getTime() + "?");
+        bundle.putInt("type", ConfirmActionDialog.DELETE_APPOINTMENT_CODE);
+        bundle.putParcelable("object", dietistApppointments.get(position));
+        bundle.putString("patientId", dietistId);
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(getActivity().getSupportFragmentManager(), "Confirm");
     }
 }
+
