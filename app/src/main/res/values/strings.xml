@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">DietMe</string>
-    <string name="email_text">E-Mail</string>
     <string name="password_text">Contraseña</string>
     <string name="ask_for_link">Solicitar enlace</string>
     <string name="log_in">Entrar</string>
@@ -34,7 +33,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
+    <string name="email_text">E-Mail</string>
     <string name="menu_home">Inicio</string>
     <string name="menu_profile">Perfil</string>
 
@@ -134,4 +133,5 @@
     <string name="restarting_database">Reiniciando base de datos...</string>
     <string name="no_patient_main_appointments_found">No tienes ninguna cita asignada.\n¿Necesitas pedir una?</string>
     <string name="profile_title">Perfil</string>
+    <string name="no_complementary_files">Todavía no tienes material complementario</string>
 </resources>

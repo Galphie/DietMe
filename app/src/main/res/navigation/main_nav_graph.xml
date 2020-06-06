@@ -78,7 +78,7 @@
         tools:layout="@layout/fragment_patient_main_appointment" />
     <fragment
         android:id="@+id/patientProfileFragment"
-        android:name="com.galphie.dietme.PatientProfileFragment"
+        android:name="com.galphie.dietme.patient_only.PatientProfileFragment"
         android:label="fragment_patient_profile"
         tools:layout="@layout/fragment_patient_profile" />
 </navigation>

@@ -50,7 +50,7 @@ public class ConfirmActionDialog extends DialogFragment {
                     .setPositiveButton(getString(R.string.accept), (dialog, id) -> {
                         switch (mArgs.getInt("type")) {
                             case CALL_CODE:
-                                Intent call = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mArgs.getString("Object")));
+                                Intent call = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mArgs.getString("object")));
                                 startActivity(call);
                                 break;
                             case EMAIL_CODE:

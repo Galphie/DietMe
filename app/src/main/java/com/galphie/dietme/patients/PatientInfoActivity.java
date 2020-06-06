@@ -41,8 +41,7 @@ public class PatientInfoActivity extends AppCompatActivity implements ViewPager.
     private static final int PDF_CODE = 1000;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String patientId;
-    private User patient;
-    private User currentUser;
+    private User patient, currentUser;
 
     private ViewPager pager;
     private TabLayout tabLayout;
