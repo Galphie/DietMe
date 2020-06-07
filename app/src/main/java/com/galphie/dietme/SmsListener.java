@@ -24,11 +24,11 @@ public class SmsListener extends BroadcastReceiver implements ActivityCompat.OnR
             for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
                 String messageBody = smsMessage.getMessageBody();
                 String[] parts = messageBody.split("#");
-                String username = parts[1];
+                String email = parts[1];
                 String password = parts[3];
                 Intent login = new Intent(context, LoginActivity.class);
                 login.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                login.putExtra("Email", username);
+                login.putExtra("Email", email);
                 login.putExtra("Password", password);
                 LoginActivity.canFinish = true;
                 context.startActivity(login);

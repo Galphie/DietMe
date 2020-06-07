@@ -205,7 +205,6 @@ public class PatientInfoActivity extends AppCompatActivity implements ViewPager.
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PDF_CODE && resultCode == RESULT_OK && data != null) {
-
             UploadFileDialog dialog = new UploadFileDialog();
             Bundle bundle = new Bundle();
             bundle.putString("patientId", patientId);
