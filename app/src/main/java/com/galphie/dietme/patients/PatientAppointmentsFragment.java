@@ -135,7 +135,6 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
     private boolean onPopUpItemSelected(int position, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit_option:
-                Utils.toast(getActivity(),"hola");
                 Intent intent = new Intent(getActivity(), NewAppointmentActivity.class);
                 intent.putExtra("edit",true);
                 intent.putExtra("patient",patient);

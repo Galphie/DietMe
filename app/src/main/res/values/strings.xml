@@ -134,4 +134,5 @@
     <string name="no_patient_main_appointments_found">No tienes ninguna cita asignada.\n¿Necesitas pedir una?</string>
     <string name="profile_title">Perfil</string>
     <string name="no_complementary_files">Todavía no tienes material complementario</string>
+    <string name="replace">Reemplazar</string>
 </resources>

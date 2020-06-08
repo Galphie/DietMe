@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.Appointment;
 import com.galphie.dietme.instantiable.Signing;
 import com.galphie.dietme.instantiable.User;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,13 +32,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class NewAppointmentActivity extends AppCompatActivity implements AppointmentListAdapter.OnAppointmentClickListener {
+public class NewAppointmentActivity extends AppCompatActivity implements AppointmentListAdapter.OnAppointmentClickListener,
+        ValueEventListener {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference appointmentsReference = database.getReference().child("Citas");
     private String dayString;
 
     private Bundle mArgs;
+    private ArrayList<Appointment> userAppointments = new ArrayList<>();
     private ArrayList<Signing> appointments = new ArrayList<>();
     private User patient;
 
@@ -51,6 +55,10 @@ public class NewAppointmentActivity extends AppCompatActivity implements Appoint
         mArgs = getIntent().getExtras();
         patient = Objects.requireNonNull(mArgs).getParcelable("patient");
 
+        DatabaseReference userAppointmentsRef = appointmentsReference
+                .child("users")
+                .child(Objects.requireNonNull(Utils.MD5(patient.getEmail())).substring(0, 6).toUpperCase());
+        userAppointmentsRef.addValueEventListener(this);
         recyclerView = findViewById(R.id.new_appointment_recycler_view);
         CalendarView calendarView = findViewById(R.id.new_appointment_calendar_view);
         noFreeAppointmentsText = findViewById(R.id.no_free_appointments);
@@ -134,19 +142,73 @@ public class NewAppointmentActivity extends AppCompatActivity implements Appoint
         Appointment newAppointment = appointments.get(position).getAppointment();
         newAppointment.setPicked(true);
         newAppointment.setPatientId(Objects.requireNonNull(Utils.MD5(patient.getEmail())).substring(0, 6).toUpperCase());
-
-
-        DialogFragment dialogFragment = new ConfirmActionDialog();
-        Bundle bundle = new Bundle();
-        bundle.putString("confirm_action_dialog_message", "¿Pedir cita a las " + newAppointment.getTime() + "?");
-        bundle.putInt("type", ConfirmActionDialog.NEW_APPOINTMENT_CODE);
-        bundle.putString("dayRef", dayString);
-        bundle.putParcelable("object", newAppointment);
-        if (Objects.requireNonNull(mArgs).getBoolean("edit")) {
-            bundle.putBoolean("edit", true);
-            bundle.putParcelable("appointmentToEdit", mArgs.getParcelable("appointmentToEdit"));
+        if (!appointmentExist(newAppointment) || Objects.requireNonNull(mArgs).getBoolean("edit")) {
+            DialogFragment dialogFragment = new ConfirmActionDialog();
+            Bundle bundle = new Bundle();
+            bundle.putString("confirm_action_dialog_message", "¿Pedir cita a las " + newAppointment.getTime() + "?");
+            bundle.putInt("type", ConfirmActionDialog.NEW_APPOINTMENT_CODE);
+            bundle.putString("dayRef", dayString);
+            bundle.putParcelable("object", newAppointment);
+            if (Objects.requireNonNull(mArgs).getBoolean("edit")) {
+                bundle.putBoolean("edit", true);
+                bundle.putParcelable("appointmentToEdit", mArgs.getParcelable("appointmentToEdit"));
+            }
+            dialogFragment.setArguments(bundle);
+            dialogFragment.show(getSupportFragmentManager(), "Confirm");
+        } else {
+            Appointment appointmentToEdit = checkForAppointment(newAppointment);
+            Snackbar.make(findViewById(R.id.new_appointment_parent), "Ya existe una cita asignada este día.\n¿Desea reemplazarla?", Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.replace), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            DialogFragment dialogFragment = new ConfirmActionDialog();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("confirm_action_dialog_message", "¿Pedir cita a las " + newAppointment.getTime() + "?");
+                            bundle.putInt("type", ConfirmActionDialog.NEW_APPOINTMENT_CODE);
+                            bundle.putString("dayRef", dayString);
+                            bundle.putParcelable("object", newAppointment);
+                            bundle.putBoolean("edit", true);
+                            bundle.putParcelable("appointmentToEdit", appointmentToEdit);
+                            dialogFragment.setArguments(bundle);
+                            dialogFragment.show(getSupportFragmentManager(), "Confirm");
+                        }
+                    })
+                    .setActionTextColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null))
+                    .setBackgroundTint(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null))
+                    .show();
         }
-        dialogFragment.setArguments(bundle);
-        dialogFragment.show(getSupportFragmentManager(), "Confirm");
+    }
+
+    private boolean appointmentExist(Appointment newAppointment) {
+        boolean exist = false;
+        Appointment appointmentToCompare = checkForAppointment(newAppointment);
+        if (appointmentToCompare != null) {
+            exist = true;
+        }
+        return exist;
+    }
+
+    private Appointment checkForAppointment(Appointment newAppointment) {
+        Appointment appointmentFound = null;
+        for (int i = 0; i < userAppointments.size(); i++) {
+            if (newAppointment.getDate().equals(userAppointments.get(i).getDate())) {
+                appointmentFound = userAppointments.get(i);
+            }
+        }
+        return appointmentFound;
+    }
+
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        userAppointments.clear();
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            Appointment appointment = ds.getValue(Appointment.class);
+            userAppointments.add(appointment);
+        }
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
     }
 }
