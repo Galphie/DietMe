@@ -15,6 +15,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.dialog.AccessRequestDialog;
@@ -150,16 +151,19 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
                 finish();
             } else {
                 Snackbar.make(view, getString(R.string.invalid_password), Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(ResourcesCompat.getColor(getResources(),R.color.colorPrimaryDark, null))
                         .setAction("Action", null)
                         .show();
             }
         } else {
             if (emailInput.getText().length() == 0) {
                 Snackbar.make(view, getString(R.string.empty_email), Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(ResourcesCompat.getColor(getResources(),R.color.colorPrimaryDark, null))
                         .setAction("Action", null)
                         .show();
             } else {
                 Snackbar.make(view, getString(R.string.no_such_email) + emailInput.getText().toString() + ".", Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(ResourcesCompat.getColor(getResources(),R.color.colorPrimaryDark, null))
                         .setAction("Action", null)
                         .show();
             }

@@ -34,8 +34,8 @@ export const onUserAppointmentDeleted = functions.database
         });
 
         return snapshot.ref.root.child(`/Citas/${year}/${month}/${day}/${time}`).set(emptyAppointment)
-    })*/
-
+    })
+*/
 export const onUserAppointmentModified = functions.database
     .ref('/Citas/{year}/{month}/{day}/{time}')
     .onUpdate((change, context) => {
