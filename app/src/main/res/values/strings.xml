@@ -135,4 +135,6 @@
     <string name="profile_title">Perfil</string>
     <string name="no_complementary_files">Todavía no tienes material complementario</string>
     <string name="replace">Reemplazar</string>
+    <string name="blocked_appointments">Citas bloqueadas.</string>
+    <string name="email_already_registered">Ya existe un usuario registrado con este correo.</string>
 </resources>

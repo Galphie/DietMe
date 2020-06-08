@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -18,18 +19,23 @@ import com.galphie.dietme.Utils;
 import com.galphie.dietme.instantiable.Measures;
 import com.galphie.dietme.instantiable.User;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
 
-public class NewPatientActivity extends AppCompatActivity {
+public class NewPatientActivity extends AppCompatActivity implements ValueEventListener {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private Measures measures = new Measures(true);
     private String password = null;
 
+    private ArrayList<User> users = new ArrayList<>();
     private CheckBox checkIsAdmin;
     private RadioButton manButton, womanButton, anotherButton;
     private DatePickerDialog datePickerDialog;
@@ -41,6 +47,9 @@ public class NewPatientActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_patient);
+
+        DatabaseReference usersRef = database.getReference().child("Usuario");
+        usersRef.addValueEventListener(this);
 
         TextView newPatientText = findViewById(R.id.newPatientText);
         newNameInput = findViewById(R.id.new_name_input);
@@ -96,10 +105,11 @@ public class NewPatientActivity extends AppCompatActivity {
                     .setAction("Action", null)
                     .show();
         } else {
-            if (Utils.hasEmailFormat(newEmailInput.getText().toString())) {
+            if (Utils.hasEmailFormat(newEmailInput.getText().toString()) && !patientExists(newEmailInput.getText().toString())) {
+                newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_on_secondary, null));
                 checkPhoneNumber();
                 if (Utils.hasPhoneFormat(newPhoneInput.getText().toString())) {
-                    newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_on_secondary, null));
+                    newPhoneInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_on_secondary, null));
                     int gender = 0;
                     boolean admin = false;
                     if (manButton.isChecked()) {
@@ -110,7 +120,6 @@ public class NewPatientActivity extends AppCompatActivity {
                     if (checkIsAdmin.isChecked()) {
                         admin = true;
                     }
-                    newPhoneInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_on_secondary, null));
                     User user = new User(newBirthdateInput.getText().toString(),
                             newEmailInput.getText().toString(),
                             newForenamesInput.getText().toString(),
@@ -140,10 +149,17 @@ public class NewPatientActivity extends AppCompatActivity {
                     newPhoneInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
                 }
             } else {
-                Snackbar.make(v, getString(R.string.invalid_email), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
-                newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
+                if (patientExists(newEmailInput.getText().toString())) {
+                    Snackbar.make(v, getString(R.string.email_already_registered), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null)
+                            .show();
+                    newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
+                } else {
+                    Snackbar.make(v, getString(R.string.invalid_email), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null)
+                            .show();
+                    newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
+                }
             }
         }
     }
@@ -183,5 +199,29 @@ public class NewPatientActivity extends AppCompatActivity {
         } else {
             anotherButton.setChecked(true);
         }
+    }
+
+    private boolean patientExists(String email) {
+        boolean exists = false;
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getEmail().equals(email)) {
+                exists = true;
+            }
+        }
+        return exists;
+    }
+
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        users.clear();
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            User user = ds.getValue(User.class);
+            users.add(user);
+        }
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
     }
 }

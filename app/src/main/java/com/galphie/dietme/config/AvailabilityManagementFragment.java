@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +25,8 @@ import com.galphie.dietme.adapters.PatientAppointmentListAdapter;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
 import com.galphie.dietme.instantiable.Appointment;
 import com.galphie.dietme.instantiable.User;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,6 +41,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Objects;
 
 public class AvailabilityManagementFragment extends Fragment implements ValueEventListener, DietistAppointmentListAdapter.OnDietistAppointmentClickListener {
     private static final String CURRENT_USER = "currentUser";
@@ -150,6 +154,9 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
             }
             firstDay = firstDay.plusHours(1);
         }
+        Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(R.id.availability_fragment_parent), getString(R.string.blocked_appointments), BaseTransientBottomBar.LENGTH_LONG)
+                .setBackgroundTint(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null))
+                .show();
     }
 
     private boolean checkDates(String startDate, String endDate) {
@@ -223,7 +230,7 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
         bundle.putParcelable("object", dietistApppointments.get(position));
         bundle.putString("patientId", dietistId);
         dialogFragment.setArguments(bundle);
-        dialogFragment.show(getActivity().getSupportFragmentManager(), "Confirm");
+        dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Confirm");
     }
 }
 

@@ -110,12 +110,14 @@ public class PasswordFragment extends Fragment implements TextWatcher {
                     } else {
                         repeatPassText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
                         Snackbar.make(view, getString(R.string.invalid_repeat_password), Snackbar.LENGTH_LONG)
+                                .setBackgroundTint(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null))
                                 .setAction("Action", null)
                                 .show();
                     }
                 } else {
                     newPassText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
                     Snackbar.make(view, getString(R.string.invalid_new_password), Snackbar.LENGTH_LONG)
+                            .setBackgroundTint(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null))
                             .setAction("Action", null)
                             .show();
                 }
@@ -123,6 +125,7 @@ public class PasswordFragment extends Fragment implements TextWatcher {
             } else {
                 oldPassText.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
                 Snackbar.make(view, getString(R.string.invalid_password), Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null))
                         .setAction("Action", null)
                         .show();
             }
