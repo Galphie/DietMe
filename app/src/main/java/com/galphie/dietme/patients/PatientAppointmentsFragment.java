@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
-import com.galphie.dietme.Utils;
 import com.galphie.dietme.adapters.PatientAppointmentListAdapter;
 import com.galphie.dietme.appointment.NewAppointmentActivity;
 import com.galphie.dietme.dialog.ConfirmActionDialog;
@@ -30,6 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -107,7 +108,12 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
             noAppointmentsText.setVisibility(View.GONE);
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 Appointment appointment = ds.getValue(Appointment.class);
-                appointments.add(appointment);
+                String appointmentDate = appointment.getDate() + " " + appointment.getTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime completeDate = LocalDateTime.parse(appointmentDate, formatter);
+                if (completeDate.isAfter(LocalDateTime.now())) {
+                    appointments.add(appointment);
+                }
             }
             Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
         } else {
@@ -136,8 +142,8 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
         switch (item.getItemId()) {
             case R.id.edit_option:
                 Intent intent = new Intent(getActivity(), NewAppointmentActivity.class);
-                intent.putExtra("edit",true);
-                intent.putExtra("patient",patient);
+                intent.putExtra("edit", true);
+                intent.putExtra("patient", patient);
                 intent.putExtra("appointmentToEdit", appointments.get(position));
                 startActivity(intent);
                 break;
@@ -145,12 +151,12 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
                 DialogFragment dialogFragment = new ConfirmActionDialog();
                 Bundle confirmActionBundle = new Bundle();
                 confirmActionBundle.putString("confirm_action_dialog_message", "¿Eliminar cita del día " +
-                        PatientAppointmentListAdapter.setDisplayDate(appointments.get(position).getDate()) + ", a las " +appointments.get(position).getTime() + "?");
-                confirmActionBundle.putInt("type",ConfirmActionDialog.DELETE_APPOINTMENT_CODE);
+                        PatientAppointmentListAdapter.setDisplayDate(appointments.get(position).getDate()) + ", a las " + appointments.get(position).getTime() + "?");
+                confirmActionBundle.putInt("type", ConfirmActionDialog.DELETE_APPOINTMENT_CODE);
                 confirmActionBundle.putParcelable("object", appointments.get(position));
                 confirmActionBundle.putString("patientId", patientId);
                 dialogFragment.setArguments(confirmActionBundle);
-                dialogFragment.show(getActivity().getSupportFragmentManager(),"Confirm");
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "Confirm");
                 break;
         }
         return true;

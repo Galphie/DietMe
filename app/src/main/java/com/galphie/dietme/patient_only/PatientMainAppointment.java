@@ -30,6 +30,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -95,7 +97,12 @@ public class PatientMainAppointment extends Fragment implements ValueEventListen
             arrow.setVisibility(View.GONE);
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 Appointment appointment = ds.getValue(Appointment.class);
-                appointments.add(appointment);
+                String appointmentDate = appointment.getDate() + " " + appointment.getTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime completeDate = LocalDateTime.parse(appointmentDate, formatter);
+                if (completeDate.isAfter(LocalDateTime.now())) {
+                    appointments.add(appointment);
+                }
             }
             Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
         } else {

@@ -105,7 +105,8 @@ public class NewPatientActivity extends AppCompatActivity implements ValueEventL
                     .setAction("Action", null)
                     .show();
         } else {
-            if (Utils.hasEmailFormat(newEmailInput.getText().toString()) && !patientExists(newEmailInput.getText().toString())) {
+            if ((Utils.hasEmailFormat(newEmailInput.getText().toString()) && !patientExists(newEmailInput.getText().toString()))
+            || bundle.getBoolean("edit")) {
                 newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_on_secondary, null));
                 checkPhoneNumber();
                 if (Utils.hasPhoneFormat(newPhoneInput.getText().toString())) {

@@ -108,7 +108,13 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
 
                     firstDay = firstDay.minusMinutes(firstDay.getMinute());
                     lastDay = lastDay.minusMinutes(lastDay.getMinute());
-                    setAppointmentsPicked(firstDay, lastDay, formatter, appointmentsRef);
+                    if (firstDay.isAfter(LocalDateTime.now())) {
+                        setAppointmentsPicked(firstDay, lastDay, formatter, appointmentsRef);
+                    } else {
+                        Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(R.id.availability_fragment_parent), getString(R.string.impossible_to_block_previous_date), BaseTransientBottomBar.LENGTH_LONG)
+                                .setBackgroundTint(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null))
+                                .show();
+                    }
                 } else {
                     Utils.toast(getActivity().getApplicationContext(), getString(R.string.invalid_dates));
                 }
@@ -207,7 +213,12 @@ public class AvailabilityManagementFragment extends Fragment implements ValueEve
         if (dataSnapshot.hasChildren()) {
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 Appointment appt = ds.getValue(Appointment.class);
-                dietistApppointments.add(appt);
+                String appointmentDate = appt.getDate() + " " + appt.getTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime completeDate = LocalDateTime.parse(appointmentDate, formatter);
+                if (completeDate.isAfter(LocalDateTime.now())) {
+                    dietistApppointments.add(appt);
+                }
             }
             Collections.sort(dietistApppointments, (o1, o2) -> o1.getDate().compareToIgnoreCase(o2.getDate()));
             recyclerView.getAdapter().notifyDataSetChanged();
