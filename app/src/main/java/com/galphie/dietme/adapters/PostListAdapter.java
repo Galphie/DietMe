@@ -38,6 +38,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHo
     }
 
     @Override
+    
     public void onBindViewHolder(@NonNull PostListAdapter.ViewHolder holder, int position) {
         String time = Utils.timeBetween(Utils.stringToLocalDateTime(postArrayList.get(position).getPublishDate()));
         String message = postArrayList.get(position).getMessage();

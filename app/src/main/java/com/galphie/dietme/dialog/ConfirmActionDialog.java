@@ -2,24 +2,27 @@ package com.galphie.dietme.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
+import com.galphie.dietme.adapters.PatientAppointmentListAdapter;
 import com.galphie.dietme.config.AppointmentsManagementFragment;
-import com.galphie.dietme.config.ConfigContainerActivity;
 import com.galphie.dietme.instantiable.Appointment;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -40,6 +43,8 @@ public class ConfirmActionDialog extends DialogFragment {
     public static final int DELETE_POST_CODE = 6663;
     public static final int DELETE_APPOINTMENT_CODE = 6664;
     public static final int RESTART_CODE = 0;
+
+    private static final String CHANNEL_ID = "canal1";
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -102,7 +107,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                     userAppointmentToReplaceRef.removeValue();
                                     DatabaseReference appointmentToReplaceRef = database.getReference()
                                             .child("Citas")
-                                            .child(editedAppointment.getDate().replace("-","/"))
+                                            .child(editedAppointment.getDate().replace("-", "/"))
                                             .child(editedAppointment.getTime());
                                     appointmentToReplaceRef.removeValue();
                                 }
