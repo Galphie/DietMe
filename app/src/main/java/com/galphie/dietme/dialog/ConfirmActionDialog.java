@@ -100,16 +100,21 @@ public class ConfirmActionDialog extends DialogFragment {
                             case NEW_APPOINTMENT_CODE:
                                 if (mArgs.getBoolean("edit")) {
                                     Appointment editedAppointment = mArgs.getParcelable("appointmentToEdit");
+                                    Appointment emptyAppointment = new Appointment(
+                                            null,
+                                            editedAppointment.getTime(),
+                                            editedAppointment.getDate(),
+                                            false);
                                     DatabaseReference userAppointmentToReplaceRef = database.getReference()
                                             .child("Citas/users")
                                             .child(editedAppointment.getPatientId())
                                             .child(editedAppointment.getDate() + "-" + editedAppointment.getTime());
-                                    userAppointmentToReplaceRef.removeValue();
                                     DatabaseReference appointmentToReplaceRef = database.getReference()
                                             .child("Citas")
                                             .child(editedAppointment.getDate().replace("-", "/"))
                                             .child(editedAppointment.getTime());
-                                    appointmentToReplaceRef.removeValue();
+                                    userAppointmentToReplaceRef.removeValue();
+                                    appointmentToReplaceRef.setValue(emptyAppointment);
                                 }
                                 String dayRef = mArgs.getString("dayRef");
                                 Appointment newAppointment = mArgs.getParcelable("object");
