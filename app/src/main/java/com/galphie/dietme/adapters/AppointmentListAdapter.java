@@ -27,14 +27,13 @@ public class AppointmentListAdapter extends RecyclerView.Adapter<AppointmentList
     @Override
     public AppointmentListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.appointment_list_item, parent, false);
-        return new AppointmentListAdapter.ViewHolder(view, mListener);
+        return new ViewHolder(view, mListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull AppointmentListAdapter.ViewHolder holder, int position) {
         holder.time.setText(signings.get(position).getAppointment().getTime());
-        holder.name.setText(signings.get(position).getUser().getName()
-                + " " + signings.get(position).getUser().getForenames());
+        holder.name.setText(String.format("%s %s", signings.get(position).getUser().getName(), signings.get(position).getUser().getForenames()));
 
     }
 
@@ -43,23 +42,21 @@ public class AppointmentListAdapter extends RecyclerView.Adapter<AppointmentList
         return signings.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView time, name;
-        private OnAppointmentClickListener mListener;
 
         public ViewHolder(@NonNull View itemView, OnAppointmentClickListener mListener) {
             super(itemView);
 
             time = itemView.findViewById(R.id.appointment_item_time);
             name = itemView.findViewById(R.id.appointment_item_patient_name);
-            this.mListener = mListener;
 
             itemView.setOnClickListener(v -> mListener.onAppointmentClick(getAdapterPosition()));
         }
     }
 
     public interface OnAppointmentClickListener {
-        void onAppointmentClick (int position);
+        void onAppointmentClick(int position);
     }
 }

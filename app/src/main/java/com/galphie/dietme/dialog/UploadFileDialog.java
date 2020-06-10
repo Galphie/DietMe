@@ -1,7 +1,6 @@
 package com.galphie.dietme.dialog;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -50,38 +49,35 @@ public class UploadFileDialog extends DialogFragment implements TextWatcher {
         nameEdit.addTextChangedListener(this);
 
         builder.setView(view)
-                .setTitle("Introduce el nombre del archivo a subir:")
-                .setPositiveButton(getString(R.string.upload), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String newFileName = nameEdit.getText().toString();
-                        String patientId = getArguments().getString("patientId");
-                        newFileName = newFileName.concat(".pdf");
-                        Uri selectedPdf = Uri.parse(getArguments().getString("pdf"));
-                        StorageMetadata metadata = new StorageMetadata.Builder()
-                                .setContentType("application/pdf")
-                                .build();
-                        StorageReference userFiles = storage.getReference().child("users/" + patientId);
-                        DatabaseReference userFilesDatabase = database.getReference().child("Archivos/users/" + patientId);
-                        StorageReference selectedPdfRef = userFiles.child(newFileName);
-                        UploadTask uploadTask = selectedPdfRef.putFile(selectedPdf, metadata);
-                        uploadTask.addOnSuccessListener(taskSnapshot -> {
-                        });
-                        Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
-                            if (!task.isSuccessful()) {
-                                throw task.getException();
-                            }
-                            return selectedPdfRef.getDownloadUrl();
-                        }).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Uri downloadUri = task.getResult();
-                                CustomFile uploadedFile = new CustomFile(selectedPdfRef.getName(), downloadUri.toString(),selectedPdfRef.getPath());
-                                userFilesDatabase.child(Utils.MD5(uploadedFile.getName())).setValue(uploadedFile);
-                            }
-                        });
-                        dismiss();
-                        Utils.toast(getActivity().getApplicationContext(), getString(R.string.succesfully_upload));
-                    }
+                .setTitle(R.string.introduce_file_name)
+                .setPositiveButton(getString(R.string.upload), (dialog, which) -> {
+                    String newFileName = nameEdit.getText().toString();
+                    String patientId = Objects.requireNonNull(getArguments()).getString("patientId");
+                    newFileName = newFileName.concat(".pdf");
+                    Uri selectedPdf = Uri.parse(getArguments().getString("pdf"));
+                    StorageMetadata metadata = new StorageMetadata.Builder()
+                            .setContentType("application/pdf")
+                            .build();
+                    StorageReference userFiles = storage.getReference().child("users/" + patientId);
+                    DatabaseReference userFilesDatabase = database.getReference().child("Archivos/users/" + patientId);
+                    StorageReference selectedPdfRef = userFiles.child(newFileName);
+                    UploadTask uploadTask = selectedPdfRef.putFile(selectedPdf, metadata);
+                    uploadTask.addOnSuccessListener(taskSnapshot -> {
+                    });
+                    Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
+                        if (!task.isSuccessful()) {
+                            throw Objects.requireNonNull(task.getException());
+                        }
+                        return selectedPdfRef.getDownloadUrl();
+                    }).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            CustomFile uploadedFile = new CustomFile(selectedPdfRef.getName(), Objects.requireNonNull(downloadUri).toString(), selectedPdfRef.getPath());
+                            userFilesDatabase.child(Objects.requireNonNull(Utils.MD5(uploadedFile.getName()))).setValue(uploadedFile);
+                        }
+                    });
+                    Utils.toast(getActivity().getApplicationContext(), getString(R.string.succesfully_upload));
+                    dismiss();
                 });
 
         return builder.create();
@@ -99,6 +95,6 @@ public class UploadFileDialog extends DialogFragment implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        nameText.setText(s.toString() + ".pdf");
+        nameText.setText(String.format("%s.pdf", s.toString()));
     }
 }

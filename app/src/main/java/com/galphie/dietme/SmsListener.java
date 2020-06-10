@@ -46,30 +46,16 @@ public class SmsListener extends BroadcastReceiver implements ActivityCompat.OnR
             if (ContextCompat.checkSelfPermission(context,
                     android.Manifest.permission.SEND_SMS)
                     != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
-                        android.Manifest.permission.SEND_SMS)) {
-                    ActivityCompat.requestPermissions(activity,
-                            new String[]{android.Manifest.permission.SEND_SMS},
-                            PERMISSION_REQUEST_SEND_SMS);
-                } else {
-                    ActivityCompat.requestPermissions(activity,
-                            new String[]{android.Manifest.permission.SEND_SMS},
-                            PERMISSION_REQUEST_SEND_SMS);
-                }
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{android.Manifest.permission.SEND_SMS},
+                        PERMISSION_REQUEST_SEND_SMS);
             }
             if (ContextCompat.checkSelfPermission(context,
                     android.Manifest.permission.RECEIVE_SMS)
                     != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
-                        android.Manifest.permission.RECEIVE_SMS)) {
-                    ActivityCompat.requestPermissions(activity,
-                            new String[]{android.Manifest.permission.RECEIVE_SMS},
-                            PERMISSION_REQUEST_RECEIVE_SMS);
-                } else {
-                    ActivityCompat.requestPermissions(activity,
-                            new String[]{android.Manifest.permission.RECEIVE_SMS},
-                            PERMISSION_REQUEST_RECEIVE_SMS);
-                }
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{android.Manifest.permission.RECEIVE_SMS},
+                        PERMISSION_REQUEST_RECEIVE_SMS);
             }
         } else {
             granted = true;

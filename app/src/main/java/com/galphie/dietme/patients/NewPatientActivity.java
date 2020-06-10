@@ -154,13 +154,12 @@ public class NewPatientActivity extends AppCompatActivity implements ValueEventL
                     Snackbar.make(v, getString(R.string.email_already_registered), Snackbar.LENGTH_LONG)
                             .setAction("Action", null)
                             .show();
-                    newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
                 } else {
                     Snackbar.make(v, getString(R.string.invalid_email), Snackbar.LENGTH_LONG)
                             .setAction("Action", null)
                             .show();
-                    newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
                 }
+                newEmailInput.setTextColor(ResourcesCompat.getColor(getResources(), R.color.design_default_color_error, null));
             }
         }
     }

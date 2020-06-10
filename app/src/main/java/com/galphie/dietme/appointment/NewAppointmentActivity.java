@@ -157,7 +157,7 @@ public class NewAppointmentActivity extends AppCompatActivity implements Appoint
             dialogFragment.show(getSupportFragmentManager(), "Confirm");
         } else {
             Appointment appointmentToEdit = checkForAppointment(newAppointment);
-            Snackbar.make(findViewById(R.id.new_appointment_parent), "Ya existe una cita asignada este día.\n¿Desea reemplazarla?", Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(R.id.new_appointment_parent), R.string.appointment_already_created, Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.replace), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

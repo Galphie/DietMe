@@ -41,7 +41,7 @@ public class SharedFileListAdapter extends RecyclerView.Adapter<SharedFileListAd
         return sharedFiles.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         TextView name;
         ImageButton button;

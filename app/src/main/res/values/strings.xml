@@ -138,4 +138,6 @@
     <string name="blocked_appointments">Citas bloqueadas.</string>
     <string name="email_already_registered">Ya existe un usuario registrado con este correo.</string>
     <string name="impossible_to_block_previous_date">No se pueden bloquear citas anteriores a la fecha actual.</string>
+    <string name="appointment_already_created">Ya existe una cita asignada este día.\n¿Desea reemplazarla?</string>
+    <string name="introduce_file_name">Introduce el nombre del archivo a subir:</string>
 </resources>

@@ -27,7 +27,7 @@ public class DietistAppointmentListAdapter extends RecyclerView.Adapter<DietistA
     @Override
     public DietistAppointmentListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dietist_appointment_list_item, parent, false);
-        return new DietistAppointmentListAdapter.ViewHolder(view, mListener);
+        return new ViewHolder(view, mListener);
     }
 
     @Override
@@ -42,17 +42,15 @@ public class DietistAppointmentListAdapter extends RecyclerView.Adapter<DietistA
         return appointments.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView date, time;
-        private OnDietistAppointmentClickListener mListener;
 
         public ViewHolder(@NonNull View itemView, OnDietistAppointmentClickListener mListener) {
             super(itemView);
 
             date = itemView.findViewById(R.id.dietist_date);
             time = itemView.findViewById(R.id.dietist_time);
-            this.mListener = mListener;
 
             itemView.setOnClickListener(v -> mListener.onDietistAppointmentClick(getAdapterPosition()));
         }

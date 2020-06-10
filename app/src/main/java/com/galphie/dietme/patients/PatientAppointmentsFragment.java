@@ -108,7 +108,7 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
             noAppointmentsText.setVisibility(View.GONE);
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 Appointment appointment = ds.getValue(Appointment.class);
-                String appointmentDate = appointment.getDate() + " " + appointment.getTime();
+                String appointmentDate = Objects.requireNonNull(appointment).getDate() + " " + appointment.getTime();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 LocalDateTime completeDate = LocalDateTime.parse(appointmentDate, formatter);
                 if (completeDate.isAfter(LocalDateTime.now())) {
@@ -156,7 +156,7 @@ public class PatientAppointmentsFragment extends Fragment implements ValueEventL
                 confirmActionBundle.putParcelable("object", appointments.get(position));
                 confirmActionBundle.putString("patientId", patientId);
                 dialogFragment.setArguments(confirmActionBundle);
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "Confirm");
+                dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Confirm");
                 break;
         }
         return true;

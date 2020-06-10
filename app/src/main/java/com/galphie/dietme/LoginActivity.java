@@ -177,13 +177,12 @@ public class LoginActivity extends AppCompatActivity implements AccessRequestDia
             editor.putString("Email", emailInput.getText().toString());
             editor.putString("Password", passInput.getText().toString());
             editor.putBoolean("isChecked", true);
-            editor.apply();
         } else {
             editor.putString("Email", "");
             editor.putString("Password", "");
             editor.putBoolean("isChecked", false);
-            editor.apply();
         }
+        editor.apply();
     }
 
     public boolean isRegistered(String user) {

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,7 +26,7 @@ import java.util.Objects;
 public class PatientProfileFragment extends Fragment implements ValueEventListener {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private User currentUser, patient;
+    private User patient;
     private String patientId;
 
     private TextView patientEmailText;
@@ -39,7 +38,6 @@ public class PatientProfileFragment extends Fragment implements ValueEventListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.currentUser = getArguments().getParcelable("currentUser");
             this.patient = getArguments().getParcelable("patient");
             this.patientId = getArguments().getString("patientId");
         }
@@ -63,10 +61,10 @@ public class PatientProfileFragment extends Fragment implements ValueEventListen
         patientAgeText = view.findViewById(R.id.profile_patient_age);
         patientGenderText = view.findViewById(R.id.profile_patient_gender);
 
-        BasicInfoProfileFragment basicInfoProfileFragment = BasicInfoProfileFragment.newInstance(patientId,patient);
+        BasicInfoProfileFragment basicInfoProfileFragment = BasicInfoProfileFragment.newInstance(patientId, patient);
         getChildFragmentManager()
                 .beginTransaction()
-                .add(R.id.profile_container,basicInfoProfileFragment)
+                .add(R.id.profile_container, basicInfoProfileFragment)
                 .commit();
     }
 

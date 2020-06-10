@@ -38,8 +38,6 @@ public class BasicInfoProfileFragment extends Fragment implements ValueEventList
     private static final String PATIENT = "patient";
 
     private String patientId;
-    private User patient;
-    private Measures dbMeasures;
     private ArrayList<CustomFile> sharedFiles = new ArrayList<>();
     private RecyclerView recyclerView;
     private TextView noSharedFilesText;
@@ -63,7 +61,6 @@ public class BasicInfoProfileFragment extends Fragment implements ValueEventList
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             patientId = getArguments().getString(PATIENT_ID);
-            patient = getArguments().getParcelable(PATIENT);
         }
     }
 
@@ -77,7 +74,7 @@ public class BasicInfoProfileFragment extends Fragment implements ValueEventList
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DatabaseReference measuresReference = database.getReference().child("Usuario/"+patientId+"/measures");
+        DatabaseReference measuresReference = database.getReference().child("Usuario/" + patientId + "/measures");
         DatabaseReference filesReference = database.getReference().child("Archivos/users/" + patientId);
 
         measuresReference.addValueEventListener(this);
@@ -87,7 +84,6 @@ public class BasicInfoProfileFragment extends Fragment implements ValueEventList
                 if (!dataSnapshot.hasChildren()) {
                     noSharedFilesText.setVisibility(View.VISIBLE);
                     sharedFiles.clear();
-                    Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
                 } else {
                     sharedFiles.clear();
                     noSharedFilesText.setVisibility(View.INVISIBLE);
@@ -96,8 +92,8 @@ public class BasicInfoProfileFragment extends Fragment implements ValueEventList
                         sharedFiles.add(customFile);
                         Collections.sort(sharedFiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
                     }
-                    Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
                 }
+                Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
             }
 
             @Override
@@ -137,7 +133,7 @@ public class BasicInfoProfileFragment extends Fragment implements ValueEventList
     @Override
     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
         if (dataSnapshot.getValue() != null) {
-            dbMeasures = dataSnapshot.getValue(Measures.class);
+            Measures dbMeasures = dataSnapshot.getValue(Measures.class);
             init(Objects.requireNonNull(dbMeasures));
         }
     }

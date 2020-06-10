@@ -55,11 +55,11 @@ public class BodyCompositionFragment extends Fragment implements ValueEventListe
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             User patient = getArguments().getParcelable(PATIENT);
-            patientId = Objects.requireNonNull(Utils.MD5(Objects.requireNonNull(patient).getEmail())).substring(0,6).toUpperCase();
+            patientId = Objects.requireNonNull(Utils.MD5(Objects.requireNonNull(patient).getEmail())).substring(0, 6).toUpperCase();
 
             DatabaseReference measuresRef = database.getReference("Usuario/" + patientId).child("measures");
 
-             measuresRef.addValueEventListener(this);
+            measuresRef.addValueEventListener(this);
         }
     }
 
@@ -128,8 +128,8 @@ public class BodyCompositionFragment extends Fragment implements ValueEventListe
             double whI = calculateWaistHipIndex(measures.getWaist(), measures.getHip());
             waistHipIndexText.setText(String.valueOf(whI));
         }
-        leanMassText.setText(String.format("%s%%", String.valueOf(measures.getLeanMass())));
-        fatMassText.setText(String.format("%s%%", String.valueOf(measures.getFatMass())));
+        leanMassText.setText(String.format("%s%%", measures.getLeanMass()));
+        fatMassText.setText(String.format("%s%%", measures.getFatMass()));
     }
 
     private static double calculateWaistHipIndex(double waist, double hip) {

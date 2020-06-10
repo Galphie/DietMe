@@ -1,17 +1,11 @@
 package com.galphie.dietme.adapters;
 
-import android.text.Html;
-import android.text.Spannable;
-import android.text.method.LinkMovementMethod;
-import android.text.style.BackgroundColorSpan;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.galphie.dietme.R;
@@ -19,7 +13,6 @@ import com.galphie.dietme.Utils;
 import com.galphie.dietme.instantiable.Post;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 
 public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
     private ArrayList<Post> postArrayList;
@@ -38,7 +31,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHo
     }
 
     @Override
-    
+
     public void onBindViewHolder(@NonNull PostListAdapter.ViewHolder holder, int position) {
         String time = Utils.timeBetween(Utils.stringToLocalDateTime(postArrayList.get(position).getPublishDate()));
         String message = postArrayList.get(position).getMessage();

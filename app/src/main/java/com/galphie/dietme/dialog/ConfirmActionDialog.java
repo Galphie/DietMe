@@ -2,25 +2,18 @@ package com.galphie.dietme.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.galphie.dietme.R;
 import com.galphie.dietme.Utils;
-import com.galphie.dietme.adapters.PatientAppointmentListAdapter;
 import com.galphie.dietme.config.AppointmentsManagementFragment;
 import com.galphie.dietme.instantiable.Appointment;
 import com.google.firebase.database.DatabaseReference;
@@ -43,8 +36,6 @@ public class ConfirmActionDialog extends DialogFragment {
     public static final int DELETE_POST_CODE = 6663;
     public static final int DELETE_APPOINTMENT_CODE = 6664;
     public static final int RESTART_CODE = 0;
-
-    private static final String CHANNEL_ID = "canal1";
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -74,7 +65,8 @@ public class ConfirmActionDialog extends DialogFragment {
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
                                 LocalDateTime firstDay = LocalDateTime.parse(start, formatter);
                                 getParentFragmentManager().popBackStack();
-                                appointmentsRef.child("users").removeValue();
+                                appointmentsRef
+                                        .child("users").removeValue();
                                 new Handler().postDelayed(() -> appointmentsRef.removeValue().addOnSuccessListener(aVoid1 -> resetAppointmentsDatabase(appointmentsRef, formatter, firstDay)), 3000);
                                 Utils.toast(Objects.requireNonNull(getActivity()).getApplicationContext(), getString(R.string.restarting_database));
                                 break;
@@ -86,8 +78,11 @@ public class ConfirmActionDialog extends DialogFragment {
                                 String patientId = mArgs.getString("patientId");
                                 String fileName = mArgs.getString("fileName");
                                 String path = mArgs.getString("path");
-                                StorageReference fileCloudRef = storage.getReference().child(Objects.requireNonNull(path));
-                                DatabaseReference fileDatabaseRef = database.getReference().child("Archivos/users/" + patientId).child(Objects.requireNonNull(Utils.MD5(Objects.requireNonNull(fileName))));
+                                StorageReference fileCloudRef = storage.getReference()
+                                        .child(Objects.requireNonNull(path));
+                                DatabaseReference fileDatabaseRef = database.getReference()
+                                        .child("Archivos/users/" + patientId)
+                                        .child(Objects.requireNonNull(Utils.MD5(Objects.requireNonNull(fileName))));
                                 fileCloudRef.delete().addOnSuccessListener(aVoid -> fileDatabaseRef.removeValue());
                                 break;
                             case DELETE_POST_CODE:
@@ -102,7 +97,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                     Appointment editedAppointment = mArgs.getParcelable("appointmentToEdit");
                                     Appointment emptyAppointment = new Appointment(
                                             null,
-                                            editedAppointment.getTime(),
+                                            Objects.requireNonNull(editedAppointment).getTime(),
                                             editedAppointment.getDate(),
                                             false);
                                     DatabaseReference userAppointmentToReplaceRef = database.getReference()
@@ -118,7 +113,7 @@ public class ConfirmActionDialog extends DialogFragment {
                                 }
                                 String dayRef = mArgs.getString("dayRef");
                                 Appointment newAppointment = mArgs.getParcelable("object");
-                                newAppointment.setDate(dayRef.replace("/", "-"));
+                                Objects.requireNonNull(newAppointment).setDate(Objects.requireNonNull(dayRef).replace("/", "-"));
                                 DatabaseReference newAppointmentRef = database.getReference()
                                         .child("Citas/" + dayRef)
                                         .child(newAppointment.getTime());
@@ -129,11 +124,11 @@ public class ConfirmActionDialog extends DialogFragment {
                                 newAppointmentRef.setValue(newAppointment);
                                 userAppointmentsRef.setValue(newAppointment);
 
-                                getActivity().finish();
+                                Objects.requireNonNull(getActivity()).finish();
                                 break;
                             case DELETE_APPOINTMENT_CODE:
                                 Appointment deleteAppointment = mArgs.getParcelable("object");
-                                Appointment emptyAppointment = new Appointment(null, deleteAppointment.getTime(), deleteAppointment.getDate(), false);
+                                Appointment emptyAppointment = new Appointment(null, Objects.requireNonNull(deleteAppointment).getTime(), deleteAppointment.getDate(), false);
                                 String patient = mArgs.getString("patientId");
                                 DatabaseReference userAppointmentToDeleteRef;
                                 userAppointmentToDeleteRef = database.getReference()
@@ -170,12 +165,7 @@ public class ConfirmActionDialog extends DialogFragment {
             }
             firstDay = firstDay.plusHours(1);
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                AppointmentsManagementFragment.progressBar.setVisibility(View.INVISIBLE);
-            }
-        }, 4000);
+        new Handler().postDelayed(() -> AppointmentsManagementFragment.progressBar.setVisibility(View.INVISIBLE), 4500);
     }
 
 }

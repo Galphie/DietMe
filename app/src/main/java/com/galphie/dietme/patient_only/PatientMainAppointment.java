@@ -44,13 +44,11 @@ public class PatientMainAppointment extends Fragment implements ValueEventListen
     private RecyclerView recyclerView;
     private TextView noAppointmentsText;
     private ImageView arrow;
-    private User currentUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentUser = getArguments().getParcelable("currentUser");
             patient = getArguments().getParcelable("patient");
             patientId = getArguments().getString("patientId");
         }
@@ -97,7 +95,7 @@ public class PatientMainAppointment extends Fragment implements ValueEventListen
             arrow.setVisibility(View.GONE);
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                 Appointment appointment = ds.getValue(Appointment.class);
-                String appointmentDate = appointment.getDate() + " " + appointment.getTime();
+                String appointmentDate = Objects.requireNonNull(appointment).getDate() + " " + appointment.getTime();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 LocalDateTime completeDate = LocalDateTime.parse(appointmentDate, formatter);
                 if (completeDate.isAfter(LocalDateTime.now())) {
@@ -146,7 +144,7 @@ public class PatientMainAppointment extends Fragment implements ValueEventListen
                 confirmActionBundle.putParcelable("object", appointments.get(position));
                 confirmActionBundle.putString("patientId", patientId);
                 dialogFragment.setArguments(confirmActionBundle);
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "Confirm");
+                dialogFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "Confirm");
                 break;
         }
         return true;
